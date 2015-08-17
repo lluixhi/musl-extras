@@ -14,6 +14,11 @@ Features currently not found in other distros that support MUSL include:
 
 More to come :)
 
+## Note on Icedtea
+Icedtea requires a JDK to bootstrap it, and GCJ is broken.
+The two ways to install it then are to get Gentoo to allow me to host a musl
+icedtea-bin, or to add a hacky icedtea-bin package that downloads from Alpine.
+
 ## How to install the overlay
 
 With paludis: see [Paludis repository configuration](http://paludis.exherbo.org/configuration/repositories/index.html)
