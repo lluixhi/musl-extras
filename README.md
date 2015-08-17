@@ -1,9 +1,9 @@
-# MUSL Extras Testing Repo
+# MUSL Extras Repo
 
 Gentoo's Hardened Development Repo tends to be out of date.
 
 This repo exists to be bleeding edge, fix/update the hardened dev patches,
-pull in patches from Voidlinux and Alpine, and create it's own.
+pull in patches from Voidlinux and Alpine, and create its own.
 
 Features currently not found in other distros that support MUSL include:
 * GCC 5.2.0 (Hardened)
