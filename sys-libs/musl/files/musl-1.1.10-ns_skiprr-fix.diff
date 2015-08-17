@@ -1,0 +1,26 @@
+From e8cbe0bad4284906230a53af4c91ad2b9713d03b Mon Sep 17 00:00:00 2001
+From: Rich Felker <dalias@aerifal.cx>
+Date: Wed, 08 Jul 2015 02:46:45 +0000
+Subject: fix negated return value of ns_skiprr, breakage in related functions
+
+due to a reversed pointer difference computation, ns_skiprr always
+returned a negative value, which functions using it would interpret as
+an error.
+
+patch by Yu Lu.
+---
+diff --git a/src/network/ns_parse.c b/src/network/ns_parse.c
+index 3ff33a8..d01da47 100644
+--- a/src/network/ns_parse.c
++++ b/src/network/ns_parse.c
+@@ -95,7 +95,7 @@ int ns_skiprr(const unsigned char *ptr, const unsigned char *eom, ns_sect sectio
+ 			p += r;
+ 		}
+ 	}
+-	return ptr - p;
++	return p - ptr;
+ bad:
+ 	errno = EMSGSIZE;
+ 	return -1;
+--
+cgit v0.9.0.3-65-g4555

@@ -1,0 +1,44 @@
+diff -Naurw LVM2.2.02.116.orig/daemons/lvmetad/lvmetad-core.c LVM2.2.02.116/daemons/lvmetad/lvmetad-core.c
+--- LVM2.2.02.116.orig/daemons/lvmetad/lvmetad-core.c	2015-01-30 16:19:53.000000000 +0000
++++ LVM2.2.02.116/daemons/lvmetad/lvmetad-core.c	2015-08-11 19:15:53.222060888 +0000
+@@ -124,7 +124,7 @@
+ 	if (!(vg = dm_hash_lookup(s->lock.vg, id))) {
+ 		if (!(vg = malloc(sizeof(pthread_mutex_t))) ||
+ 		    pthread_mutexattr_init(&rec) ||
+-		    pthread_mutexattr_settype(&rec, PTHREAD_MUTEX_RECURSIVE_NP) ||
++		    pthread_mutexattr_settype(&rec, PTHREAD_MUTEX_RECURSIVE) ||
+ 		    pthread_mutex_init(vg, &rec))
+ 			goto bad;
+ 		if (!dm_hash_insert(s->lock.vg, id, vg)) {
+@@ -1152,7 +1152,7 @@
+ 	ls->log = s->log;
+ 
+ 	pthread_mutexattr_init(&rec);
+-	pthread_mutexattr_settype(&rec, PTHREAD_MUTEX_RECURSIVE_NP);
++	pthread_mutexattr_settype(&rec, PTHREAD_MUTEX_RECURSIVE);
+ 	pthread_mutex_init(&ls->lock.pvid_to_pvmeta, &rec);
+ 	pthread_mutex_init(&ls->lock.vgid_to_metadata, &rec);
+ 	pthread_mutex_init(&ls->lock.pvid_to_vgid, NULL);
+diff -Naurw LVM2.2.02.116.orig/lib/mm/memlock.c LVM2.2.02.116/lib/mm/memlock.c
+--- LVM2.2.02.116.orig/lib/mm/memlock.c	2015-01-30 16:19:53.000000000 +0000
++++ LVM2.2.02.116/lib/mm/memlock.c	2015-08-11 19:14:39.605392027 +0000
+@@ -133,7 +133,7 @@
+ 
+ static void _allocate_memory(void)
+ {
+-#ifndef VALGRIND_POOL
++#if !defined(VALGRIND_POOL) && defined(__GLIBC__)
+ 	void *stack_mem;
+ 	struct rlimit limit;
+ 	int i, area = 0, missing = _size_malloc_tmp, max_areas = 32, hblks;
+diff -Naurw LVM2.2.02.116.orig/libdaemon/server/daemon-server.c LVM2.2.02.116/libdaemon/server/daemon-server.c
+--- LVM2.2.02.116.orig/libdaemon/server/daemon-server.c	2015-01-30 16:19:53.000000000 +0000
++++ LVM2.2.02.116/libdaemon/server/daemon-server.c	2015-08-11 19:13:01.602055774 +0000
+@@ -14,6 +14,7 @@
+ #include "daemon-server.h"
+ #include "daemon-log.h"
+ 
++#include <fcntl.h>
+ #include <dlfcn.h>
+ #include <errno.h>
+ #include <pthread.h>

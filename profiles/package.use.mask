@@ -1,0 +1,2 @@
+sys-devel/gcc go gcj
+sys-devel/gdb server
