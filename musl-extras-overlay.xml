@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE repositories SYSTEM "/dtd/repositories.dtd">
+<repositories xmlns="" version="1.0">
+  <repo quality="experimental" status="official">
+    <name>musl-extras</name>
+    <description lang="en">MUSL ebuilds testing repository</description>
+    <homepage>https://github.com/lluixhi/musl-extras</homepage>
+    <owner type="person">
+      <email>lluixhi@gmail.com</email>
+      <name>Lluixhi Scura</name>
+    </owner>
+    <source type="git">git@github.com:lluixhi/musl-extras.git</source>
+    <source type="git">https://github.com/lluixhi/musl-extras.git</source>
+    <feed>http://github.com/feeds/lluixhi/commits/musl-extras/master</feed>
+  </repo>
+</repositories>
+

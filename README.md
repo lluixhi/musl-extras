@@ -1,4 +1,4 @@
-MUSL Extras
+# MUSL Extras Testing Repo
 
 Gentoo's Hardened Development Repo tends to be out of date.
 
@@ -13,3 +13,10 @@ Features currently not found in other distros that support MUSL include:
 * Firefox 40
 
 More to come :)
+
+## How to install the overlay
+
+With paludis: see [Paludis repository configuration](http://paludis.exherbo.org/configuration/repositories/index.html)
+
+With layman:
+```layman -f -o https://raw.githubusercontent.com/lluixhi/musl-extras/master/musl-extras-overlay.xml -a musl-extras```
