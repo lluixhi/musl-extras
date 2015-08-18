@@ -12,7 +12,6 @@ Features currently not found in other distros that support MUSL include:
 * Linux Headers 4.1
 * MESA using GLX-TLS under MUSL
 * Working xf86-video-intel
-* Firefox 40
 
 More to come :)
 
