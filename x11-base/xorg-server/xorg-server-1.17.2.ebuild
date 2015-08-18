@@ -148,7 +148,6 @@ PATCHES=(
 
 	# Patch for MUSL
 	"${FILESDIR}"/${PN}-1.17.2-musl.patch
-	sed -i -e 's/termio.h/termios.h/' hw/xfree86/os-support/xf86_OSlib.h
 )
 
 pkg_pretend() {
@@ -158,7 +157,8 @@ pkg_pretend() {
 }
 
 src_configure() {
-	# Fix types for MUSL
+	# Fix types for MUSL and termio.h inclusion
+	sed -i -e 's/termio.h/termios.h/' hw/xfree86/os-support/xf86_OSlib.h
 	append-flags "-D__uid_t=uid_t -D__gid_t=gid_t"
 
 	# localstatedir is used for the log location; we need to override the default
