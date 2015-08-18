@@ -4,7 +4,7 @@
 
 EAPI="5"
 
-inherit eutils
+inherit eutils flag-o-matic
 
 DESCRIPTION="A suite of tools to work with ELF objects on Hardened Gentoo"
 HOMEPAGE="http://www.gentoo.org/proj/en/hardened/pax-quickstart.xml
@@ -34,7 +34,7 @@ src_prepare() {
 
 src_configure() {
 	# Fix MUSL gelf.h failure in configure
-	export CFLAGS="${CFLAGS} -D_GNU_SOURCE"
+	append-flags "-D_GNU_SOURCE"
 
 	rm -f "${S}/scripts/setup.py"
 	econf --disable-tests \

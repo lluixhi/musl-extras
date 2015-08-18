@@ -4,7 +4,7 @@
 
 EAPI="4"
 
-inherit eutils autotools
+inherit eutils autotools flag-o-matic
 
 DESCRIPTION="Standalone argp library for use with uclibc"
 HOMEPAGE="http://www.lysator.liu.se/~nisse/misc/"
@@ -22,7 +22,7 @@ src_prepare() {
 
 	# Fix for linking against elfutils
 	epatch "${FILESDIR}/${P}-gnu89-inline.patch"
-	export CFLAGS="${CFLAGS} -fPIC"
+	append-flags "-fPIC"
 
 	eautoreconf
 }

@@ -159,7 +159,7 @@ pkg_pretend() {
 
 src_configure() {
 	# Fix types for MUSL
-	export CFLAGS="${CFLAGS} -D__uid_t=uid_t -D__gid_t=gid_t"
+	append-flags "-D__uid_t=uid_t -D__gid_t=gid_t"
 
 	# localstatedir is used for the log location; we need to override the default
 	#	from ebuild.sh

@@ -13,7 +13,7 @@ fi
 
 PYTHON_COMPAT=( python2_7 )
 
-inherit autotools multilib-minimal python-any-r1 pax-utils ${GIT_ECLASS}
+inherit autotools multilib-minimal python-any-r1 pax-utils flag-o-matic ${GIT_ECLASS}
 
 OPENGL_DIR="xorg-x11"
 
@@ -193,9 +193,9 @@ src_prepare() {
 multilib_src_configure() {
 	local myconf
 
-	# GNU2 dialect of global-dynamic ~initial-exec speed
-	export CFLAGS="${CFLAGS} -mtls-dialect=gnu2"
-	export CXXFLAGS="${CXXFLAGS} -mtls-dialect=gnu2"
+	# GNU2 dialect of global-dynamic is about initial-exec speed
+	# Recommended by MUSL developers.
+	append-flags "-mtls-dialect=gnu2"
 
 	if use classic; then
 		# Configurable DRI drivers
