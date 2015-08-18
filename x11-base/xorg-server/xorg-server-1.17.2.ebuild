@@ -227,6 +227,10 @@ src_install() {
 	# install the @x11-module-rebuild set for Portage
 	insinto /usr/share/portage/config/sets
 	newins "${FILESDIR}"/xorg-sets.conf xorg.conf
+
+	# Include 20-modules.conf for MUSL
+	insinto /usr/share/X11/xorg.conf.d
+	newins "${FILESDIR}"/20-modules.conf 20-modules.conf
 }
 
 pkg_postinst() {
