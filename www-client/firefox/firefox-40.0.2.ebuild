@@ -143,6 +143,7 @@ src_prepare() {
 	EPATCH_EXCLUDE="8010_bug114311-freetype26.patch" \
 	epatch "${WORKDIR}/firefox"
 	epatch "${FILESDIR}"/${PN}-38-hppa-js-syntax-error.patch #556196
+	epatch "${FILESDIR}"/${PN}-38-dont-hardcode-libc-soname.patch #557956
 
 	# Apply MUSL Patches
 	epatch "${FILESDIR}"/${P}-basename.patch
@@ -312,6 +313,10 @@ src_install() {
 	cp "${FILESDIR}"/gentoo-default-prefs.js-1 \
 		"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/all-gentoo.js" \
 		|| die
+
+	# layers.offmainthreadcomposition causes a crash on MUSL.
+	echo 'pref("layers.offmainthreadcomposition.enabled", false);' >> \
+		"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/all-gentoo.js"
 
 	# Set default path to search for dictionaries.
 	echo "pref(\"spellchecker.dictionary_path\", ${DICTPATH});" \
