@@ -34,7 +34,7 @@ src_prepare() {
 
 src_configure() {
 	# Fix MUSL gelf.h failure in configure
-	append-flags "-D_GNU_SOURCE"
+	append-cppflags "-D_GNU_SOURCE"
 
 	rm -f "${S}/scripts/setup.py"
 	econf --disable-tests \
