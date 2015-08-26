@@ -67,7 +67,7 @@ REQUIRED_USE="
 
 RDEPEND="server? ( !dev-util/gdbserver )
 	client? (
-		>=sys-libs/ncurses-5.2-r2:5=
+		>=sys-libs/ncurses-5.2-r2:0=
 		sys-libs/readline:0=
 		expat? ( dev-libs/expat )
 		lzma? ( app-arch/xz-utils )
@@ -113,7 +113,7 @@ src_configure() {
 
 	local myconf=(
 		--with-pkgversion="$(gdb_branding)"
-		--with-bugurl='http://bugs.gentoo.org/'
+		--with-bugurl='https://bugs.gentoo.org/'
 		--disable-werror
 		# Disable modules that are in a combined binutils/gdb tree. #490566
 		--disable-{binutils,etc,gas,gold,gprof,ld}
