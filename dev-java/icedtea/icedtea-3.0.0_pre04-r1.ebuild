@@ -194,6 +194,7 @@ java_prepare() {
 	ln -s "${FILESDIR}/${PN}8-hotspot-noagent-musl.patch" patches
     ln -s "${FILESDIR}/${PN}-hotspot-uclibc-fixes.patch" patches
 	ln -s "${FILESDIR}/${PN}8-jdk-execinfo.patch" patches
+	ln -s "${FILESDIR}/${PN}8-jdk-fix-build.patch" patches
 	ln -s "${FILESDIR}/${PN}-jdk-fix-ipv6-init.patch" patches
 	ln -s "${FILESDIR}/${PN}8-jdk-musl.patch" patches
 
@@ -217,6 +218,7 @@ src_configure() {
 	DISTRIBUTION_PATCHES+="patches/${PN}8-hotspot-noagent-musl.patch "
 	DISTRIBUTION_PATCHES+="patches/${PN}-hotspot-uclibc-fixes.patch "
 	DISTRIBUTION_PATCHES+="patches/${PN}8-jdk-execinfo.patch "
+	DISTRIBUTION_PATCHES+="patches/${PN}8-jdk-fix-build.patch "
 	DISTRIBUTION_PATCHES+="patches/${PN}-jdk-fix-ipv6-init.patch "
 	DISTRIBUTION_PATCHES+="patches/${PN}8-jdk-musl.patch "
 
