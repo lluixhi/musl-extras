@@ -1,0 +1,102 @@
+diff -Naurw openjdk.orig/common/autoconf/generated-configure.sh openjdk/common/autoconf/generated-configure.sh
+--- openjdk.orig/common/autoconf/generated-configure.sh	2015-06-04 12:15:14.000000000 +0700
++++ openjdk/common/autoconf/generated-configure.sh	2015-08-26 18:29:52.029531908 +0700
+@@ -7980,7 +7980,27 @@
+ 
+ 
+ 
++  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/include/thread_db.h" >&5
++$as_echo_n "checking for /usr/include/thread_db.h... " >&6; }
++if ${ac_cv_file__usr_include_thread_db_h+:} false; then :
++  $as_echo_n "(cached) " >&6
++else
++  test "$cross_compiling" = yes &&
++  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
++if test -r "/usr/include/thread_db.h"; then
++  ac_cv_file__usr_include_thread_db_h=yes
++else
++  ac_cv_file__usr_include_thread_db_h=no
++fi
++fi
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_include_thread_db_h" >&5
++$as_echo "$ac_cv_file__usr_include_thread_db_h" >&6; }
++if test "x$ac_cv_file__usr_include_thread_db_h" = xyes; then :
+   INCLUDE_SA=true
++else
++  INCLUDE_SA=false
++fi
++
+   if test "x$JVM_VARIANT_ZERO" = xtrue ; then
+     INCLUDE_SA=false
+   fi
+diff -Naurw openjdk.orig/common/autoconf/jdk-options.m4 openjdk/common/autoconf/jdk-options.m4
+--- openjdk.orig/common/autoconf/jdk-options.m4	2015-06-04 12:15:14.000000000 +0700
++++ openjdk/common/autoconf/jdk-options.m4	2015-08-26 18:29:19.602864276 +0700
+@@ -151,7 +151,7 @@
+   AC_SUBST(JVM_VARIANT_ZEROSHARK)
+   AC_SUBST(JVM_VARIANT_CORE)
+ 
+-  INCLUDE_SA=true
++  AC_CHECK_FILE(/usr/include/thread_db.h,INCLUDE_SA=true,INCLUDE_SA=false)
+   if test "x$JVM_VARIANT_ZERO" = xtrue ; then
+     INCLUDE_SA=false
+   fi
+diff -Naurw openjdk.orig/hotspot/make/linux/makefiles/defs.make openjdk/hotspot/make/linux/makefiles/defs.make
+--- openjdk.orig/hotspot/make/linux/makefiles/defs.make	2015-04-28 03:04:39.000000000 +0700
++++ openjdk/hotspot/make/linux/makefiles/defs.make	2015-08-26 18:23:55.446187950 +0700
+@@ -317,6 +317,9 @@
+ 
+ # Serviceability Binaries
+ # No SA Support for PPC, IA64, ARM or zero
++# or if thread_db.h missing (musl)
++
++ifneq ($(wildcard /usr/include/thread_db.h),)
+ ADD_SA_BINARIES/x86   = $(EXPORT_JRE_LIB_ARCH_DIR)/libsaproc.$(LIBRARY_SUFFIX) \
+                         $(EXPORT_LIB_DIR)/sa-jdi.jar
+ ADD_SA_BINARIES/sparc = $(EXPORT_JRE_LIB_ARCH_DIR)/libsaproc.$(LIBRARY_SUFFIX) \
+@@ -330,6 +333,10 @@
+     ADD_SA_BINARIES/sparc += $(EXPORT_JRE_LIB_ARCH_DIR)/libsaproc.debuginfo
+   endif
+ endif
++else
++ADD_SA_BINARIES/x86   =
++ADD_SA_BINARIES/sparc =
++endif
+ ADD_SA_BINARIES/ppc   =
+ ADD_SA_BINARIES/ia64  =
+ ADD_SA_BINARIES/arm   =
+diff -Naurw openjdk.orig/hotspot/make/linux/makefiles/sa.make openjdk/hotspot/make/linux/makefiles/sa.make
+--- openjdk.orig/hotspot/make/linux/makefiles/sa.make	2015-04-28 03:04:39.000000000 +0700
++++ openjdk/hotspot/make/linux/makefiles/sa.make	2015-08-26 18:24:06.802854955 +0700
+@@ -59,9 +59,11 @@
+ 
+ # if $(AGENT_DIR) does not exist, we don't build SA
+ # also, we don't build SA on Itanium or zero.
++# check for thread_db.h too (musl does not have it).
+ 
+ all: 
+-	if [ -d $(AGENT_DIR) -a "$(SRCARCH)" != "ia64" \
++	if [ -d $(AGENT_DIR) -a -f /usr/include/thread_db.h \
++             -a "$(SRCARCH)" != "ia64" \
+              -a "$(SRCARCH)" != "zero" \
+              -a "$(SRCARCH)" != "aarch64" ] ; then \
+ 	   $(MAKE) -f sa.make $(GENERATED)/sa-jdi.jar; \
+diff -Naurw openjdk.orig/hotspot/make/linux/makefiles/saproc.make openjdk/hotspot/make/linux/makefiles/saproc.make
+--- openjdk.orig/hotspot/make/linux/makefiles/saproc.make	2015-04-28 03:04:39.000000000 +0700
++++ openjdk/hotspot/make/linux/makefiles/saproc.make	2015-08-26 18:24:16.296188571 +0700
+@@ -61,12 +61,15 @@
+ 
+ # if $(AGENT_DIR) does not exist, we don't build SA
+ # also, we don't build SA on Itanium or zero.
++# check for thread_db.h too (musl does not have it).
+ 
++ifneq ($(wildcard /usr/include/thread_db.h),)
+ ifneq ($(wildcard $(AGENT_DIR)),)
+ ifneq ($(filter-out ia64 zero aarch64,$(SRCARCH)),)
+   BUILDLIBSAPROC = $(LIBSAPROC)
+ endif
+ endif
++endif
+ 
+ ifneq ($(ALT_SASRCDIR),)
+ ALT_SAINCDIR=-I$(ALT_SASRCDIR)
