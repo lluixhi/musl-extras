@@ -65,8 +65,13 @@ src_prepare() {
 
 	# Other upstream patches
 	epatch "${FILESDIR}"/${P}-syncfs-fix.diff
+	epatch "${FILESDIR}"/${P}-timezone-east-of-UTC.diff
 	epatch "${FILESDIR}"/${P}-ns_skiprr-fix.diff
+	epatch "${FILESDIR}"/${P}-a_store-sync.diff
+	epatch "${FILESDIR}"/${P}-syslog-reconnect.diff
 
+	# Patch from Alpine
+	epatch "${FILESDIR}"/${P}-fix-vsz-exploit.diff
 	epatch_user
 }
 
