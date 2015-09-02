@@ -40,9 +40,6 @@ src_install() {
 	# hrm, build system sucks
 	find "${ED}" '(' -name '.install' -o -name '*.cmd' ')' -delete
 	find "${ED}" -depth -type d -delete 2>/dev/null
-
-	# provided by libdrm (for now?)
-	rm -rf "${ED}"/$(kernel_header_destdir)/drm
 }
 
 src_test() {

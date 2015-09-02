@@ -1,7 +1,7 @@
-diff -Naurw gentoo-headers-base-4.1/include/uapi/linux/libc-compat.h gentoo-headers-base-4.1.new/include/uapi/linux/libc-compat.h
---- gentoo-headers-base-4.1/include/uapi/linux/libc-compat.h	2015-06-23 15:04:38.000000000 +0000
-+++ gentoo-headers-base-4.1.new/include/uapi/linux/libc-compat.h	2015-08-11 07:46:46.250828835 +0000
-@@ -48,24 +48,21 @@
+diff -Naurw gentoo-headers-base-4.2.orig/include/uapi/linux/libc-compat.h gentoo-headers-base-4.2/include/uapi/linux/libc-compat.h
+--- gentoo-headers-base-4.2.orig/include/uapi/linux/libc-compat.h	2015-08-31 18:07:23.000000000 -0700
++++ gentoo-headers-base-4.2/include/uapi/linux/libc-compat.h	2015-09-02 13:29:10.768131578 -0700
+@@ -48,11 +48,16 @@
  #ifndef _UAPI_LIBC_COMPAT_H
  #define _UAPI_LIBC_COMPAT_H
  
@@ -22,6 +22,9 @@ diff -Naurw gentoo-headers-base-4.1/include/uapi/linux/libc-compat.h gentoo-head
  
  /* GLIBC headers included first so don't define anything
   * that would already be defined. */
+@@ -64,15 +69,7 @@
+ #define __UAPI_DEF_IN_CLASS		0
+ 
  #define __UAPI_DEF_IN6_ADDR		0
 -/* The exception is the in6_addr macros which must be defined
 - * if the glibc code didn't define them. This guard matches
@@ -35,7 +38,7 @@ diff -Naurw gentoo-headers-base-4.1/include/uapi/linux/libc-compat.h gentoo-head
  #define __UAPI_DEF_SOCKADDR_IN6		0
  #define __UAPI_DEF_IPV6_MREQ		0
  #define __UAPI_DEF_IPPROTO_V6		0
-@@ -73,7 +70,7 @@
+@@ -80,7 +77,7 @@
  #define __UAPI_DEF_IN6_PKTINFO		0
  #define __UAPI_DEF_IP6_MTUINFO		0
  
@@ -44,16 +47,16 @@ diff -Naurw gentoo-headers-base-4.1/include/uapi/linux/libc-compat.h gentoo-head
  
  /* Linux headers included first, and we must define everything
   * we need. The expectation is that glibc will check the
-@@ -101,7 +98,7 @@
+@@ -115,7 +112,7 @@
  /* If we did not see any headers from any supported C libraries,
   * or we are being included in the kernel, then define everything
   * that we need. */
 -#else /* !defined(__GLIBC__) */
 +#else /* __KERNEL__ */
  
- /* Definitions for in6.h */
- #define __UAPI_DEF_IN6_ADDR		1
-@@ -116,6 +113,6 @@
+ /* Definitions for in.h */
+ #define __UAPI_DEF_IN_ADDR		1
+@@ -138,6 +135,6 @@
  /* Definitions for xattr.h */
  #define __UAPI_DEF_XATTR		1
  

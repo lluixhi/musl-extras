@@ -48,9 +48,9 @@ RESTRICT="!bindist? ( bindist )"
 
 # More URIs appended below...
 SRC_URI="${SRC_URI}
-	http://dev.gentoo.org/~anarchy/mozilla/patchsets/${PATCH}.tar.xz
-	http://dev.gentoo.org/~axs/mozilla/patchsets/${PATCH}.tar.xz
-	http://dev.gentoo.org/~polynomial-c/mozilla/patchsets/${PATCH}.tar.xz"
+	https://dev.gentoo.org/~anarchy/mozilla/patchsets/${PATCH}.tar.xz
+	https://dev.gentoo.org/~axs/mozilla/patchsets/${PATCH}.tar.xz
+	https://dev.gentoo.org/~polynomial-c/mozilla/patchsets/${PATCH}.tar.xz"
 
 ASM_DEPEND=">=dev-lang/yasm-1.1"
 
@@ -72,7 +72,7 @@ DEPEND="${RDEPEND}
 if [[ ${PV} =~ alpha ]]; then
 	CHANGESET="8a3042764de7"
 	SRC_URI="${SRC_URI}
-		http://dev.gentoo.org/~nirbheek/mozilla/firefox/firefox-${MOZ_PV}_${CHANGESET}.source.tar.bz2"
+		https://dev.gentoo.org/~nirbheek/mozilla/firefox/firefox-${MOZ_PV}_${CHANGESET}.source.tar.bz2"
 	S="${WORKDIR}/mozilla-aurora-${CHANGESET}"
 elif [[ ${PV} =~ beta ]]; then
 	S="${WORKDIR}/mozilla-release"
@@ -146,12 +146,12 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-38-dont-hardcode-libc-soname.patch #557956
 
 	# Apply MUSL Patches
-	epatch "${FILESDIR}"/${P}-basename.patch
-	epatch "${FILESDIR}"/${P}-crashreporter.patch
-	epatch "${FILESDIR}"/${P}-profiler-gettid.patch
-	epatch "${FILESDIR}"/${P}-sandbox-cdefs.patch
-	epatch "${FILESDIR}"/${P}-updater.patch
-	epatch "${FILESDIR}"/${P}-xpcom-blocksize.patch
+	epatch "${FILESDIR}"/${PN}-40.0.2-basename.patch
+	epatch "${FILESDIR}"/${PN}-40.0.2-crashreporter.patch
+	epatch "${FILESDIR}"/${PN}-40.0.2-profiler-gettid.patch
+	epatch "${FILESDIR}"/${PN}-40.0.2-sandbox-cdefs.patch
+	epatch "${FILESDIR}"/${PN}-40.0.2-updater.patch
+	epatch "${FILESDIR}"/${PN}-40.0.2-xpcom-blocksize.patch
 
 	# Allow user to apply any additional patches without modifing ebuild
 	epatch_user
