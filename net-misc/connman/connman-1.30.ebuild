@@ -33,8 +33,8 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	# Fix build with MUSL
-	epatch "${FILESDIR}/${P}-musl.patch"
-	epatch "${FILESDIR}/${P}-musl-libresolv.patch"
+	epatch "${FILESDIR}/${PN}-1.29-musl.patch"
+	epatch "${FILESDIR}/${PN}-1.29-musl-libresolv.patch"
 
 	eautoreconf
 }
