@@ -24,7 +24,7 @@ LANGTOOLS_TARBALL="9c6e1de67d7d.tar.bz2"
 OPENJDK_TARBALL="39b2c4354d0a.tar.bz2"
 HOTSPOT_TARBALL="b19bc5aeaa09.tar.bz2"
 
-CACAO_TARBALL="e215e36be9fc.tar.gz"
+CACAO_TARBALL="cacao-c182f119eaad.tar.gz"
 JAMVM_TARBALL="jamvm-ec18fb9e49e62dce16c5094ef1527eed619463aa.tar.gz"
 
 CORBA_GENTOO_TARBALL="icedtea-${ICEDTEA_BRANCH}-corba-${CORBA_TARBALL}"
@@ -35,7 +35,7 @@ LANGTOOLS_GENTOO_TARBALL="icedtea-${ICEDTEA_BRANCH}-langtools-${LANGTOOLS_TARBAL
 OPENJDK_GENTOO_TARBALL="icedtea-${ICEDTEA_BRANCH}-openjdk-${OPENJDK_TARBALL}"
 HOTSPOT_GENTOO_TARBALL="icedtea-${ICEDTEA_BRANCH}-hotspot-${HOTSPOT_TARBALL}"
 
-CACAO_GENTOO_TARBALL="icedtea-cacao-${CACAO_TARBALL}"
+CACAO_GENTOO_TARBALL="icedtea-${CACAO_TARBALL}"
 JAMVM_GENTOO_TARBALL="icedtea-${JAMVM_TARBALL}"
 
 DROP_URL="http://icedtea.classpath.org/download/drops"
@@ -57,11 +57,14 @@ SRC_URI="
 	${DROP_URL}/jamvm/${JAMVM_TARBALL} -> ${JAMVM_GENTOO_TARBALL}"
 
 LICENSE="Apache-1.1 Apache-2.0 GPL-1 GPL-2 GPL-2-with-linking-exception LGPL-2 MPL-1.0 MPL-1.1 public-domain W3C"
-KEYWORDS="~amd64 ~ppc ~x86"
+KEYWORDS="~amd64 ~arm ~x86"
 RESTRICT="test"
 
-IUSE="+X +alsa cacao cjk +cups debug doc examples infinality jamvm javascript +jbootstrap kerberos +nsplugin
-	nss pax_kernel pulseaudio sctp selinux smartcard +source +sunec test zero +webstart"
+IUSE="+awt +alsa cacao cjk +cups debug doc examples +gtk infinality
+	jamvm javascript +jbootstrap kerberos +nsplugin nss pax_kernel
+	pulseaudio sctp selinux smartcard source +sunec test zero +webstart"
+
+REQUIRED_USE="gtk? ( awt )"
 
 # Ideally the following were optional at build time.
 ALSA_COMMON_DEP="
@@ -69,20 +72,14 @@ ALSA_COMMON_DEP="
 CUPS_COMMON_DEP="
 	>=net-print/cups-1.2.12"
 X_COMMON_DEP="
-	>=dev-libs/atk-1.30.0
-	>=dev-libs/glib-2.26:2
-	media-libs/fontconfig
-	>=media-libs/freetype-2.5.3:2=[infinality?]
-	>=x11-libs/cairo-1.8.8:=
-	x11-libs/gdk-pixbuf:2
-	>=x11-libs/gtk+-2.8:2=
+	>=media-libs/giflib-4.1.6:=
+	>=media-libs/libpng-1.2:0=
 	>=x11-libs/libX11-1.1.3
 	>=x11-libs/libXext-1.1.1
 	>=x11-libs/libXi-1.1.3
 	>=x11-libs/libXrender-0.9.4
 	>=x11-libs/libXtst-1.0.3
-	x11-libs/libXt
-	>=x11-libs/pango-1.24.5"
+	x11-libs/libXt"
 X_DEPEND="
 	>=x11-libs/libXau-1.0.3
 	>=x11-libs/libXdmcp-1.0.2
@@ -93,45 +90,47 @@ X_DEPEND="
 	x11-proto/xproto"
 
 COMMON_DEP="
-	>=media-libs/giflib-4.1.6:=
+	>=dev-libs/glib-2.26:2
+	media-libs/fontconfig
+	>=media-libs/freetype-2.5.3:2=[infinality?]
 	>=media-libs/lcms-2.5
-	>=media-libs/libpng-1.2:0=
 	>=sys-libs/zlib-1.2.3:=
 	virtual/jpeg:0=
+	gtk? (
+	>=dev-libs/atk-1.30.0
+	>=x11-libs/cairo-1.8.8:=
+	x11-libs/gdk-pixbuf:2
+	>=x11-libs/gtk+-2.8:2=
+	>=x11-libs/pango-1.24.5
+	)
 	javascript? ( dev-java/rhino:1.6 )
-	nss? ( >=dev-libs/nss-3.12.5-r1 )
 	kerberos? ( virtual/krb5 )
-	smartcard? ( sys-apps/pcsc-lite )
-	sunec? ( >=dev-libs/nss-3.16.1-r1 )
+	nss? ( >=dev-libs/nss-3.12.5-r1 )
 	sctp? ( net-misc/lksctp-tools )
-	!dev-java/icedtea-web:7"
+	smartcard? ( sys-apps/pcsc-lite )
+	sunec? ( >=dev-libs/nss-3.16.1-r1 )"
 
-# cups is needed for X. #390945 #390975
 # gsettings-desktop-schemas is needed for native proxy support. #431972
 RDEPEND="${COMMON_DEP}
 	!dev-java/icedtea:0
-	X? (
-		${CUPS_COMMON_DEP}
-		${X_COMMON_DEP}
-		media-fonts/dejavu
-		cjk? (
-			media-fonts/arphicfonts
-			media-fonts/baekmuk-fonts
-			media-fonts/lklug
-			media-fonts/lohit-fonts
-			media-fonts/sazanami
-		)
-	)
+	!dev-java/icedtea-web:7
+	>=gnome-base/gsettings-desktop-schemas-3.12.2
+	media-fonts/dejavu
 	alsa? ( ${ALSA_COMMON_DEP} )
+	awt? ( ${X_COMMON_DEP} )
+	cjk? (
+		media-fonts/arphicfonts
+		media-fonts/baekmuk-fonts
+		media-fonts/lklug
+		media-fonts/lohit-fonts
+		media-fonts/sazanami
+	)
 	cups? ( ${CUPS_COMMON_DEP} )
-	selinux? ( sec-policy/selinux-java )
-	>=gnome-base/gsettings-desktop-schemas-3.12.2"
+	selinux? ( sec-policy/selinux-java )"
 
 # Only ant-core-1.8.1 has fixed ant -diagnostics when xerces+xalan are not present.
 # ca-certificates, perl and openssl are used for the cacerts keystore generation
-# xext headers have two variants depending on version - bug #288855
-# autoconf - as long as we use eautoreconf, version restrictions for bug #294918
-DEPEND="${COMMON_DEP} ${ALSA_COMMON_DEP} ${CUPS_COMMON_DEP} ${X_COMMON_DEP}
+DEPEND="${COMMON_DEP} ${ALSA_COMMON_DEP} ${CUPS_COMMON_DEP} ${X_COMMON_DEP} ${X_DEPEND}
 	|| (
 		>=dev-java/gcj-jdk-4.3
 		dev-java/icedtea-bin:7
@@ -147,10 +146,9 @@ DEPEND="${COMMON_DEP} ${ALSA_COMMON_DEP} ${CUPS_COMMON_DEP} ${X_COMMON_DEP}
 	dev-lang/perl
 	>=dev-libs/libxslt-1.1.26
 	dev-libs/openssl
-	virtual/pkgconfig
 	sys-apps/attr
 	sys-apps/lsb-release
-	${X_DEPEND}
+	virtual/pkgconfig
 	pax_kernel? ( sys-apps/elfix )"
 
 PDEPEND="webstart? ( dev-java/icedtea-web:0[icedtea7] )
@@ -194,6 +192,11 @@ src_unpack() {
 }
 
 java_prepare() {
+	if ! use cups; then
+			# CUPS is always needed at build time but you can at least make it dlopen.
+			sed -i 's/SYSTEM_CUPS="true"/SYSTEM_CUPS="false"/g' Makefile.in || die
+	fi
+
 	# SystemTap is broken for MUSL, don't try to install stp files.
 	epatch "${FILESDIR}/${P}-no-systemtap.patch"
 
@@ -215,7 +218,7 @@ java_prepare() {
 }
 
 src_configure() {
-	local cacao_config config hotspot_port jamvm_config use_jamvm use_zero zero_config
+	local cacao_config config hotspot_port jamvm_config use_cacao use_jamvm use_zero zero_config
 	local vm=$(java-pkg_get-current-vm)
 
 	# Export MUSL patches for configure
@@ -325,18 +328,20 @@ src_configure() {
 		--with-pkgversion="Gentoo ${PF}" \
 		--disable-downloading --disable-Werror \
 		--disable-hotspot-tests --disable-jdk-tests \
-		--enable-system-lcms --enable-system-gif \
-		--enable-system-jpeg --enable-system-png \
+		--enable-system-lcms --enable-system-jpeg \
 		--enable-system-zlib \
+		$(use_enable awt system-gif) \
+		$(use_enable awt system-png) \
 		$(use_enable !debug optimizations) \
 		$(use_enable doc docs) \
-		$(use_enable nss) \
-		$(use_enable kerberos system-kerberos) \
-		$(use_with pax_kernel pax "${EPREFIX}/usr/sbin/paxmark.sh") \
-		$(use_enable smartcard system-pcsc) \
-		$(use_enable sctp system-sctp) \
-		$(use_enable sunec) \
+		$(use_enable gtk system-gtk) \
 		$(use_enable infinality) \
+		$(use_enable kerberos system-kerberos) \
+		$(use_enable nss) \
+		$(use_with pax_kernel pax "${EPREFIX}/usr/sbin/paxmark.sh") \
+		$(use_enable sctp system-sctp) \
+		$(use_enable smartcard system-pcsc) \
+		$(use_enable sunec) \
 		${zero_config} ${cacao_config} ${jamvm_config}
 }
 
@@ -363,17 +368,21 @@ src_install() {
 	local dest="/usr/$(get_libdir)/icedtea${SLOT}"
 	local ddest="${ED}${dest#/}"
 
-	# Ensures HeadlessGraphicsEnvironment is used.
-	if ! use X; then
-		rm -r jre/lib/$(get_system_arch)/xawt || die
+	if ! use alsa; then
+			rm -v "${ddest}"/jre/lib/$(get_system_arch)/libjsoundalsa.* || die
+	fi
+
+	if ! use awt; then
+			rm -vr "${ddest}"/jre/lib/$(get_system_arch)/{xawt,libsplashscreen.*,libjavagtk.*} \
+				"${ddest}"/{,jre/}bin/policytool "${ddest}"/bin/appletviewer || die
 	fi
 
 	if ! use examples; then
-		rm -rf "${ddest}"/demo "${ddest}"/sample || die
+		rm -r "${ddest}"/demo "${ddest}"/sample || die
 	fi
 
 	if ! use source; then
-		rm -f "${ddest}"/src.zip || die
+		rm -v "${ddest}"/src.zip || die
 	fi
 
 	# provided by icedtea-web but we need it in JAVA_HOME to work with run-java-tool
@@ -402,15 +411,12 @@ src_install() {
 
 	# OpenJDK7 should be able to use fontconfig instead, but wont hurt to
 	# install it anyway. Bug 390663
-	cp "${FILESDIR}"/fontconfig.Gentoo.properties.src "${T}" || die
-	eprefixify "${T}"/fontconfig.Gentoo.properties.src
+	cp "${FILESDIR}"/fontconfig.Gentoo.properties.src "${T}"/fontconfig.Gentoo.properties || die
+	eprefixify "${T}"/fontconfig.Gentoo.properties
 	insinto "${dest}"/jre/lib
-	doins "${T}"/fontconfig.Gentoo.properties.src
+	doins "${T}"/fontconfig.Gentoo.properties
 
 	set_java_env "${FILESDIR}/icedtea.env"
-	if ! use X || ! use alsa || ! use cups; then
-		java-vm_revdep-mask "${dest}"
-	fi
 	java-vm_sandbox-predict /proc/self/coredump_filter
 }
 
