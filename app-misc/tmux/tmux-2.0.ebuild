@@ -20,7 +20,10 @@ COMMON_DEPEND="
 	>=dev-libs/libevent-2.0.10
 	sys-libs/ncurses"
 DEPEND="${COMMON_DEPEND}
-	virtual/pkgconfig"
+	virtual/pkgconfig
+	elibc_musl? (
+		sys-libs/bsd-compat
+	)"
 RDEPEND="${COMMON_DEPEND}
 	selinux? ( sec-policy/selinux-screen )
 	vim-syntax? ( || (
@@ -29,8 +32,7 @@ RDEPEND="${COMMON_DEPEND}
 
 DOCS=( CHANGES FAQ README TODO )
 
-PATCHES=( "${FILESDIR}"/${P}-flags.patch
-		  "${FILESDIR}"/${P}-musl.patch )
+PATCHES=( "${FILESDIR}"/${P}-flags.patch )
 
 pkg_setup() {
 	if has_version "<app-misc/tmux-1.9a"; then

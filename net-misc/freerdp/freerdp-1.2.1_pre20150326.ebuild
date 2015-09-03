@@ -76,6 +76,9 @@ DEPEND="${RDEPEND}
 		app-text/docbook-xml-dtd:4.1.2
 		app-text/xmlto
 	) ) )
+	elibc_musl? (
+		sys-libs/bsd-compat
+	)
 "
 
 DOCS=( README )
