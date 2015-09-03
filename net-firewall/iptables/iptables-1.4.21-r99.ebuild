@@ -35,6 +35,7 @@ src_prepare() {
 	rm -f include/linux/{kernel,types}.h
 
 	epatch "${FILESDIR}"/${P}-configure.patch #557586
+	epatch "${FILESDIR}"/${P}-static-connlabel-config.patch #558234
 
 	# Fix for MUSL
 	epatch "${FILESDIR}"/${P}-musl.patch
