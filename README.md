@@ -9,9 +9,10 @@ pull in patches from Voidlinux and Alpine, and create its own.
 
 Features currently not found in other distros that support MUSL include:
 * GCC 5.2.0 (Hardened)
-* Linux Headers 4.1
+* Linux Headers 4.2
 * MESA using GLX-TLS under MUSL
 * Working xf86-video-intel
+* Latest ElfUtils
 
 More to come :)
 
