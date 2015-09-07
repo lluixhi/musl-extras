@@ -39,7 +39,7 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	epatch "${FILESDIR}"/${PN}-3.1.0-mtu.patch #291907
-	use ipv6 || epatch "${FILESDIR}"/${PN}-3.10.0-no-ipv6.patch #326849
+	use ipv6 || epatch "${FILESDIR}"/${P}-no-ipv6.patch #326849
 
 	# Fix build with MUSL
 	epatch "${FILESDIR}"/${P}-musl.patch
