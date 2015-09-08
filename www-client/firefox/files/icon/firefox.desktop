@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=@NAME@
 Comment=Web Browser
-Exec=firefox %u
+Exec=firefox %U
 Icon=@ICON@
 Terminal=false
 Type=Application

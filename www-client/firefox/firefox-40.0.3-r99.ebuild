@@ -39,7 +39,7 @@ inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6
 DESCRIPTION="Firefox Web Browser"
 HOMEPAGE="http://www.mozilla.com/firefox"
 
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~ppc ~ppc64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~arm ~ppc ~x86"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
@@ -145,13 +145,22 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-38-hppa-js-syntax-error.patch #556196
 	epatch "${FILESDIR}"/${PN}-38-dont-hardcode-libc-soname.patch #557956
 
-	# Apply MUSL Patches
-	epatch "${FILESDIR}"/${PN}-40.0.2-basename.patch
-	epatch "${FILESDIR}"/${PN}-40.0.2-crashreporter.patch
-	epatch "${FILESDIR}"/${PN}-40.0.2-profiler-gettid.patch
-	epatch "${FILESDIR}"/${PN}-40.0.2-sandbox-cdefs.patch
-	epatch "${FILESDIR}"/${PN}-40.0.2-updater.patch
-	epatch "${FILESDIR}"/${PN}-40.0.2-xpcom-blocksize.patch
+	## patches for building with musl libc
+
+	#  already upstream
+	epatch "${FILESDIR}"/1152176.patch
+	epatch "${FILESDIR}"/sandbox-cdefs.patch
+
+	#  with mozilla bug
+	epatch "${FILESDIR}"/basename.patch
+	epatch "${FILESDIR}"/updater.patch
+
+	#  others
+	epatch "${FILESDIR}"/crashreporter.patch
+	epatch "${FILESDIR}"/profiler-gettid.patch
+	epatch "${FILESDIR}"/skia.patch
+
+	## end of musl patching
 
 	# Allow user to apply any additional patches without modifing ebuild
 	epatch_user
@@ -244,10 +253,6 @@ src_configure() {
 
 	# Other ff-specific settings
 	mozconfig_annotate '' --with-default-mozilla-five-home=${MOZILLA_FIVE_HOME}
-
-	# mozjemalloc is broken on musl
-	mozconfig_annotate '' --disable-replace-malloc
-	mozconfig_annotate '' --disable-jemalloc
 
 	# Allow for a proper pgo build
 	if use pgo; then
@@ -400,10 +405,10 @@ src_install() {
 	echo "SEARCH_DIRS_MASK=${MOZILLA_FIVE_HOME}" >> ${T}/10firefox
 	doins "${T}"/10${PN} || die
 
-	# workaround to find libmozalloc.so on musl
-	insinto /etc/env.d
-	echo "LDPATH=${MOZILLA_FIVE_HOME}" >> "${T}"/20firefox
-	doins ${T}/20firefox || die
+	# workaround to make firefox find libmozalloc.so on musl
+	into /
+	echo "LDPATH=${MOZILLA_FIVE_HOME}" > "${T}"/20firefox
+	doenvd "${T}"/20firefox || die
 }
 
 pkg_preinst() {
