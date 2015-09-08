@@ -97,11 +97,11 @@ COMMON_DEP="
 	>=sys-libs/zlib-1.2.3:=
 	virtual/jpeg:0=
 	gtk? (
-	>=dev-libs/atk-1.30.0
-	>=x11-libs/cairo-1.8.8:=
-	x11-libs/gdk-pixbuf:2
-	>=x11-libs/gtk+-2.8:2=
-	>=x11-libs/pango-1.24.5
+		>=dev-libs/atk-1.30.0
+		>=x11-libs/cairo-1.8.8:=
+		x11-libs/gdk-pixbuf:2
+		>=x11-libs/gtk+-2.8:2=
+		>=x11-libs/pango-1.24.5
 	)
 	javascript? ( dev-java/rhino:1.6 )
 	kerberos? ( virtual/krb5 )
@@ -193,8 +193,8 @@ src_unpack() {
 
 java_prepare() {
 	if ! use cups; then
-			# CUPS is always needed at build time but you can at least make it dlopen.
-			sed -i 's/SYSTEM_CUPS="true"/SYSTEM_CUPS="false"/g' Makefile.in || die
+		# CUPS is always needed at build time but you can at least make it dlopen.
+		sed -i 's/SYSTEM_CUPS="true"/SYSTEM_CUPS="false"/g' Makefile.in || die
 	fi
 
 	# SystemTap is broken for MUSL, don't try to install stp files.
@@ -369,12 +369,12 @@ src_install() {
 	local ddest="${ED}${dest#/}"
 
 	if ! use alsa; then
-			rm -v "${ddest}"/jre/lib/$(get_system_arch)/libjsoundalsa.* || die
+		rm -v "${ddest}"/jre/lib/$(get_system_arch)/libjsoundalsa.* || die
 	fi
 
 	if ! use awt; then
-			rm -vr "${ddest}"/jre/lib/$(get_system_arch)/{xawt,libsplashscreen.*,libjavagtk.*} \
-				"${ddest}"/{,jre/}bin/policytool "${ddest}"/bin/appletviewer || die
+		rm -vr "${ddest}"/jre/lib/$(get_system_arch)/{xawt,libsplashscreen.*,libjavagtk.*} \
+		   "${ddest}"/{,jre/}bin/policytool "${ddest}"/bin/appletviewer || die
 	fi
 
 	if ! use examples; then
