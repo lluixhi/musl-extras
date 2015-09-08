@@ -1,0 +1,183 @@
+diff -Naurw xfsprogs-4.2.0.orig/fsr/xfs_fsr.c xfsprogs-4.2.0/fsr/xfs_fsr.c
+--- xfsprogs-4.2.0.orig/fsr/xfs_fsr.c	2015-08-26 17:17:57.000000000 -0700
++++ xfsprogs-4.2.0/fsr/xfs_fsr.c	2015-09-08 11:27:41.073501889 -0700
+@@ -43,6 +43,9 @@
+ #define _PATH_FSRLAST		"/var/tmp/.fsrlast_xfs"
+ #define _PATH_PROC_MOUNTS	"/proc/mounts"
+ 
++#ifndef _PATH_MOUNTED
++# define _PATH_MOUNTED MOUNTED
++#endif
+ 
+ char *progname;
+ 
+diff -Naurw xfsprogs-4.2.0.orig/include/linux.h xfsprogs-4.2.0/include/linux.h
+--- xfsprogs-4.2.0.orig/include/linux.h	2015-08-03 16:37:12.000000000 -0700
++++ xfsprogs-4.2.0/include/linux.h	2015-09-08 11:45:30.077636876 -0700
+@@ -30,6 +30,33 @@
+ #include <endian.h>
+ #include <stdbool.h>
+ #include <asm/types.h>
++#include <fcntl.h>
++
++#ifndef __uint8_t
++# define __uint8_t uint8_t
++#endif
++#ifndef __uint16_t
++# define __uint16_t uint16_t
++#endif
++#ifndef __uint32_t
++# define __uint32_t uint32_t
++#endif
++#ifndef __uint64_t
++# define __uint64_t uint64_t
++#endif
++
++#ifndef __int8_t
++# define __int8_t int8_t
++#endif
++#ifndef __int16_t
++# define __int16_t int16_t
++#endif
++#ifndef __int32_t
++# define __int32_t int32_t
++#endif
++#ifndef __int64_t
++# define __int64_t int64_t
++#endif
+ 
+ static __inline__ int xfsctl(const char *path, int fd, int cmd, void *p)
+ {
+diff -Naurw xfsprogs-4.2.0.orig/io/readdir.c xfsprogs-4.2.0/io/readdir.c
+--- xfsprogs-4.2.0.orig/io/readdir.c	2015-08-23 16:14:11.000000000 -0700
++++ xfsprogs-4.2.0/io/readdir.c	2015-09-08 11:55:37.884321654 -0700
+@@ -24,6 +24,18 @@
+ #include <sys/types.h>
+ #include <dirent.h>
+ 
++#if defined(__linux__)
++# ifndef _DIRENT_HAVE_D_OFF
++#  define _DIRENT_HAVE_D_OFF
++# endif
++# ifndef _DIRENT_HAVE_D_RECLEN
++#  define _DIRENT_HAVE_D_RECLEN
++# endif
++# ifndef _DIRENT_HAVE_D_TYPE
++#  define _DIRENT_HAVE_D_TYPE
++# endif
++#endif
++
+ static struct cmdinfo readdir_cmd;
+ 
+ const char *d_type_str(unsigned int type)
+diff -Naurw xfsprogs-4.2.0.orig/libhandle/handle.c xfsprogs-4.2.0/libhandle/handle.c
+--- xfsprogs-4.2.0.orig/libhandle/handle.c	2015-08-03 16:37:12.000000000 -0700
++++ xfsprogs-4.2.0/libhandle/handle.c	2015-09-08 11:21:48.076931704 -0700
+@@ -21,6 +21,9 @@
+ #include "xfs.h"
+ #include "handle.h"
+ #include "parent.h"
++#if defined(__linux__)
++# include <linux/limits.h>
++#endif
+ 
+ /* just pick a value we know is more than big enough */
+ #define	MAXHANSIZ	64
+diff -Naurw xfsprogs-4.2.0.orig/libhandle/jdm.c xfsprogs-4.2.0/libhandle/jdm.c
+--- xfsprogs-4.2.0.orig/libhandle/jdm.c	2015-08-03 16:37:12.000000000 -0700
++++ xfsprogs-4.2.0/libhandle/jdm.c	2015-09-08 11:23:45.606935206 -0700
+@@ -21,6 +21,9 @@
+ #include "handle.h"
+ #include "jdm.h"
+ #include "parent.h"
++#if defined(__linux__)
++# include <linux/limits.h>
++#endif
+ 
+ /* internal fshandle - typecast to a void for external use */
+ #define FSHANDLE_SZ		8
+diff -Naurw xfsprogs-4.2.0.orig/libxfs/linux.c xfsprogs-4.2.0/libxfs/linux.c
+--- xfsprogs-4.2.0.orig/libxfs/linux.c	2015-08-02 17:39:42.000000000 -0700
++++ xfsprogs-4.2.0/libxfs/linux.c	2015-09-08 11:14:57.233586128 -0700
+@@ -16,11 +16,8 @@
+  * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+  */
+ 
+-#define ustat __kernel_ustat
+ #include <mntent.h>
+ #include <sys/stat.h>
+-#undef ustat
+-#include <sys/ustat.h>
+ #include <sys/mount.h>
+ #include <sys/ioctl.h>
+ #include <sys/sysinfo.h>
+@@ -51,9 +48,12 @@
+ int
+ platform_check_ismounted(char *name, char *block, struct stat64 *s, int verbose)
+ {
+-	/* Pad ust; pre-2.6.28 linux copies out too much in 32bit compat mode */
+-	struct ustat	ust[2];
+ 	struct stat64	st;
++        FILE            *f;
++        struct stat64   mst;
++        struct mntent   *mnt;
++        char            mounts[MAXPATHLEN];
++        int             ismounted = 0;
+ 
+ 	if (!s) {
+ 		if (stat64(block, &st) < 0)
+@@ -63,14 +63,25 @@
+ 		s = &st;
+ 	}
+ 
+-	if (ustat(s->st_rdev, ust) >= 0) {
++        strcpy(mounts, (!access(PROC_MOUNTED, R_OK)) ? PROC_MOUNTED : MOUNTED);
++        if ((f = setmntent(mounts, "r")) == NULL)
++                return 0;
++
++        while ((mnt = getmntent(f)) != NULL) {
++                if (stat64(mnt->mnt_dir, &mst) < 0)
++                        continue;
++                if (mst.st_dev != s->st_rdev)
++                        continue;
++
+ 		if (verbose)
+ 			fprintf(stderr,
+ 				_("%s: %s contains a mounted filesystem\n"),
+ 				progname, name);
+-		return 1;
++                ismounted = 1;
++                break;
+ 	}
+-	return 0;
++        endmntent(f);
++        return ismounted;
+ }
+ 
+ int
+diff -Naurw xfsprogs-4.2.0.orig/libxfs/xfs_attr_remote.c xfsprogs-4.2.0/libxfs/xfs_attr_remote.c
+--- xfsprogs-4.2.0.orig/libxfs/xfs_attr_remote.c	2015-08-26 17:17:57.000000000 -0700
++++ xfsprogs-4.2.0/libxfs/xfs_attr_remote.c	2015-09-08 11:06:45.785802728 -0700
+@@ -35,6 +35,9 @@
+ #include "xfs_trans_space.h"
+ #include "xfs_trace.h"
+ #include "xfs_cksum.h"
++#if defined(__linux__)
++# include <linux/limits.h>
++#endif
+ 
+ #define ATTR_RMTVALUE_MAPSIZE	1	/* # of map entries at once */
+ 
+diff -Naurw xfsprogs-4.2.0.orig/repair/attr_repair.c xfsprogs-4.2.0/repair/attr_repair.c
+--- xfsprogs-4.2.0.orig/repair/attr_repair.c	2015-09-02 15:43:18.000000000 -0700
++++ xfsprogs-4.2.0/repair/attr_repair.c	2015-09-08 11:30:11.493506371 -0700
+@@ -24,6 +24,9 @@
+ #include "bmap.h"
+ #include "protos.h"
+ #include "dir2.h"
++#if defined(__linux__)
++# include <linux/limits.h>
++#endif
+ 
+ static int xfs_acl_valid(struct xfs_mount *mp, struct xfs_acl *daclp);
+ static int xfs_mac_valid(xfs_mac_label_t *lp);
