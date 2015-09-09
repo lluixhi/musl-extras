@@ -61,10 +61,7 @@ pkg_setup() {
 }
 
 src_prepare() {
-	# Fix for Python/Perl UTF-8-CODE-UNITS bug.
-	# From Voidlinux
-	epatch "${FILESDIR}/${P}-no-utf8-code-units.diff"
-
+	epatch "${FILESDIR}"/${P}-fix-codeset.patch
 	epatch_user
 }
 
