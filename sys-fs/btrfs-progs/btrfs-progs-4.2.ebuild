@@ -51,7 +51,6 @@ fi
 
 src_prepare() {
 	# Fix for MUSL
-	epatch "${FILESDIR}"/${P}-musl-includes.patch
 	epatch "${FILESDIR}"/${P}-musl.patch
 
 	epatch_user
