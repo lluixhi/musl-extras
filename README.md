@@ -1,8 +1,6 @@
 # MUSL Extras Repo
 
-Gentoo's Hardened Development Repo tends to be out of date.
-
-(This may become a fork at some point)
+Gentoo's Hardened Development Repo is on the stable side.
 
 This repo exists to be bleeding edge, fix/update the hardened dev patches,
 pull in patches from Voidlinux and Alpine, and create its own.
