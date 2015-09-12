@@ -1,3 +1,15 @@
+diff -Naurw openjdk.orig/common/autoconf/configure openjdk/common/autoconf/configure
+--- openjdk.orig/common/autoconf/configure	2015-08-26 20:56:02.737943779 +0700
++++ openjdk/common/autoconf/configure	2015-08-26 21:44:17.270994265 +0700
+@@ -92,7 +92,7 @@
+ }
+ 
+ # Check for local changes
+-check_hg_updates
++run_autogen_or_fail
+ 
+ if test -e $conf_custom_script_dir/generated-configure.sh; then
+   # Test if open configure is newer than custom configure, if so, custom needs to
 diff -Naurw openjdk.orig/common/autoconf/jdk-options.m4 openjdk/common/autoconf/jdk-options.m4
 --- openjdk.orig/common/autoconf/jdk-options.m4	2015-06-04 12:15:14.000000000 +0700
 +++ openjdk/common/autoconf/jdk-options.m4	2015-08-26 18:29:19.602864276 +0700
