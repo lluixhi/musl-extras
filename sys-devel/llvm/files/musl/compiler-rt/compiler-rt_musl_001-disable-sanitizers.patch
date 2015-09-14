@@ -1,0 +1,17 @@
+diff -Naurw a/projects/compiler-rt/cmake/config-ix.cmake b/projects/compiler-rt/cmake/config-ix.cmake
+--- a/projects/compiler-rt/cmake/config-ix.cmake	2015-07-29 21:28:50.000000000 -0700
++++ b/projects/compiler-rt/cmake/config-ix.cmake	2015-09-13 23:34:02.230945883 -0700
+@@ -270,13 +270,7 @@
+   set(OS_NAME "${CMAKE_SYSTEM_NAME}")
+ endif()
+ 
+-if (SANITIZER_COMMON_SUPPORTED_ARCH AND NOT LLVM_USE_SANITIZER AND
+-    (OS_NAME MATCHES "Android|Darwin|Linux|FreeBSD" OR
+-    (OS_NAME MATCHES "Windows" AND MSVC)))
+-  set(COMPILER_RT_HAS_SANITIZER_COMMON TRUE)
+-else()
+   set(COMPILER_RT_HAS_SANITIZER_COMMON FALSE)
+-endif()
+ 
+ if (COMPILER_RT_HAS_SANITIZER_COMMON AND
+     (NOT OS_NAME MATCHES "Windows" OR CMAKE_SIZEOF_VOID_P EQUAL 4))
