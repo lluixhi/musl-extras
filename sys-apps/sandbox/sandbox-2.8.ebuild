@@ -16,7 +16,7 @@ SRC_URI="mirror://gentoo/${P}.tar.xz
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~mips ~ppc ~ppc64 ~x86"
+KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~sparc-fbsd ~x86-fbsd"
 IUSE="multilib"
 
 DEPEND="app-arch/xz-utils
@@ -46,11 +46,11 @@ sb_foreach_abi() {
 src_unpack() {
 	unpacker
 	cd "${S}"
+	epatch "${FILESDIR}"/${P}-write-ptmx.patch #413327
 
 	# Fix for MUSL
 	epatch "${FILESDIR}"/${PN}-2.6-musl.patch
 	epatch "${FILESDIR}"/${PN}-2.6-include-PROTECTED-symbols.patch
-
 	epatch_user
 }
 
