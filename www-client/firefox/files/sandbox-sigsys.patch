@@ -1,0 +1,15 @@
+diff -Naurw mozilla-release.orig/security/sandbox/chromium/sandbox/linux/seccomp-bpf/trap.cc mozilla-release/security/sandbox/chromium/sandbox/linux/seccomp-bpf/trap.cc
+--- mozilla-release.orig/security/sandbox/chromium/sandbox/linux/seccomp-bpf/trap.cc	2015-09-17 15:13:24.000000000 -0700
++++ mozilla-release/security/sandbox/chromium/sandbox/linux/seccomp-bpf/trap.cc	2015-09-23 13:28:08.006611374 -0700
+@@ -155,7 +155,11 @@
+   // most versions of glibc don't include this information in siginfo_t. So,
+   // we need to explicitly copy it into a arch_sigsys structure.
+   struct arch_sigsys sigsys;
++#if defined(__GLIBC__) || defined(__UCLIBC__) || defined(__BIONIC__)
+   memcpy(&sigsys, &info->_sifields, sizeof(sigsys));
++#else // MUSL
++  memcpy(&sigsys, &info->__si_fields, sizeof(sigsys));
++#endif
+ 
+ #if defined(__mips__)
+   // When indirect syscall (syscall(__NR_foo, ...)) is made on Mips, the

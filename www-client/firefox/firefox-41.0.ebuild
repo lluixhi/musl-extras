@@ -151,6 +151,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/updater.patch
 
 	#  others
+	epatch "${FILESDIR}"/sandbox-sigsys.patch
 	epatch "${FILESDIR}"/crashreporter.patch
 	epatch "${FILESDIR}"/profiler-gettid.patch
 	epatch "${FILESDIR}"/skia.patch
