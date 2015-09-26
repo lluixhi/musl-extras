@@ -65,7 +65,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-fix-codeset.patch
 	epatch "${FILESDIR}"/${P}-arm-memfcns.patch
 	epatch "${FILESDIR}"/${P}-fix-perm-fclose.patch
-	epatch "${FILESDIR}"/${P}-remove-sigsetjmp.patch
 	epatch "${FILESDIR}"/${P}-fix-i386-earlyclobber.patch
 	epatch "${FILESDIR}"/${P}-fix-hosts-uninitialized.patch
 	epatch_user
