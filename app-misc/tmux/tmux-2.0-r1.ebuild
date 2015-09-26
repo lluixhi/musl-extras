@@ -16,15 +16,16 @@ SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~amd64-fbsd ~x86-fbsd ~x64-freebsd ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos"
 IUSE="debug selinux vim-syntax"
 
-COMMON_DEPEND="
+CDEPEND="
 	>=dev-libs/libevent-2.0.10
+	!sys-apps/utempter
 	sys-libs/ncurses"
-DEPEND="${COMMON_DEPEND}
+DEPEND="${CDEPEND}
 	virtual/pkgconfig
 	elibc_musl? (
 		sys-libs/bsd-compat
 	)"
-RDEPEND="${COMMON_DEPEND}
+RDEPEND="${CDEPEND}
 	selinux? ( sec-policy/selinux-screen )
 	vim-syntax? ( || (
 		app-editors/vim
