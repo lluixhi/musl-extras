@@ -46,7 +46,6 @@ sb_foreach_abi() {
 src_unpack() {
 	unpacker
 	cd "${S}"
-	epatch "${FILESDIR}"/${P}-write-ptmx.patch #413327
 
 	# Fix for MUSL
 	epatch "${FILESDIR}"/${PN}-2.6-musl.patch
