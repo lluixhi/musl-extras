@@ -94,7 +94,7 @@ RDEPEND="
 	>=x11-libs/libXxf86vm-1.1.3:=[${MULTILIB_USEDEP}]
 	>=x11-libs/libxcb-1.9.3:=[${MULTILIB_USEDEP}]
 	x11-libs/libXfixes:=[${MULTILIB_USEDEP}]
-	llvm? (
+	llvm? ( !kernel_FreeBSD? (
 		video_cards_radeonsi? ( || (
 			>=dev-libs/elfutils-0.155-r1:=[${MULTILIB_USEDEP}]
 			>=dev-libs/libelf-0.8.13-r2:=[${MULTILIB_USEDEP}]
@@ -104,16 +104,16 @@ RDEPEND="
 				>=dev-libs/elfutils-0.155-r1:=[${MULTILIB_USEDEP}]
 				>=dev-libs/libelf-0.8.13-r2:=[${MULTILIB_USEDEP}]
 				) )
-		)
+		) )
 		>=sys-devel/llvm-3.4.2:=[${MULTILIB_USEDEP}]
 	)
 	opencl? (
 				app-eselect/eselect-opencl
 				dev-libs/libclc
-				|| (
+				!kernel_FreeBSD?  ( || (
 					>=dev-libs/elfutils-0.155-r1:=[${MULTILIB_USEDEP}]
 					>=dev-libs/libelf-0.8.13-r2:=[${MULTILIB_USEDEP}]
-				)
+				) )
 			)
 	openmax? ( >=media-libs/libomxil-bellagio-0.9.3:=[${MULTILIB_USEDEP}] )
 	vaapi? ( >=x11-libs/libva-0.35.0:=[${MULTILIB_USEDEP}] )
