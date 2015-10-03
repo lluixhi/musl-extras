@@ -1,11 +1,11 @@
 # Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/eclass/toolchain.eclass,v 1.675 2015/06/01 16:05:43 vapier Exp $
+# $Id$
 
 # Maintainer: Toolchain Ninjas <toolchain@gentoo.org>
 
 DESCRIPTION="The GNU Compiler Collection"
-HOMEPAGE="http://gcc.gnu.org/"
+HOMEPAGE="https://gcc.gnu.org/"
 RESTRICT="strip" # cross-compilers need controlled stripping
 
 inherit eutils fixheadtails flag-o-matic gnuconfig libtool multilib pax-utils toolchain-funcs versionator
@@ -152,7 +152,7 @@ if [[ ${PN} != "kgcc64" && ${PN} != gcc-* ]] ; then
 	# the older versions, we don't want to bother supporting it.  #448024
 	tc_version_is_at_least 4.8 && IUSE+=" graphite" IUSE_DEF+=( sanitize )
 	tc_version_is_at_least 4.9 && IUSE+=" cilk"
-	tc_version_is_at_least 6.0 && IUSE+=" pie"
+	tc_version_is_at_least 6.0 && IUSE+=" pie +ssp"
 fi
 
 IUSE+=" ${IUSE_DEF[*]/#/+}"
@@ -160,8 +160,11 @@ IUSE+=" ${IUSE_DEF[*]/#/+}"
 # Support upgrade paths here or people get pissed
 if ! tc_version_is_at_least 4.7 || is_crosscompile || use multislot || [[ ${GCC_PV} == *_alpha* ]] ; then
 	SLOT="${GCC_CONFIG_VER}"
-else
+elif ! tc_version_is_at_least 5.0 ; then
 	SLOT="${GCC_BRANCH_VER}"
+else
+	# Upstream changed versioning w/gcc-5+, so SLOT matches major only. #555164
+	SLOT="${GCCMAJOR}"
 fi
 
 #---->> DEPEND <<----
@@ -172,7 +175,7 @@ RDEPEND="sys-libs/zlib
 tc_version_is_at_least 3 && RDEPEND+=" virtual/libiconv"
 
 if tc_version_is_at_least 4 ; then
-	GMP_MPFR_DEPS=">=dev-libs/gmp-4.3.2 >=dev-libs/mpfr-2.4.2"
+	GMP_MPFR_DEPS=">=dev-libs/gmp-4.3.2:0 >=dev-libs/mpfr-2.4.2:0"
 	if tc_version_is_at_least 4.3 ; then
 		RDEPEND+=" ${GMP_MPFR_DEPS}"
 	elif in_iuse fortran ; then
@@ -180,7 +183,7 @@ if tc_version_is_at_least 4 ; then
 	fi
 fi
 
-tc_version_is_at_least 4.5 && RDEPEND+=" >=dev-libs/mpc-0.8.1"
+tc_version_is_at_least 4.5 && RDEPEND+=" >=dev-libs/mpc-0.8.1:0"
 
 if in_iuse graphite ; then
 	if tc_version_is_at_least 5.0 ; then
@@ -213,10 +216,6 @@ if in_iuse gcj ; then
 		x11-proto/xextproto
 		=x11-libs/gtk+-2*
 		virtual/pkgconfig
-		amd64? ( multilib? (
-			app-emulation/emul-linux-x86-gtklibs
-			app-emulation/emul-linux-x86-xlibs
-		) )
 	"
 	tc_version_is_at_least 3.4 && GCJ_GTK_DEPS+=" x11-libs/pango"
 	tc_version_is_at_least 4.2 && GCJ_DEPS+=" app-arch/zip app-arch/unzip"
@@ -242,7 +241,7 @@ S=$(
 gentoo_urls() {
 	local devspace="HTTP~vapier/dist/URI HTTP~rhill/dist/URI
 	HTTP~zorry/patches/gcc/URI HTTP~blueness/dist/URI"
-	devspace=${devspace//HTTP/http:\/\/dev.gentoo.org\/}
+	devspace=${devspace//HTTP/https:\/\/dev.gentoo.org\/}
 	echo mirror://gentoo/$1 ${devspace//URI/$1}
 }
 
@@ -891,7 +890,9 @@ toolchain_src_configure() {
 	# Use the default ("release") checking because upstream usually neglects
 	# to test "disabled" so it has a history of breaking. #317217
 	if tc_version_is_at_least 3.4 ; then
-		confgcc+=( --enable-checking="${GCC_CHECKS_LIST:-$(usex debug yes release)}" )
+		# The "release" keyword is new to 4.0. #551636
+		local off=$(tc_version_is_at_least 4.0 && echo release || echo no)
+		confgcc+=( --enable-checking="${GCC_CHECKS_LIST:-$(usex debug yes ${off})}" )
 	fi
 
 	# Branding
@@ -1207,7 +1208,11 @@ toolchain_src_configure() {
 	fi
 
 	if tc_version_is_at_least 6.0 ; then
-		confgcc+=( $(use_enable pie default-pie) )
+		confgcc+=(
+			$(use_enable pie default-pie)
+			# This defaults to -fstack-protector-strong.
+			$(use_enable ssp default-ssp)
+		)
 	fi
 
 	# Disable gcc info regeneration -- it ships with generated info pages
@@ -1627,7 +1632,7 @@ toolchain_src_install() {
 	# We remove the generated fixincludes, as they can cause things to break
 	# (ncurses, openssl, etc).  We do not prevent them from being built, as
 	# in the following commit which we revert:
-	# http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/eclass/toolchain.eclass?r1=1.647&r2=1.648
+	# https://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/eclass/toolchain.eclass?r1=1.647&r2=1.648
 	# This is because bsd userland needs fixedincludes to build gcc, while
 	# linux does not.  Both can dispose of them afterwards.
 	while read x ; do
@@ -1967,7 +1972,7 @@ toolchain_pkg_postinst() {
 		echo
 		ewarn "You might want to review the GCC upgrade guide when moving between"
 		ewarn "major versions (like 4.2 to 4.3):"
-		ewarn "http://www.gentoo.org/doc/en/gcc-upgrading.xml"
+		ewarn "https://wiki.gentoo.org/wiki/Upgrading_GCC"
 		echo
 
 		# Clean up old paths
