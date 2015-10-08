@@ -1,0 +1,17 @@
+diff -Naurw acpid-2.0.25.orig/sock.c acpid-2.0.25/sock.c
+--- acpid-2.0.25.orig/sock.c	2015-07-28 15:32:35.500948470 -0700
++++ acpid-2.0.25/sock.c	2015-10-08 13:05:40.556725982 -0700
+@@ -54,7 +54,12 @@
+ int
+ is_socket(int fd)
+ {
+-    return (isfdtype(fd, S_IFSOCK) == 1);
++    struct stat st;
++
++    if (fstat(fd, &st) == 0)
++        return S_ISSOCK(st.st_mode);
++
++    return -1;
+ }
+ 
+ /* accept a new client connection */
