@@ -46,7 +46,6 @@ src_prepare() {
 	toolchain_src_prepare
 	if use elibc_musl; then
 		cd "${S}"
-		sed -i 's@\./fixinc\.sh@-c true@' gcc/Makefile.in
 		epatch "${FILESDIR}"/${PV}/musl.patch
 		epatch "${FILESDIR}"/4.9.3/musl-posix_memalign-c++.patch
 	fi
