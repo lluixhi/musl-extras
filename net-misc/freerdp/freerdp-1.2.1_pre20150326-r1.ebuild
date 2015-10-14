@@ -47,7 +47,7 @@ RDEPEND="
 			xv? ( x11-libs/libXv )
 		)
 	)
-	ffmpeg? ( virtual/ffmpeg )
+	ffmpeg? ( >=virtual/ffmpeg-9 )
 	gstreamer? (
 		media-libs/gstreamer:1.0
 		media-libs/gst-plugins-base:1.0
@@ -84,8 +84,8 @@ DEPEND="${RDEPEND}
 
 DOCS=( README )
 
-PATCHES=( "${FILESDIR}/freerdp-armfp.patch"
-		  "${FILESDIR}/freerdp-musl.patch" )
+PATCHES=( "${FILESDIR}/freerdp-armfp.patch" "${FILESDIR}/freerdp-ffmpeg29.patch"
+		"${FILESDIR}/freerdp-musl.patch" )
 
 src_configure() {
 	local mycmakeargs=(

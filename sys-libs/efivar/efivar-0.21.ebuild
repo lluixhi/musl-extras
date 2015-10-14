@@ -12,7 +12,7 @@ SRC_URI="https://github.com/rhinstaller/${PN}/releases/download/${PV}/${P}.tar.b
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 ~ia64 x86"
+KEYWORDS="amd64 ia64 x86"
 
 RDEPEND="dev-libs/popt"
 DEPEND="${RDEPEND}"
@@ -27,4 +27,5 @@ src_prepare() {
 src_configure() {
 	tc-export CC
 	export libdir="/usr/$(get_libdir)"
+	unset LIBS # Bug 562004
 }
