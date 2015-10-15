@@ -15,7 +15,7 @@ DOC_P="${PN}-${DOC_PV}"
 
 DESCRIPTION="Fast array and numerical python library"
 HOMEPAGE="http://www.numpy.org/"
-SRC_URI="mirror://pypi/${PN:0:1}/${PN}/${P/_p/.post}.tar.gz
+SRC_URI="mirror://pypi/${PN:0:1}/${PN}/${P}.tar.gz
 	doc? (
 		http://docs.scipy.org/doc/${DOC_P}/${PN}-html-${DOC_PV}.zip
 		http://docs.scipy.org/doc/${DOC_P}/${PN}-ref-${DOC_PV}.pdf
@@ -45,8 +45,6 @@ PATCHES=(
 
 src_unpack() {
 	default
-	mv "${WORKDIR}"/* "${S}" || die
-
 	if use doc; then
 		unzip -qo "${DISTDIR}"/${PN}-html-${DOC_PV}.zip -d html || die
 	fi
