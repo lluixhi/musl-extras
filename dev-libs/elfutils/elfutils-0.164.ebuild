@@ -8,8 +8,7 @@ inherit eutils flag-o-matic multilib-minimal
 
 DESCRIPTION="Libraries/utilities to handle ELF objects (drop in replacement for libelf)"
 HOMEPAGE="https://fedorahosted.org/elfutils/"
-SRC_URI="https://fedorahosted.org/releases/e/l/${PN}/${PV}/${P}.tar.bz2
-	https://fedorahosted.org/releases/e/l/${PN}/${PV}/${PN}-portability-${PV}.patch -> ${P}-portability.patch"
+SRC_URI="https://fedorahosted.org/releases/e/l/${PN}/${PV}/${P}.tar.bz2"
 
 LICENSE="GPL-2-with-exceptions"
 SLOT="0"
@@ -35,7 +34,6 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	epatch "${FILESDIR}"/${PN}-0.118-PaX-support.patch
-	epatch "${DISTDIR}"/${P}-portability.patch
 
 	# Add MUSL patches
 	epatch "${FILESDIR}"/002-argp-standalone.patch
@@ -59,7 +57,6 @@ src_configure() {
 
 multilib_src_configure() {
 	ECONF_SOURCE="${S}" econf \
-		--disable-werror \
 		$(use_enable nls) \
 		$(use_enable threads thread-safety) \
 		--program-prefix="eu-" \
