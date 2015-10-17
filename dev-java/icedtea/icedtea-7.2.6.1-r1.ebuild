@@ -200,15 +200,18 @@ java_prepare() {
 	# SystemTap is broken for MUSL, don't try to install stp files.
 	epatch "${FILESDIR}/${P}-no-systemtap.patch"
 
+	# https://bugs.gentoo.org/show_bug.cgi?id=561500
+	ln -s "${FILESDIR}/TryXShmAttach.patch" patches || die
+
 	# Link MUSL patches into icedtea build tree
-	ln -s "${FILESDIR}/${PN}-hotspot-musl.patch" patches
-	ln -s "${FILESDIR}/${PN}-hotspot-noagent-musl.patch" patches
-    ln -s "${FILESDIR}/${PN}-hotspot-uclibc-fixes.patch" patches
-	ln -s "${FILESDIR}/${PN}-jdk-execinfo.patch" patches
-	ln -s "${FILESDIR}/${PN}-jdk-fix-build.patch" patches
-	ln -s "${FILESDIR}/${PN}-jdk-fix-ipv6-init.patch" patches
-	ln -s "${FILESDIR}/${PN}-jdk-musl.patch" patches
-	ln -s "${FILESDIR}/${PN}-jdk-no-soname.patch" patches
+	ln -s "${FILESDIR}/${PN}-hotspot-musl.patch" patches || die
+	ln -s "${FILESDIR}/${PN}-hotspot-noagent-musl.patch" patches || die
+    ln -s "${FILESDIR}/${PN}-hotspot-uclibc-fixes.patch" patches || die
+	ln -s "${FILESDIR}/${PN}-jdk-execinfo.patch" patches || die
+	ln -s "${FILESDIR}/${PN}-jdk-fix-build.patch" patches || die
+	ln -s "${FILESDIR}/${PN}-jdk-fix-ipv6-init.patch" patches || die
+	ln -s "${FILESDIR}/${PN}-jdk-musl.patch" patches || die
+	ln -s "${FILESDIR}/${PN}-jdk-no-soname.patch" patches || die
 
 	# For bootstrap builds as the sandbox control file might not yet exist.
 	addpredict /proc/self/coredump_filter
@@ -221,9 +224,13 @@ src_configure() {
 	local cacao_config config hotspot_port jamvm_config use_cacao use_jamvm use_zero zero_config
 	local vm=$(java-pkg_get-current-vm)
 
-	# Export MUSL patches for configure
+	# Export patches for configure
 	DISTRIBUTION_PATCHES=""
 
+	# Gentoo Patches
+	DISTRIBUTION_PATCHES+="patches/TryXShmAttach.patch "
+
+	# MUSL Patches
 	DISTRIBUTION_PATCHES+="patches/${PN}-hotspot-musl.patch "
 	DISTRIBUTION_PATCHES+="patches/${PN}-hotspot-noagent-musl.patch "
 	DISTRIBUTION_PATCHES+="patches/${PN}-hotspot-uclibc-fixes.patch "
@@ -309,10 +316,6 @@ src_configure() {
 	fi
 
 	unset JAVA_HOME JDK_HOME CLASSPATH JAVAC JAVACFLAGS
-
-	# https://bugs.gentoo.org/show_bug.cgi?id=561500
-	ln -s "${FILESDIR}/TryXShmAttach.patch" || die
-	export DISTRIBUTION_PATCHES="TryXShmAttach.patch"
 
 	econf ${config} \
 		--with-openjdk-src-zip="${DISTDIR}/${OPENJDK_GENTOO_TARBALL}" \

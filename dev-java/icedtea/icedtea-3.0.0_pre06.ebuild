@@ -190,13 +190,13 @@ src_unpack() {
 
 java_prepare() {
 	# Link MUSL patches into icedtea build tree
-	ln -s "${FILESDIR}/${PN}-hotspot-musl.patch" patches
-	ln -s "${FILESDIR}/${PN}8-hotspot-noagent-musl.patch" patches
-    ln -s "${FILESDIR}/${PN}-hotspot-uclibc-fixes.patch" patches
-	ln -s "${FILESDIR}/${PN}8-jdk-execinfo.patch" patches
-	ln -s "${FILESDIR}/${PN}8-jdk-fix-libjvm-load.patch" patches
-	ln -s "${FILESDIR}/${PN}-jdk-fix-ipv6-init.patch" patches
-	ln -s "${FILESDIR}/${PN}8-jdk-musl.patch" patches
+	ln -s "${FILESDIR}/${PN}-hotspot-musl.patch" patches || die
+	ln -s "${FILESDIR}/${PN}8-hotspot-noagent-musl.patch" patches || die
+    ln -s "${FILESDIR}/${PN}-hotspot-uclibc-fixes.patch" patches || die
+	ln -s "${FILESDIR}/${PN}8-jdk-execinfo.patch" patches || die
+	ln -s "${FILESDIR}/${PN}8-jdk-fix-libjvm-load.patch" patches || die
+	ln -s "${FILESDIR}/${PN}-jdk-fix-ipv6-init.patch" patches || die
+	ln -s "${FILESDIR}/${PN}8-jdk-musl.patch" patches || die
 
 	# For bootstrap builds as the sandbox control file might not yet exist.
 	addpredict /proc/self/coredump_filter
