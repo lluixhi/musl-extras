@@ -40,6 +40,8 @@ DISTUTILS_IN_SOURCE_BUILD=1
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-1.9.2-no-hardcode-blas.patch
+	"${FILESDIR}"/${P}-backport-1.patch
+	"${FILESDIR}"/${P}-backport-2.patch
 	"${FILESDIR}"/${PN}-1.10.0-musl.patch
 )
 
