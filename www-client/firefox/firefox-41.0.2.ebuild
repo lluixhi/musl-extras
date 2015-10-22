@@ -141,6 +141,8 @@ src_prepare() {
 	EPATCH_FORCE="yes" \
 	epatch "${WORKDIR}/firefox"
 
+	epatch "${FILESDIR}"/non-executable-jit.patch
+
 	## patches for building with musl libc
 
 	#  already upstream
