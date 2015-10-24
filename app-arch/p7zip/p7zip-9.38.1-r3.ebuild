@@ -4,7 +4,7 @@
 
 EAPI=5
 
-WX_GTK_VER="2.8"
+WX_GTK_VER="3.0"
 
 inherit eutils multilib toolchain-funcs wxwidgets
 
@@ -20,8 +20,8 @@ IUSE="doc kde rar +pch static wxwidgets abi_x86_x32"
 REQUIRED_USE="kde? ( wxwidgets )"
 
 RDEPEND="
-	kde? ( x11-libs/wxGTK:2.8[X,-odbc] kde-base/kdelibs )
-	wxwidgets? ( x11-libs/wxGTK:2.8[X,-odbc] )"
+	kde? ( x11-libs/wxGTK:${WX_GTK_VER}[X] kde-base/kdelibs )
+	wxwidgets? ( x11-libs/wxGTK:${WX_GTK_VER}[X] )"
 DEPEND="${RDEPEND}
 	amd64? ( dev-lang/yasm )
 	abi_x86_x32? ( >=dev-lang/yasm-1.2.0-r1 )
@@ -93,6 +93,7 @@ src_prepare() {
 	fi
 
 	if use kde || use wxwidgets; then
+		need-wxwidgets unicode
 		einfo "Preparing dependency list"
 		emake depend
 	fi
