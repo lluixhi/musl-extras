@@ -31,11 +31,7 @@ S=${WORKDIR}/${PN}_${PV}
 
 src_prepare() {
 	epatch \
-		"${FILESDIR}"/${P}-osversion.patch \
-		"${FILESDIR}"/${P}-CVE-2015-1038.patch
-
-	# Fix CVE patch for MUSL
-	epatch \
+		"${FILESDIR}"/${P}-CVE-2015-1038.patch \
 		"${FILESDIR}"/${P}-cve-musl.patch
 
 	if ! use pch; then
@@ -46,6 +42,8 @@ src_prepare() {
 		-e 's:-m32 ::g' \
 		-e 's:-m64 ::g' \
 		-e 's:-O::g' \
+		-e 's: -s ::g' \
+		-e 's: -s$::g' \
 		-e 's:-pipe::g' \
 		-e "/^CXX=/s:g++:$(tc-getCXX):" \
 		-e "/^CC=/s:gcc:$(tc-getCC):" \
@@ -65,7 +63,7 @@ src_prepare() {
 	fi
 
 	if use abi_x86_x32; then
-		sed -i -e "/^ASM=/s:amd64:x32:" makefile*
+		sed -i -e "/^ASM=/s:amd64:x32:" makefile* || die
 		cp -f makefile.linux_amd64_asm makefile.machine || die
 	elif use amd64; then
 		cp -f makefile.linux_amd64_asm makefile.machine || die
