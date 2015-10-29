@@ -146,10 +146,9 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-1.12-unloadsubmodule.patch
 	# needed for new eselect-opengl, bug #541232
 	"${FILESDIR}"/${PN}-1.17-support-multiple-Files-sections.patch
-	"${FILESDIR}"/${PN}-1.17.2-uninit-clientsWritable.patch
 
 	# Patch for MUSL
-	"${FILESDIR}"/${PN}-1.17.2-musl.patch
+	"${FILESDIR}"/${PN}-1.17.4-musl.patch
 )
 
 pkg_pretend() {
@@ -159,10 +158,6 @@ pkg_pretend() {
 }
 
 src_configure() {
-	# Fix types for MUSL and termio.h inclusion
-	sed -i -e 's/termio.h/termios.h/' hw/xfree86/os-support/xf86_OSlib.h
-	append-cppflags "-D__uid_t=uid_t -D__gid_t=gid_t"
-
 	# localstatedir is used for the log location; we need to override the default
 	#	from ebuild.sh
 	# sysconfdir is used for the xorg.conf location; same applies
