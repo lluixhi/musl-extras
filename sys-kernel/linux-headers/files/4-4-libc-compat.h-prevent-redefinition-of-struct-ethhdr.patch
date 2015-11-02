@@ -1,5 +1,6 @@
---- include/uapi/linux/if_ether.h.orig	2015-05-31 15:46:25.659328508 +0200
-+++ include/uapi/linux/if_ether.h	2015-05-31 15:47:19.843238460 +0200
+diff -Naurw gentoo-headers-base-4.3.orig/include/uapi/linux/if_ether.h gentoo-headers-base-4.3/include/uapi/linux/if_ether.h
+--- gentoo-headers-base-4.3.orig/include/uapi/linux/if_ether.h	2015-11-02 10:36:00.000000000 -0800
++++ gentoo-headers-base-4.3/include/uapi/linux/if_ether.h	2015-11-02 13:28:20.557633610 -0800
 @@ -22,6 +22,7 @@
  #define _UAPI_LINUX_IF_ETHER_H
  
@@ -8,7 +9,7 @@
  
  /*
   *	IEEE 802.3 Ethernet magic constants.  The frame sizes omit the preamble
-@@ -134,11 +135,12 @@
+@@ -135,11 +136,12 @@
   *	This is an Ethernet frame header.
   */
  
