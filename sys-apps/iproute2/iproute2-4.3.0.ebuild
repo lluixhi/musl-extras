@@ -42,7 +42,7 @@ src_prepare() {
 	use ipv6 || epatch "${FILESDIR}"/${PN}-4.2.0-no-ipv6.patch #326849
 
 	# Fix build with MUSL
-	epatch "${FILESDIR}"/${P}-musl.patch
+	epatch "${FILESDIR}"/${PN}-4.2.0-musl.patch
 
 	sed -i \
 		-e '/^CC =/d' \
