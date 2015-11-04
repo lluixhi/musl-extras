@@ -1,5 +1,6 @@
---- a/mozilla-release/gfx/skia/trunk/src/core/SkUtilsArm.cpp
-+++ b/mozilla-release/gfx/skia/trunk/src/core/SkUtilsArm.cpp
+diff -Naurw firefox-42.0.orig/gfx/skia/skia/src/core/SkUtilsArm.cpp firefox-42.0/gfx/skia/skia/src/core/SkUtilsArm.cpp
+--- firefox-42.0.orig/gfx/skia/skia/src/core/SkUtilsArm.cpp	2015-10-29 15:17:45.000000000 -0700
++++ firefox-42.0/gfx/skia/skia/src/core/SkUtilsArm.cpp	2015-11-04 12:40:05.016740952 -0800
 @@ -109,7 +109,7 @@
  
      do {

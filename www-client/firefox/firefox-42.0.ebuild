@@ -27,13 +27,14 @@ if [[ ${MOZ_ESR} == 1 ]]; then
 fi
 
 # Patch version
-PATCH="${PN}-41.0-patches-01"
+PATCH="${PN}-42.0-patches-02"
 MOZ_HTTP_URI="http://archive.mozilla.org/pub/${PN}/releases"
 
+MOZCONFIG_OPTIONAL_GTK3=1
 MOZCONFIG_OPTIONAL_WIFI=1
 MOZCONFIG_OPTIONAL_JIT="enabled"
 
-inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.41 multilib pax-utils fdo-mime autotools virtualx mozlinguas
+inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.42 multilib pax-utils fdo-mime autotools virtualx mozlinguas
 
 DESCRIPTION="Firefox Web Browser"
 HOMEPAGE="http://www.mozilla.com/firefox"
@@ -55,8 +56,8 @@ ASM_DEPEND=">=dev-lang/yasm-1.1"
 
 # Mesa 7.10 needed for WebGL + bugfixes
 RDEPEND="
-	>=dev-libs/nss-3.19.2
-	>=dev-libs/nspr-4.10.8
+	>=dev-libs/nss-3.20.1
+	>=dev-libs/nspr-4.10.10
 	selinux? ( sec-policy/selinux-mozilla )"
 
 DEPEND="${RDEPEND}
@@ -67,24 +68,16 @@ DEPEND="${RDEPEND}
 	x86? ( ${ASM_DEPEND}
 		virtual/opengl )"
 
-# No source releases for alpha|beta
+# No source releases for alpha
 if [[ ${PV} =~ alpha ]]; then
 	CHANGESET="8a3042764de7"
 	SRC_URI="${SRC_URI}
 		https://dev.gentoo.org/~nirbheek/mozilla/firefox/firefox-${MOZ_PV}_${CHANGESET}.source.tar.xz"
 	S="${WORKDIR}/mozilla-aurora-${CHANGESET}"
-elif [[ ${PV} =~ beta ]]; then
-	S="${WORKDIR}/mozilla-beta"
-	SRC_URI="${SRC_URI}
-		${MOZ_HTTP_URI}/${MOZ_PV}/source/firefox-${MOZ_PV}.source.tar.xz"
 else
+	S="${WORKDIR}/firefox-${MOZ_PV}"
 	SRC_URI="${SRC_URI}
 		${MOZ_HTTP_URI}/${MOZ_PV}/source/firefox-${MOZ_PV}.source.tar.xz"
-	if [[ ${MOZ_ESR} == 1 ]]; then
-		S="${WORKDIR}/mozilla-esr${PV%%.*}"
-	else
-		S="${WORKDIR}/mozilla-release"
-	fi
 fi
 
 QA_PRESTRIPPED="usr/$(get_libdir)/${PN}/firefox"
@@ -145,15 +138,12 @@ src_prepare() {
 
 	## patches for building with musl libc
 
-	#  already upstream
-	epatch "${FILESDIR}"/sandbox-cdefs.patch
-
 	#  with mozilla bug
 	epatch "${FILESDIR}"/basename.patch
 	epatch "${FILESDIR}"/updater.patch
 
 	#  others
-	epatch "${FILESDIR}"/sandbox-sigsys.patch
+	epatch "${FILESDIR}"/fix-seccomp-bpf.patch
 	epatch "${FILESDIR}"/crashreporter.patch
 	epatch "${FILESDIR}"/profiler-gettid.patch
 	epatch "${FILESDIR}"/skia.patch

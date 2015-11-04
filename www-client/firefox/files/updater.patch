@@ -1,15 +1,6 @@
-# HG changeset patch
-# User Felix Janda <felix.janda@posteo.de>
-# Date 1428142217 -7200
-#      Sat Apr 04 12:10:17 2015 +0200
-# Node ID c04cc88f3bb26e254356df6de06583a542ae6796
-# Parent  90adc073cbc6398f4fab9b1cd07b685368559f34
-# https://bugzilla.mozilla.org/show_bug.cgi?id=1157850
-updater: no fts.h and MAXNAMLEN
-
-diff -r 90adc073cbc6 -r c04cc88f3bb2 toolkit/mozapps/update/common/updatedefines.h
---- a/toolkit/mozapps/update/common/updatedefines.h	Thu Apr 02 08:10:00 2015 -0400
-+++ b/toolkit/mozapps/update/common/updatedefines.h	Sat Apr 04 12:10:17 2015 +0200
+diff -Naurw firefox-42.0.orig/toolkit/mozapps/update/common/updatedefines.h firefox-42.0/toolkit/mozapps/update/common/updatedefines.h
+--- firefox-42.0.orig/toolkit/mozapps/update/common/updatedefines.h	2015-10-29 15:18:00.000000000 -0700
++++ firefox-42.0/toolkit/mozapps/update/common/updatedefines.h	2015-11-04 12:29:43.666722437 -0800
 @@ -109,7 +109,7 @@
  # include <sys/wait.h>
  # include <unistd.h>
@@ -19,10 +10,10 @@ diff -r 90adc073cbc6 -r c04cc88f3bb2 toolkit/mozapps/update/common/updatedefines
  # include <sys/stat.h>
  #else
  # include <fts.h>
-diff -r 90adc073cbc6 -r c04cc88f3bb2 toolkit/mozapps/update/updater/updater.cpp
---- a/toolkit/mozapps/update/updater/updater.cpp	Thu Apr 02 08:10:00 2015 -0400
-+++ b/toolkit/mozapps/update/updater/updater.cpp	Sat Apr 04 12:10:17 2015 +0200
-@@ -3338,7 +3338,8 @@
+diff -Naurw firefox-42.0.orig/toolkit/mozapps/update/updater/updater.cpp firefox-42.0/toolkit/mozapps/update/updater/updater.cpp
+--- firefox-42.0.orig/toolkit/mozapps/update/updater/updater.cpp	2015-10-29 15:18:00.000000000 -0700
++++ firefox-42.0/toolkit/mozapps/update/updater/updater.cpp	2015-11-04 12:29:43.670055771 -0800
+@@ -3592,7 +3592,8 @@
    return rv;
  }
  
@@ -32,7 +23,7 @@ diff -r 90adc073cbc6 -r c04cc88f3bb2 toolkit/mozapps/update/updater/updater.cpp
  int add_dir_entries(const NS_tchar *dirpath, ActionList *list)
  {
    int rv = OK;
-@@ -3346,7 +3347,7 @@
+@@ -3600,7 +3601,7 @@
    NS_tchar foundpath[MAXPATHLEN];
    struct {
      dirent dent_buffer;

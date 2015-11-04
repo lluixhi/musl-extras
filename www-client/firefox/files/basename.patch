@@ -1,16 +1,7 @@
-# HG changeset patch
-# User Felix Janda <felix.janda@posteo.de>
-# Date 1423172942 -3600
-#      Thu Feb 05 22:49:02 2015 +0100
-# Node ID 5f3abeb6ae6c0512901724428d908f601b9e49d4
-# Parent  2d344ef8da33717224d5a08570dc834ca2254f9f
-# https://bugzilla.mozilla.org/show_bug.cgi?id=1041962
-LulElf: Avoid basename
-
-diff -r 2d344ef8da33 -r 5f3abeb6ae6c tools/profiler/LulElf.cpp
---- a/tools/profiler/LulElf.cpp	Sun Feb 01 19:32:36 2015 +0100
-+++ b/tools/profiler/LulElf.cpp	Thu Feb 05 22:49:02 2015 +0100
-@@ -611,9 +611,9 @@
+diff -Naurw firefox-42.0.orig/tools/profiler/lul/LulElf.cpp firefox-42.0/tools/profiler/lul/LulElf.cpp
+--- firefox-42.0.orig/tools/profiler/lul/LulElf.cpp	2015-10-29 15:18:01.000000000 -0700
++++ firefox-42.0/tools/profiler/lul/LulElf.cpp	2015-11-04 12:26:35.540050166 -0800
+@@ -484,9 +484,9 @@
  // last slash, or the whole filename if there are no slashes.
  string BaseFileName(const string &filename) {
    // Lots of copies!  basename's behavior is less than ideal.

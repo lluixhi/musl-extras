@@ -1,14 +1,6 @@
-# HG changeset patch
-# User Felix Janda <felix.janda@posteo.de>
-# Date 1423172597 -3600
-#      Thu Feb 05 22:43:17 2015 +0100
-# Node ID df5ec9e5685a52bcd19bbe566c0770daa40f14b1
-# Parent  2d344ef8da33717224d5a08570dc834ca2254f9f
-crashreporter: compile with musl
-
-diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/client/linux/crash_generation/crash_generation_server.cc
---- a/toolkit/crashreporter/google-breakpad/src/client/linux/crash_generation/crash_generation_server.cc	Sun Feb 01 19:32:36 2015 +0100
-+++ b/toolkit/crashreporter/google-breakpad/src/client/linux/crash_generation/crash_generation_server.cc	Thu Feb 05 22:43:17 2015 +0100
+diff -Naurw firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/client/linux/crash_generation/crash_generation_server.cc firefox-42.0/toolkit/crashreporter/google-breakpad/src/client/linux/crash_generation/crash_generation_server.cc
+--- firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/client/linux/crash_generation/crash_generation_server.cc	2015-10-29 15:17:58.000000000 -0700
++++ firefox-42.0/toolkit/crashreporter/google-breakpad/src/client/linux/crash_generation/crash_generation_server.cc	2015-11-04 12:31:49.386726183 -0800
 @@ -28,7 +28,6 @@
  // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
@@ -26,9 +18,9 @@ diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/c
  static const char kCommandQuit = 'x';
  
  namespace google_breakpad {
-diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/client/linux/handler/exception_handler.cc
---- a/toolkit/crashreporter/google-breakpad/src/client/linux/handler/exception_handler.cc	Sun Feb 01 19:32:36 2015 +0100
-+++ b/toolkit/crashreporter/google-breakpad/src/client/linux/handler/exception_handler.cc	Thu Feb 05 22:43:17 2015 +0100
+diff -Naurw firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/client/linux/handler/exception_handler.cc firefox-42.0/toolkit/crashreporter/google-breakpad/src/client/linux/handler/exception_handler.cc
+--- firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/client/linux/handler/exception_handler.cc	2015-10-29 15:17:58.000000000 -0700
++++ firefox-42.0/toolkit/crashreporter/google-breakpad/src/client/linux/handler/exception_handler.cc	2015-11-04 12:31:49.393392851 -0800
 @@ -77,7 +77,7 @@
  #include <sys/wait.h>
  #include <unistd.h>
@@ -64,9 +56,9 @@ diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/c
    if (getcontext_result)
      return false;
  #if !defined(__ARM_EABI__)
-diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/client/linux/handler/exception_handler.h
---- a/toolkit/crashreporter/google-breakpad/src/client/linux/handler/exception_handler.h	Sun Feb 01 19:32:36 2015 +0100
-+++ b/toolkit/crashreporter/google-breakpad/src/client/linux/handler/exception_handler.h	Thu Feb 05 22:43:17 2015 +0100
+diff -Naurw firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/client/linux/handler/exception_handler.h firefox-42.0/toolkit/crashreporter/google-breakpad/src/client/linux/handler/exception_handler.h
+--- firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/client/linux/handler/exception_handler.h	2015-10-29 15:17:58.000000000 -0700
++++ firefox-42.0/toolkit/crashreporter/google-breakpad/src/client/linux/handler/exception_handler.h	2015-11-04 12:31:49.393392851 -0800
 @@ -192,7 +192,7 @@
      struct ucontext context;
  #if !defined(__ARM_EABI__)
@@ -76,9 +68,9 @@ diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/c
  #endif
    };
  
-diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/client/linux/minidump_writer/minidump_writer.cc
---- a/toolkit/crashreporter/google-breakpad/src/client/linux/minidump_writer/minidump_writer.cc	Sun Feb 01 19:32:36 2015 +0100
-+++ b/toolkit/crashreporter/google-breakpad/src/client/linux/minidump_writer/minidump_writer.cc	Thu Feb 05 22:43:17 2015 +0100
+diff -Naurw firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/client/linux/minidump_writer/minidump_writer.cc firefox-42.0/toolkit/crashreporter/google-breakpad/src/client/linux/minidump_writer/minidump_writer.cc
+--- firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/client/linux/minidump_writer/minidump_writer.cc	2015-10-29 15:17:58.000000000 -0700
++++ firefox-42.0/toolkit/crashreporter/google-breakpad/src/client/linux/minidump_writer/minidump_writer.cc	2015-11-04 12:31:49.396726185 -0800
 @@ -174,7 +174,7 @@
  //   out: the minidump structure
  //   info: the collection of register structures.
@@ -115,9 +107,9 @@ diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/c
    LinuxDumper* dumper_;
    MinidumpFileWriter minidump_writer_;
    off_t minidump_size_limit_;
-diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/common/android/include/stab.h
---- a/toolkit/crashreporter/google-breakpad/src/common/android/include/stab.h	Sun Feb 01 19:32:36 2015 +0100
-+++ /dev/null	Thu Jan 01 00:00:00 1970 +0000
+diff -Naurw firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/common/android/include/stab.h firefox-42.0/toolkit/crashreporter/google-breakpad/src/common/android/include/stab.h
+--- firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/common/android/include/stab.h	2015-10-29 15:17:58.000000000 -0700
++++ firefox-42.0/toolkit/crashreporter/google-breakpad/src/common/android/include/stab.h	1969-12-31 16:00:00.000000000 -0800
 @@ -1,100 +0,0 @@
 -// Copyright (c) 2012, Google Inc.
 -// All rights reserved.
@@ -219,9 +211,9 @@ diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/c
 -#endif  // __BIONIC_HAVE_STAB_H
 -
 -#endif  // GOOGLE_BREAKPAD_COMMON_ANDROID_INCLUDE_STAB_H
-diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/common/android/include/sys/signal.h
---- a/toolkit/crashreporter/google-breakpad/src/common/android/include/sys/signal.h	Sun Feb 01 19:32:36 2015 +0100
-+++ /dev/null	Thu Jan 01 00:00:00 1970 +0000
+diff -Naurw firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/common/android/include/sys/signal.h firefox-42.0/toolkit/crashreporter/google-breakpad/src/common/android/include/sys/signal.h
+--- firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/common/android/include/sys/signal.h	2015-10-29 15:17:58.000000000 -0700
++++ firefox-42.0/toolkit/crashreporter/google-breakpad/src/common/android/include/sys/signal.h	1969-12-31 16:00:00.000000000 -0800
 @@ -1,35 +0,0 @@
 -// Copyright (c) 2012, Google Inc.
 -// All rights reserved.
@@ -258,9 +250,9 @@ diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/c
 -#include <signal.h>
 -
 -#endif  // GOOGLE_BREAKPAD_COMMON_ANDROID_INCLUDE_SYS_SIGNAL_H
-diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/common/linux/dump_symbols.cc
---- a/toolkit/crashreporter/google-breakpad/src/common/linux/dump_symbols.cc	Sun Feb 01 19:32:36 2015 +0100
-+++ b/toolkit/crashreporter/google-breakpad/src/common/linux/dump_symbols.cc	Thu Feb 05 22:43:17 2015 +0100
+diff -Naurw firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/common/linux/dump_symbols.cc firefox-42.0/toolkit/crashreporter/google-breakpad/src/common/linux/dump_symbols.cc
+--- firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/common/linux/dump_symbols.cc	2015-10-29 15:17:58.000000000 -0700
++++ firefox-42.0/toolkit/crashreporter/google-breakpad/src/common/linux/dump_symbols.cc	2015-11-04 12:31:49.396726185 -0800
 @@ -829,9 +829,9 @@
  // last slash, or the whole filename if there are no slashes.
  string BaseFileName(const string &filename) {
@@ -274,9 +266,9 @@ diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/c
    return base;
  }
  
-diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/common/linux/elf_core_dump.h
---- a/toolkit/crashreporter/google-breakpad/src/common/linux/elf_core_dump.h	Sun Feb 01 19:32:36 2015 +0100
-+++ b/toolkit/crashreporter/google-breakpad/src/common/linux/elf_core_dump.h	Thu Feb 05 22:43:17 2015 +0100
+diff -Naurw firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/common/linux/elf_core_dump.h firefox-42.0/toolkit/crashreporter/google-breakpad/src/common/linux/elf_core_dump.h
+--- firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/common/linux/elf_core_dump.h	2015-10-29 15:17:58.000000000 -0700
++++ firefox-42.0/toolkit/crashreporter/google-breakpad/src/common/linux/elf_core_dump.h	2015-11-04 12:31:49.400059517 -0800
 @@ -36,6 +36,7 @@
  #include <elf.h>
  #include <link.h>
@@ -285,9 +277,9 @@ diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/c
  
  #include "common/memory_range.h"
  
-diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/common/stabs_reader.cc
---- a/toolkit/crashreporter/google-breakpad/src/common/stabs_reader.cc	Sun Feb 01 19:32:36 2015 +0100
-+++ b/toolkit/crashreporter/google-breakpad/src/common/stabs_reader.cc	Thu Feb 05 22:43:17 2015 +0100
+diff -Naurw firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/common/stabs_reader.cc firefox-42.0/toolkit/crashreporter/google-breakpad/src/common/stabs_reader.cc
+--- firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/common/stabs_reader.cc	2015-10-29 15:17:58.000000000 -0700
++++ firefox-42.0/toolkit/crashreporter/google-breakpad/src/common/stabs_reader.cc	2015-11-04 12:31:49.400059517 -0800
 @@ -34,7 +34,6 @@
  #include "common/stabs_reader.h"
  
@@ -296,9 +288,9 @@ diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/c
  #include <string.h>
  
  #include <string>
-diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/common/stabs_reader.h
---- a/toolkit/crashreporter/google-breakpad/src/common/stabs_reader.h	Sun Feb 01 19:32:36 2015 +0100
-+++ b/toolkit/crashreporter/google-breakpad/src/common/stabs_reader.h	Thu Feb 05 22:43:17 2015 +0100
+diff -Naurw firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/common/stabs_reader.h firefox-42.0/toolkit/crashreporter/google-breakpad/src/common/stabs_reader.h
+--- firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/common/stabs_reader.h	2015-10-29 15:17:58.000000000 -0700
++++ firefox-42.0/toolkit/crashreporter/google-breakpad/src/common/stabs_reader.h	2015-11-04 12:31:49.400059517 -0800
 @@ -53,12 +53,19 @@
  #include <config.h>
  #endif
@@ -322,9 +314,9 @@ diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/c
  
  #include <string>
  #include <vector>
-diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/common/stabs_reader_unittest.cc
---- a/toolkit/crashreporter/google-breakpad/src/common/stabs_reader_unittest.cc	Sun Feb 01 19:32:36 2015 +0100
-+++ b/toolkit/crashreporter/google-breakpad/src/common/stabs_reader_unittest.cc	Thu Feb 05 22:43:17 2015 +0100
+diff -Naurw firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/common/stabs_reader_unittest.cc firefox-42.0/toolkit/crashreporter/google-breakpad/src/common/stabs_reader_unittest.cc
+--- firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/common/stabs_reader_unittest.cc	2015-10-29 15:17:58.000000000 -0700
++++ firefox-42.0/toolkit/crashreporter/google-breakpad/src/common/stabs_reader_unittest.cc	2015-11-04 12:31:49.403392851 -0800
 @@ -33,7 +33,6 @@
  
  #include <assert.h>
@@ -333,9 +325,9 @@ diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/c
  #include <stdarg.h>
  #include <stdlib.h>
  #include <string.h>
-diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/third_party/lss/linux_syscall_support.h
---- a/toolkit/crashreporter/google-breakpad/src/third_party/lss/linux_syscall_support.h	Sun Feb 01 19:32:36 2015 +0100
-+++ b/toolkit/crashreporter/google-breakpad/src/third_party/lss/linux_syscall_support.h	Thu Feb 05 22:43:17 2015 +0100
+diff -Naurw firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/third_party/lss/linux_syscall_support.h firefox-42.0/toolkit/crashreporter/google-breakpad/src/third_party/lss/linux_syscall_support.h
+--- firefox-42.0.orig/toolkit/crashreporter/google-breakpad/src/third_party/lss/linux_syscall_support.h	2015-10-29 15:17:59.000000000 -0700
++++ firefox-42.0/toolkit/crashreporter/google-breakpad/src/third_party/lss/linux_syscall_support.h	2015-11-04 12:31:49.403392851 -0800
 @@ -2814,7 +2814,7 @@
      LSS_INLINE _syscall6(void*, mmap,              void*, s,
                           size_t,                   l, int,               p,
@@ -345,10 +337,10 @@ diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/google-breakpad/src/t
  
      LSS_INLINE _syscall4(int, newfstatat,         int,   d,
                           const char *,            p,
-diff -r 2d344ef8da33 -r df5ec9e5685a toolkit/crashreporter/nsExceptionHandler.cpp
---- a/toolkit/crashreporter/nsExceptionHandler.cpp	Sun Feb 01 19:32:36 2015 +0100
-+++ b/toolkit/crashreporter/nsExceptionHandler.cpp	Thu Feb 05 22:43:17 2015 +0100
-@@ -49,6 +49,7 @@
+diff -Naurw firefox-42.0.orig/toolkit/crashreporter/nsExceptionHandler.cpp firefox-42.0/toolkit/crashreporter/nsExceptionHandler.cpp
+--- firefox-42.0.orig/toolkit/crashreporter/nsExceptionHandler.cpp	2015-10-29 15:17:59.000000000 -0700
++++ firefox-42.0/toolkit/crashreporter/nsExceptionHandler.cpp	2015-11-04 12:31:49.406726185 -0800
+@@ -50,6 +50,7 @@
  #elif defined(XP_LINUX)
  #include "nsIINIParser.h"
  #include "common/linux/linux_libc_support.h"
