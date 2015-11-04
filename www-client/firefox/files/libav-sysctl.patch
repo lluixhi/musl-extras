@@ -1,0 +1,15 @@
+diff -Naruw firefox-42.0.orig/media/libav/config_unix.h firefox-42.0/media/libav/config_unix.h
+--- firefox-42.0.orig/media/libav/config_unix.h	2015-11-04 13:45:46.010191719 -0800
++++ firefox-42.0/media/libav/config_unix.h	2015-11-04 13:47:14.630194360 -0800
+@@ -223,7 +223,11 @@
+ #define HAVE_STRERROR_R 1
+ #define HAVE_STRPTIME 1
+ #define HAVE_SYSCONF 1
++#if !defined(__linux__) || defined(__GLIBC__)
+ #define HAVE_SYSCTL 1
++#else
++#define HAVE_SYSCTL 0
++#endif
+ #define HAVE_USLEEP 1
+ #define HAVE_VIRTUALALLOC 0
+ #define HAVE_PTHREADS 0

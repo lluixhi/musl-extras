@@ -147,6 +147,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/crashreporter.patch
 	epatch "${FILESDIR}"/profiler-gettid.patch
 	epatch "${FILESDIR}"/skia.patch
+	epatch "${FILESDIR}"/libav-sysctl.patch
 
 	## end of musl patching
 
