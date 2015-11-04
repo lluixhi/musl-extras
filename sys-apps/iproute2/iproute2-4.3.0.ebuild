@@ -39,7 +39,7 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	epatch "${FILESDIR}"/${PN}-3.1.0-mtu.patch #291907
-	use ipv6 || epatch "${FILESDIR}"/${P}-no-ipv6.patch #326849
+	use ipv6 || epatch "${FILESDIR}"/${PN}-4.2.0-no-ipv6.patch #326849
 
 	# Fix build with MUSL
 	epatch "${FILESDIR}"/${P}-musl.patch
@@ -63,9 +63,6 @@ src_prepare() {
 	rm -r include/netinet #include/linux include/ip{,6}tables{,_common}.h include/libiptc
 	sed -i 's:TCPI_OPT_ECN_SEEN:16:' misc/ss.c || die
 
-	# don't build arpd if USE=-berkdb #81660
-	use berkdb || sed -i '/^TARGETS=/s: arpd : :' misc/Makefile
-
 	use minimal && sed -i -e '/^SUBDIRS=/s:=.*:=lib tc ip:' Makefile
 }
 
@@ -86,6 +83,7 @@ src_configure() {
 	TC_CONFIG_XT  := $(usex iptables y n)
 	# We've locked in recent enough kernel headers #549948
 	TC_CONFIG_IPSET := y
+	HAVE_BERKELEY_DB := $(usex berkdb y n)
 	HAVE_MNL      := $(usex minimal n y)
 	HAVE_SELINUX  := $(usex selinux y n)
 	IP_CONFIG_SETNS := ${setns}
