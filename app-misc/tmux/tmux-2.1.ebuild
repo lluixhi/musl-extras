@@ -22,10 +22,7 @@ CDEPEND="
 	!sys-apps/utempter
 	sys-libs/ncurses"
 DEPEND="${CDEPEND}
-	virtual/pkgconfig
-	elibc_musl? (
-		sys-libs/bsd-compat
-	)"
+	virtual/pkgconfig"
 RDEPEND="${CDEPEND}
 	selinux? ( sec-policy/selinux-screen )
 	vim-syntax? ( || (
@@ -34,7 +31,8 @@ RDEPEND="${CDEPEND}
 
 DOCS=( CHANGES FAQ README TODO )
 
-PATCHES=( "${FILESDIR}"/${P}-flags.patch )
+PATCHES=( "${FILESDIR}"/${PN}-2.0-flags.patch
+		  "${FILESDIR}"/${P}-cdefs.patch )
 
 pkg_setup() {
 	if has_version "<app-misc/tmux-1.9a"; then
@@ -57,9 +55,6 @@ src_prepare() {
 
 	# regenerate aclocal.m4 to support earlier automake versions
 	rm aclocal.m4 || die
-
-	# remove generated files
-	rm -r compat/.{dirstamp,deps} || die
 
 	autotools-utils_src_prepare
 }
