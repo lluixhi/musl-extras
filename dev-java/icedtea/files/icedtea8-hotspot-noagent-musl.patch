@@ -18,7 +18,7 @@ diff -Naurw openjdk.orig/common/autoconf/jdk-options.m4 openjdk/common/autoconf/
    AC_SUBST(JVM_VARIANT_CORE)
  
 -  INCLUDE_SA=true
-+  AC_CHECK_FILE(/usr/include/thread_db.h,INCLUDE_SA=true,INCLUDE_SA=false)
++  AC_CHECK_HEADER(thread_db.h,INCLUDE_SA=true,INCLUDE_SA=false)
    if test "x$JVM_VARIANT_ZERO" = xtrue ; then
      INCLUDE_SA=false
    fi
