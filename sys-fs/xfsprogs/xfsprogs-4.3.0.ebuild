@@ -78,8 +78,8 @@ src_configure() {
 	fi
 
 	econf \
-		--bindir=/usr/bin \
 		--libexecdir=/usr/$(get_libdir) \
+		--enable-lib64=no \
 		$(use_enable nls gettext) \
 		$(use_enable readline) \
 		$(usex readline --disable-editline $(use_enable libedit editline)) \
