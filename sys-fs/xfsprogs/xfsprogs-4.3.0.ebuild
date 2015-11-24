@@ -4,7 +4,7 @@
 
 EAPI="4"
 
-inherit eutils toolchain-funcs multilib flag-o-matic
+inherit eutils toolchain-funcs multilib
 
 DESCRIPTION="xfs filesystem utilities"
 HOMEPAGE="http://oss.sgi.com/projects/xfs/"
@@ -37,10 +37,10 @@ pkg_setup() {
 }
 
 src_prepare() {
-	epatch "${FILESDIR}"/${PN}-4.2.0-sharedlibs.patch
-
 	# Fix for MUSL
-	epatch "${FILESDIR}"/${PN}-4.2.0-musl.patch
+	epatch "${FILESDIR}"/${PN}-4.3.0-musl.patch
+
+	epatch "${FILESDIR}"/${PN}-4.3.0-sharedlibs.patch
 
 	# LLDFLAGS is used for programs, so apply -all-static when USE=static is enabled.
 	# Clear out -static from all flags since we want to link against dynamic xfs libs.
@@ -66,7 +66,6 @@ src_prepare() {
 }
 
 src_configure() {
-	append-cppflags "-DHAVE_D_RECLEN"
 	export DEBUG=-DNDEBUG
 	export OPTIMIZER=${CFLAGS}
 	unset PLATFORM # if set in user env, this breaks configure
