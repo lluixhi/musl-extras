@@ -1,0 +1,52 @@
+diff -Naurw btrfs-progs-v4.3.1.orig/chunk-recover.c btrfs-progs-v4.3.1/chunk-recover.c
+--- btrfs-progs-v4.3.1.orig/chunk-recover.c	2015-11-16 05:29:25.000000000 -0800
++++ btrfs-progs-v4.3.1/chunk-recover.c	2015-11-29 10:36:21.278592499 -0800
+@@ -887,12 +887,7 @@
+ 		for (i = 0; i < devidx; i++) {
+ 			if (dev_scans[i].bytenr == -1)
+ 				continue;
+-			ret = pthread_tryjoin_np(t_scans[i],
+-						 (void **)&t_rets[i]);
+-			if (ret == EBUSY) {
+-				all_done = 0;
+-				continue;
+-			}
++			ret = pthread_join(t_scans[i], (void **)&t_rets[i]);
+ 			if (ret || t_rets[i]) {
+ 				ret = 1;
+ 				goto out1;
+diff -Naurw btrfs-progs-v4.3.1.orig/kerncompat.h btrfs-progs-v4.3.1/kerncompat.h
+--- btrfs-progs-v4.3.1.orig/kerncompat.h	2015-11-16 05:29:25.000000000 -0800
++++ btrfs-progs-v4.3.1/kerncompat.h	2015-11-29 10:35:53.305258333 -0800
+@@ -28,6 +28,7 @@
+ #include <assert.h>
+ #include <stddef.h>
+ #include <linux/types.h>
++#include <linux/limits.h>
+ #include <stdint.h>
+ 
+ #include <features.h>
+diff -Naurw btrfs-progs-v4.3.1.orig/utils.c btrfs-progs-v4.3.1/utils.c
+--- btrfs-progs-v4.3.1.orig/utils.c	2015-11-16 05:29:25.000000000 -0800
++++ btrfs-progs-v4.3.1/utils.c	2015-11-29 10:39:54.468598852 -0800
+@@ -1208,13 +1208,19 @@
+ {
+ 	int ret;
+ 	FILE *f;
++        struct stat stat_buf;
+ 	char fmt[20];
+ 	char p[PATH_MAX];
+ 	char real_loop_dev[PATH_MAX];
+ 
+ 	if (!realpath(loop_dev, real_loop_dev))
+ 		return -errno;
+-	snprintf(p, PATH_MAX, "/sys/block/%s/loop/backing_file", strrchr(real_loop_dev, '/'));
++
++        if (stat(real_loop_dev, &stat_buf) || !S_ISBLK(stat_buf.st_mode))
++                return -errno;
++
++        snprintf(p, PATH_MAX, "/sys/block/%d:%d/loop/backing_file",
++                 major(stat_buf.st_rdev), minor(stat_buf.st_rdev));
+ 	if (!(f = fopen(p, "r"))) {
+ 		if (errno == ENOENT)
+ 			/*
