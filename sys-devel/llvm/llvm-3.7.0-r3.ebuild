@@ -167,6 +167,10 @@ src_prepare() {
 	# https://llvm.org/bugs/show_bug.cgi?id=18341
 	epatch "${FILESDIR}"/cmake/0004-cmake-Do-not-install-libgtest.patch
 
+        # Fix llvm-config for shared linking and sane flags
+        # https://bugs.gentoo.org/show_bug.cgi?id=565358
+        epatch "${FILESDIR}"/llvm-3.7-llvm-config.patch
+
 	if use clang; then
 		# Automatically select active system GCC's libraries, bugs #406163 and #417913
 		epatch "${FILESDIR}"/clang-3.5-gentoo-runtime-gcc-detection-v3.patch
