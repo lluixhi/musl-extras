@@ -62,6 +62,7 @@ src_configure() {
 		--enable-devel \
 		--enable-shared \
 		$(use_enable pcap bpf-compiler) \
+		$(use_enable pcap nfsynproxy) \
 		$(use_enable static-libs static) \
 		$(use_enable ipv6)
 }

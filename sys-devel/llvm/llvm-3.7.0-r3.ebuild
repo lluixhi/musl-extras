@@ -43,7 +43,7 @@ COMMON_DEPEND="
 		>=dev-lang/ocaml-4.00.0:0=
 		dev-ml/findlib
 		dev-ml/ocaml-ctypes
-		!!<=sys-devel/llvm-3.7.0-r2[ocaml] )"
+		!!<=sys-devel/llvm-3.7.0-r1[ocaml] )"
 # configparser-3.2 breaks the build (3.3 or none at all are fine)
 DEPEND="${COMMON_DEPEND}
 	dev-lang/perl
@@ -72,7 +72,7 @@ PDEPEND="clang? ( =sys-devel/clang-${PV}-r100 )"
 # pypy gives me around 1700 unresolved tests due to open file limit
 # being exceeded. probably GC does not close them fast enough.
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
-	lldb? ( clang )
+	lldb? ( clang xml )
 	test? ( || ( $(python_gen_useflags 'python*') ) )"
 
 S=${WORKDIR}/${P/_}.src
@@ -167,9 +167,9 @@ src_prepare() {
 	# https://llvm.org/bugs/show_bug.cgi?id=18341
 	epatch "${FILESDIR}"/cmake/0004-cmake-Do-not-install-libgtest.patch
 
-        # Fix llvm-config for shared linking and sane flags
-        # https://bugs.gentoo.org/show_bug.cgi?id=565358
-        epatch "${FILESDIR}"/llvm-3.7-llvm-config.patch
+	# Fix llvm-config for shared linking and sane flags
+	# https://bugs.gentoo.org/show_bug.cgi?id=565358
+	epatch "${FILESDIR}"/llvm-3.7-llvm-config.patch
 
 	if use clang; then
 		# Automatically select active system GCC's libraries, bugs #406163 and #417913
@@ -184,6 +184,10 @@ src_prepare() {
 		# https://llvm.org/bugs/show_bug.cgi?id=23792
 		epatch "${FILESDIR}"/cmake/clang-0001-Install-clang-runtime-into-usr-lib-without-suffix.patch
 		epatch "${FILESDIR}"/cmake/compiler-rt-0001-cmake-Install-compiler-rt-into-usr-lib-without-suffi.patch
+
+		# Do not force -march flags on arm platforms
+		# https://bugs.gentoo.org/show_bug.cgi?id=562706
+		epatch "${FILESDIR}"/cmake/${P}-compiler_rt_arm_march_flags.patch
 
 		# Make it possible to override CLANG_LIBDIR_SUFFIX
 		# (that is used only to find LLVMgold.so)
@@ -283,6 +287,12 @@ multilib_src_configure() {
 
 		-DHAVE_HISTEDIT_H=$(usex libedit)
 	)
+
+	if use clang; then
+		mycmakeargs+=(
+			-DCMAKE_DISABLE_FIND_PACKAGE_LibXml2=$(usex !xml)
+		)
+	fi
 
 	if use lldb; then
 		mycmakeargs+=(
