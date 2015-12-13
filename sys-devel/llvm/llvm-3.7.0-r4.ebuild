@@ -5,10 +5,10 @@
 EAPI=5
 
 : ${CMAKE_MAKEFILE_GENERATOR:=ninja}
-PYTHON_COMPAT=( python2_7 pypy )
+PYTHON_COMPAT=( python2_7 )
 
 inherit check-reqs cmake-utils eutils flag-o-matic multilib \
-	multilib-minimal python-r1 toolchain-funcs pax-utils
+	multilib-minimal python-single-r1 toolchain-funcs pax-utils
 
 DESCRIPTION="Low Level Virtual Machine"
 HOMEPAGE="http://llvm.org/"
@@ -72,8 +72,7 @@ PDEPEND="clang? ( =sys-devel/clang-${PV}-r100 )"
 # pypy gives me around 1700 unresolved tests due to open file limit
 # being exceeded. probably GC does not close them fast enough.
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
-	lldb? ( clang xml )
-	test? ( || ( $(python_gen_useflags 'python*') ) )"
+	lldb? ( clang xml )"
 
 S=${WORKDIR}/${P/_}.src
 
@@ -252,7 +251,7 @@ multilib_src_configure() {
 	if use multitarget; then
 		targets=all
 	else
-		targets='host;CppBackend'
+		targets='host;BPF;CppBackend'
 		use video_cards_radeon && targets+=';AMDGPU'
 	fi
 
@@ -291,6 +290,9 @@ multilib_src_configure() {
 	if use clang; then
 		mycmakeargs+=(
 			-DCMAKE_DISABLE_FIND_PACKAGE_LibXml2=$(usex !xml)
+			# libgomp support fails to find headers without explicit -I
+			# furthermore, it provides only syntax checking
+			-DCLANG_DEFAULT_OPENMP_RUNTIME=libomp
 		)
 	fi
 
@@ -489,7 +491,7 @@ multilib_src_install() {
 
 multilib_src_install_all() {
 	insinto /usr/share/vim/vimfiles
-	doins -r utils/vim/*/
+	doins -r utils/vim/*/.
 	# some users may find it useful
 	dodoc utils/vim/vimrc
 
@@ -509,33 +511,36 @@ multilib_src_install_all() {
 			popd >/dev/null || die
 		fi
 
-		python_inst() {
-			if use static-analyzer ; then
-				pushd tools/scan-view >/dev/null || die
+		if use static-analyzer ; then
+			pushd tools/scan-view >/dev/null || die
 
-				python_doscript scan-view
+			python_doscript scan-view
 
-				touch __init__.py || die
-				python_moduleinto clang
-				python_domodule *.py Resources
+			touch __init__.py || die
+			python_moduleinto clang
+			python_domodule *.py Resources
 
-				popd >/dev/null || die
-			fi
+			popd >/dev/null || die
+		fi
 
-			if use python ; then
-				pushd bindings/python/clang >/dev/null || die
+		if use python ; then
+			pushd bindings/python/clang >/dev/null || die
 
-				python_moduleinto clang
-				python_domodule *.py
+			python_moduleinto clang
+			python_domodule *.py
 
-				popd >/dev/null || die
-			fi
+			popd >/dev/null || die
+		fi
 
-			# AddressSanitizer symbolizer (currently separate)
-			python_doscript "${S}"/projects/compiler-rt/lib/asan/scripts/asan_symbolize.py
-		}
-		python_foreach_impl python_inst
+		# AddressSanitizer symbolizer (currently separate)
+		dobin "${S}"/projects/compiler-rt/lib/asan/scripts/asan_symbolize.py
+
 		popd >/dev/null || die
+
+		python_fix_shebang "${ED}"
+		if use lldb && use python; then
+			python_optimize
+		fi
 	fi
 }
 
