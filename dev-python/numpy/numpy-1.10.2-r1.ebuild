@@ -11,7 +11,7 @@ FORTRAN_NEEDED=lapack
 
 inherit distutils-r1 eutils flag-o-matic fortran-2 multilib multiprocessing toolchain-funcs versionator
 
-DOC_PV="1.9.1"
+DOC_PV="1.10.1"
 DOC_P="${PN}-${DOC_PV}"
 
 DESCRIPTION="Fast array and numerical python library"
@@ -40,9 +40,7 @@ DEPEND="${RDEPEND}
 DISTUTILS_IN_SOURCE_BUILD=1
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-1.9.2-no-hardcode-blas.patch
-	"${FILESDIR}"/${P}-backport-1.patch
-	"${FILESDIR}"/${P}-backport-2.patch
+	"${FILESDIR}"/${P}-no-hardcode-blas.patch
 	"${FILESDIR}"/${PN}-1.10.0-musl.patch
 )
 
@@ -74,8 +72,6 @@ python_prepare_all() {
 	if use lapack; then
 		append-ldflags "$($(tc-getPKG_CONFIG) --libs-only-other cblas lapack)"
 		local libdir="${EPREFIX}"/usr/$(get_libdir)
-		# make sure _dotblas.so gets built
-		sed -i -e '/NO_ATLAS_INFO/,+1d' numpy/core/setup.py || die
 		cat >> site.cfg <<-EOF
 			[blas]
 			include_dirs = $(pc_incdir cblas)
@@ -115,7 +111,7 @@ python_prepare_all() {
 
 	# we don't have f2py-3.3
 	sed \
-		-e "/f2py_cmd/s:'f2py'.*:'f2py':g" \
+		-e "/f2py_cmd/s:'f2py'.*:'f2py'\]:g" \
 		-i numpy/tests/test_scripts.py || die
 
 	distutils-r1_python_prepare_all
