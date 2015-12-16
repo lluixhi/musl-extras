@@ -153,6 +153,7 @@ src_prepare() {
 
 	# Fix for MUSL
 	epatch "${FILESDIR}"/remove-stabs.patch
+	epatch "${FILESDIR}"/fix-xpcom.patch
 
 	# Allow user to apply any additional patches without modifing ebuild
 	epatch_user
