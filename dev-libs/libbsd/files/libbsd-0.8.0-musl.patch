@@ -1,0 +1,73 @@
+diff -Naurw libbsd-0.8.0.orig/include/bsd/nlist.h libbsd-0.8.0/include/bsd/nlist.h
+--- libbsd-0.8.0.orig/include/bsd/nlist.h	2015-09-22 10:56:09.000000000 -0700
++++ libbsd-0.8.0/include/bsd/nlist.h	2015-12-24 11:39:50.708316512 -0800
+@@ -28,7 +28,11 @@
+ #define LIBBSD_NLIST_H
+ 
+ #include <sys/cdefs.h>
++#if defined(__GLIBC__)
+ #include <a.out.h>
++#else
++#include <linux/a.out.h>
++#endif
+ 
+ __BEGIN_DECLS
+ extern int nlist(const char *filename, struct nlist *list);
+diff -Naurw libbsd-0.8.0.orig/include/bsd/sys/cdefs.h libbsd-0.8.0/include/bsd/sys/cdefs.h
+--- libbsd-0.8.0.orig/include/bsd/sys/cdefs.h	2015-09-22 22:59:27.000000000 -0700
++++ libbsd-0.8.0/include/bsd/sys/cdefs.h	2015-12-24 11:23:46.584954449 -0800
+@@ -24,10 +24,12 @@
+  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#ifdef LIBBSD_OVERLAY
+-#include_next <sys/cdefs.h>
++#ifdef __cplusplus
++#define __BEGIN_DECLS extern "C" {
++#define __END_DECLS }
+ #else
+-#include <sys/cdefs.h>
++#define __BEGIN_DECLS
++#define __END_DECLS
+ #endif
+ 
+ #ifndef LIBBSD_SYS_CDEFS_H
+diff -Naurw libbsd-0.8.0.orig/src/flopen.c libbsd-0.8.0/src/flopen.c
+--- libbsd-0.8.0.orig/src/flopen.c	2011-07-05 09:56:44.000000000 -0700
++++ libbsd-0.8.0/src/flopen.c	2015-12-24 11:26:45.284959774 -0800
+@@ -32,6 +32,7 @@
+ #include <sys/stat.h>
+ 
+ #include <errno.h>
++#include <fcntl.h>
+ #include <stdarg.h>
+ #include <unistd.h>
+ #include <libutil.h>
+diff -Naurw libbsd-0.8.0.orig/src/funopen.c libbsd-0.8.0/src/funopen.c
+--- libbsd-0.8.0.orig/src/funopen.c	2015-09-22 10:56:09.000000000 -0700
++++ libbsd-0.8.0/src/funopen.c	2015-12-24 11:30:08.958299176 -0800
+@@ -137,6 +137,4 @@
+ 
+ 	return fopencookie(cookiewrap, mode, funcswrap);
+ }
+-#else
+-#error "Function funopen() needs to be ported."
+ #endif
+diff -Naurw libbsd-0.8.0.orig/src/nlist.c libbsd-0.8.0/src/nlist.c
+--- libbsd-0.8.0.orig/src/nlist.c	2015-09-22 22:59:34.000000000 -0700
++++ libbsd-0.8.0/src/nlist.c	2015-12-24 11:41:39.848319764 -0800
+@@ -39,11 +39,13 @@
+ #include <arpa/inet.h>
+ 
+ #include <errno.h>
+-#include <a.out.h>
++#include <fcntl.h>
+ #include <stdio.h>
+ #include <string.h>
+ #include <unistd.h>
+ 
++#include "nlist.h"
++
+ #if !defined(__NO_A_OUT_SUPPORT)
+ #define _NLIST_DO_AOUT
+ #endif

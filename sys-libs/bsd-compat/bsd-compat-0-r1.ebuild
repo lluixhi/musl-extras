@@ -21,4 +21,5 @@ S="${WORKDIR}"
 src_install() {
 	insinto /usr/include/sys
 	newins "${FILESDIR}/sys-queue.h" queue.h
+	newins "${FILESDIR}/sys-tree.h" tree.h
 }
