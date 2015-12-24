@@ -16,26 +16,31 @@ SRC_URI="http://www.netfilter.org/projects/iptables/files/${P}.tar.bz2"
 LICENSE="GPL-2"
 # Subslot tracks libxtables as that's the one other packages generally link
 # against and iptables changes.  Will have to revisit if other sonames change.
-SLOT="0/10"
+SLOT="0/11"
 KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
-IUSE="conntrack ipv6 netlink pcap static-libs"
+IUSE="conntrack ipv6 netlink nftables pcap static-libs"
 
 RDEPEND="
 	conntrack? ( net-libs/libnetfilter_conntrack )
 	netlink? ( net-libs/libnfnetlink )
+	nftables? (
+		>=net-libs/libmnl-1.0
+		>=net-libs/libnftnl-1.0.5
+	)
 	pcap? ( net-libs/libpcap )
 "
 DEPEND="${RDEPEND}
 	virtual/os-headers
 	virtual/pkgconfig
+	nftables? (
+		sys-devel/flex
+		virtual/yacc
+	)
 "
 
 src_prepare() {
 	# use the saner headers from the kernel
 	rm -f include/linux/{kernel,types}.h
-
-	epatch "${FILESDIR}"/${P}-configure.patch #557586
-	epatch "${FILESDIR}"/${P}-static-connlabel-config.patch #558234
 
 	# Fix for MUSL
 	epatch "${FILESDIR}"/${P}-musl.patch
@@ -61,6 +66,7 @@ src_configure() {
 		--libexecdir="${EPREFIX}/$(get_libdir)" \
 		--enable-devel \
 		--enable-shared \
+		$(use_enable nftables) \
 		$(use_enable pcap bpf-compiler) \
 		$(use_enable pcap nfsynproxy) \
 		$(use_enable static-libs static) \
@@ -68,6 +74,8 @@ src_configure() {
 }
 
 src_compile() {
+	# Deal with parallel build errors.
+	use nftables && emake -C iptables xtables-config-parser.h
 	emake V=1
 }
 
