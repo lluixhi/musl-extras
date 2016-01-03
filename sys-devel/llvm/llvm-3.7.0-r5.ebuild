@@ -170,6 +170,9 @@ src_prepare() {
 	# https://bugs.gentoo.org/show_bug.cgi?id=565358
 	epatch "${FILESDIR}"/llvm-3.7-llvm-config.patch
 
+	# Fix msan with newer kernels, #569894
+	epatch "${FILESDIR}"/llvm-3.7-msan-fix.patch
+
 	if use clang; then
 		# Automatically select active system GCC's libraries, bugs #406163 and #417913
 		epatch "${FILESDIR}"/clang-3.5-gentoo-runtime-gcc-detection-v3.patch
@@ -193,10 +196,17 @@ src_prepare() {
 		# https://llvm.org/bugs/show_bug.cgi?id=23793
 		epatch "${FILESDIR}"/cmake/clang-0002-cmake-Make-CLANG_LIBDIR_SUFFIX-overridable.patch
 
+		pushd projects/compiler-rt >/dev/null || die
+
+		# Fix msan with newer kernels, compiler-rt part, #569894
+		epatch "${FILESDIR}"/compiler-rt-3.7-msan-fix.patch
+
 		# Fix WX sections, bug #421527
-		find "${S}"/projects/compiler-rt/lib/builtins -type f -name \*.S -exec sed \
+		find lib/builtins -type f -name '*.S' -exec sed \
 			 -e '$a\\n#if defined(__linux__) && defined(__ELF__)\n.section .note.GNU-stack,"",%progbits\n#endif' \
-			 -i {} \; || die
+			 -i {} + || die
+
+		popd >/dev/null || die
 
 		# Fix for MUSL
 		epatch "${FILESDIR}"/musl/cfe/cfe-001-fix-stdint.patch
