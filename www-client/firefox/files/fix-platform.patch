@@ -1,0 +1,17 @@
+diff -Naurw firefox-43.0.orig/tools/profiler/core/platform-linux.cc firefox-43.0/tools/profiler/core/platform-linux.cc
+--- firefox-43.0.orig/tools/profiler/core/platform-linux.cc	2016-01-03 15:43:43.947413010 -0800
++++ firefox-43.0/tools/profiler/core/platform-linux.cc	2016-01-03 15:44:42.982411331 -0800
+@@ -710,11 +710,13 @@
+ void TickSample::PopulateContext(void* aContext)
+ {
+   MOZ_ASSERT(aContext);
++#if defined(__GLIBC__)
+   ucontext_t* pContext = reinterpret_cast<ucontext_t*>(aContext);
+   if (!getcontext(pContext)) {
+     context = pContext;
+     SetSampleContext(this, aContext);
+   }
++#endif
+ }
+ 
+ void OS::SleepMicro(int microseconds)
