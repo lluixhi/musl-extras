@@ -1,0 +1,11 @@
+diff -Naurw icecat-38.5.2.orig/browser/installer/package-manifest.in icecat-38.5.2/browser/installer/package-manifest.in
+--- icecat-38.5.2.orig/browser/installer/package-manifest.in	2016-01-05 13:59:59.251781194 -0800
++++ icecat-38.5.2/browser/installer/package-manifest.in	2016-01-05 14:02:47.242776417 -0800
+@@ -696,6 +696,7 @@
+ 
+ ; [Default Preferences]
+ ; All the pref files must be part of base to prevent migration bugs
++@RESPATH@/browser/@PREF_DIR@/all-gentoo.js
+ @RESPATH@/browser/@PREF_DIR@/icecat.js
+ @RESPATH@/browser/@PREF_DIR@/icecat-branding.js
+ @RESPATH@/greprefs.js

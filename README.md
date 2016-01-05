@@ -10,6 +10,7 @@ Features currently not found in other distros that support MUSL include:
 * Linux Headers 4.3
 * Working xf86-video-intel
 * Latest ElfUtils
+* Icecat
 * Icedtea 8
 
 ## Note on Icedtea
