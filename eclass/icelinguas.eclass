@@ -155,10 +155,10 @@ else
 fi
 unset x
 
-# @FUNCTION: mozlinguas_export
+# @FUNCTION: icelinguas_export
 # @INTERNAL
 # @DESCRIPTION:
-# Generate the list of language packs called "mozlinguas"
+# Generate the list of language packs called "icelinguas"
 # This list is used to unpack and install the xpi language packs
 icelinguas_export() {
 	if [[ ${PN} == seamonkey ]] ; then
@@ -167,18 +167,18 @@ icelinguas_export() {
 		[[ ${PV} =~ alpha|beta ]] && ! [[ -n ${MOZ_GENERATE_LANGPACKS} ]] && return
 	fi
 	local lingua
-	mozlinguas=()
+	icelinguas=()
 	for lingua in ${LINGUAS}; do
 		if has ${lingua} en en_US; then
 			# For mozilla products, en and en_US are handled internally
 			continue
 		# If this language is supported by ${P},
 		elif has ${lingua} "${MOZ_LANGS[@]//-/_}"; then
-			# Add the language to mozlinguas, if it isn't already there
-			has ${lingua//_/-} "${mozlinguas[@]}" || mozlinguas+=(${lingua//_/-})
+			# Add the language to icelinguas, if it isn't already there
+			has ${lingua//_/-} "${icelinguas[@]}" || icelinguas+=(${lingua//_/-})
 			continue
 		# For each short lingua that isn't in MOZ_LANGS,
-		# We used to add *all* long MOZ_LANGS to the mozlinguas list,
+		# We used to add *all* long MOZ_LANGS to the icelinguas list,
 		# but we stopped doing that due to bug 325195.
 		else
 			:
@@ -187,24 +187,24 @@ icelinguas_export() {
 	done
 }
 
-# @FUNCTION: mozlinguas_src_unpack
+# @FUNCTION: icelinguas_src_unpack
 # @DESCRIPTION:
 # Unpack xpi language packs according to the user's LINGUAS settings
 icelinguas_src_unpack() {
 	local x
 	if ! [[ -n ${MOZ_GENERATE_LANGPACKS} ]]; then
 		icelinguas_export
-		for x in "${mozlinguas[@]}"; do
+		for x in "${icelinguas[@]}"; do
 			# FIXME: Add support for unpacking xpis to portage
 			xpi_unpack "${MOZ_P}-${x}${MOZ_LANGPACK_UNOFFICIAL:+.unofficial}.xpi"
 		done
-		if [[ "${mozlinguas[*]}" != "" && "${mozlinguas[*]}" != "en" ]]; then
-			einfo "Selected language packs (first will be default): ${mozlinguas[*]}"
+		if [[ "${icelinguas[*]}" != "" && "${icelinguas[*]}" != "en" ]]; then
+			einfo "Selected language packs (first will be default): ${icelinguas[*]}"
 		fi
 	fi
 }
 
-# @FUNCTION: mozlinguas_mozconfig
+# @FUNCTION: icelinguas_mozconfig
 # @DESCRIPTION:
 # if applicable, add the necessary flag to .mozconfig to support
 # the generation of locales.  Note that this function requires
@@ -220,7 +220,7 @@ icelinguas_mozconfig() {
 	fi
 }
 
-# @FUNCTION: mozlinguas_src_compile
+# @FUNCTION: icelinguas_src_compile
 # @DESCRIPTION:
 # if applicable, build the selected locales.
 icelinguas_src_compile() {
@@ -228,7 +228,7 @@ icelinguas_src_compile() {
 		# leverage BUILD_OBJ_DIR if set otherwise assume PWD.
 		local x y targets=( "langpack" ) localedir="${BUILD_OBJ_DIR:-.}"
 		case ${PN} in
-			*firefox)
+			*icecat)
 				localedir+="/browser/locales"
 				;;
 			seamonkey)
@@ -242,14 +242,14 @@ icelinguas_src_compile() {
 		esac
 		pushd "${localedir}" > /dev/null || die
 		icelinguas_export
-		for x in "${mozlinguas[@]}"; do for y in "${targets[@]}"; do
+		for x in "${icelinguas[@]}"; do for y in "${targets[@]}"; do
 			emake ${y}-${x} LOCALE_MERGEDIR="./${y}-${x}"
 		done; done
 		popd > /dev/null || die
 	fi
 }
 
-# @FUNCTION: mozlinguas_xpistage_langpacks
+# @FUNCTION: icelinguas_xpistage_langpacks
 # @DESCRIPTION:
 # Add extra langpacks to the xpi-stage dir for prebuilt plugins
 #
@@ -261,7 +261,7 @@ icelinguas_src_compile() {
 # Example - installing extra langpacks for lightning:
 # src_install() {
 # 	... # general installation steps
-# 	mozlinguas_xpistage_langpacks \
+# 	icelinguas_xpistage_langpacks \
 #		"${BUILD_OBJ_DIR}"/dist/xpi-stage/lightning \
 #		"${WORKDIR}"/lightning \
 #		lightning calendar
@@ -276,7 +276,7 @@ icelinguas_xpistage_langpacks() {
 
 	icelinguas_export
 	mkdir -p "${modpath}/chrome" || die
-	for l in "${mozlinguas[@]}"; do	for c in "${modules[@]}" ; do
+	for l in "${icelinguas[@]}"; do	for c in "${modules[@]}" ; do
 		if [[ -e "${srcprefix}-${l}/chrome/${c}-${l}" ]]; then
 			cp -RLp -t "${modpath}/chrome" "${srcprefix}-${l}/chrome/${c}-${l}" || die
 			grep "locale ${c} ${l} chrome/" "${srcprefix}-${l}/chrome.manifest" \
@@ -291,7 +291,7 @@ icelinguas_xpistage_langpacks() {
 	done; done
 }
 
-# @FUNCTION: mozlinguas_src_install
+# @FUNCTION: icelinguas_src_install
 # @DESCRIPTION:
 # Install xpi language packs according to the user's LINGUAS settings
 # NOTE - uses ${BUILD_OBJ_DIR} or PWD if unset, for source-generated langpacks
@@ -302,14 +302,14 @@ icelinguas_src_install() {
 		local repopath="${WORKDIR}/${PN}-generated-langpacks"
 		mkdir -p "${repopath}"
 		pushd "${BUILD_OBJ_DIR:-.}"/dist/*/xpi > /dev/null || die
-		for x in "${mozlinguas[@]}"; do
+		for x in "${icelinguas[@]}"; do
 			cp "${MOZ_P}.${x}.langpack.xpi" \
 			"${repopath}/${MOZ_P}-${x}${MOZ_LANGPACK_UNOFFICIAL:+.unofficial}.xpi" || die
 			xpi_unpack "${repopath}/${MOZ_P}-${x}${MOZ_LANGPACK_UNOFFICIAL:+.unofficial}.xpi"
 		done
 		popd > /dev/null || die
 	fi
-	for x in "${mozlinguas[@]}"; do
+	for x in "${icelinguas[@]}"; do
 		xpi_install "${WORKDIR}/${MOZ_P}-${x}${MOZ_LANGPACK_UNOFFICIAL:+.unofficial}"
 	done
 }
