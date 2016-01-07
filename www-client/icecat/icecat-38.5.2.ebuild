@@ -334,7 +334,7 @@ src_install() {
 
 	# Required in order to use plugins and even run icecat on hardened.
 	if use jit; then
-		pax-mark m "${ED}"${MOZILLA_FIVE_HOME}/{firefox,firefox-bin,plugin-container}
+		pax-mark m "${ED}"${MOZILLA_FIVE_HOME}/{icecat,icecat-bin,plugin-container}
 	else
 		pax-mark m "${ED}"${MOZILLA_FIVE_HOME}/plugin-container
 	fi
