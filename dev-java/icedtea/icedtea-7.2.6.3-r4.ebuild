@@ -1,4 +1,4 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 # Build written by Andrew John Hughes (gnu_andrew@member.fsf.org)
@@ -61,8 +61,8 @@ KEYWORDS="~amd64 ~arm ~ppc ~x86"
 RESTRICT="test"
 
 IUSE="+alsa cacao cjk +cups debug doc examples +gtk headless-awt infinality
-	jamvm javascript +jbootstrap kerberos +nsplugin nss pax_kernel
-	pulseaudio sctp selinux smartcard source +sunec test zero +webstart"
+	jamvm javascript +jbootstrap kerberos nsplugin nss pax_kernel
+	pulseaudio sctp selinux smartcard source +sunec test webstart zero"
 
 REQUIRED_USE="gtk? ( !headless-awt )"
 
@@ -151,8 +151,8 @@ DEPEND="${COMMON_DEP} ${ALSA_COMMON_DEP} ${CUPS_COMMON_DEP} ${X_COMMON_DEP} ${X_
 	virtual/pkgconfig
 	pax_kernel? ( sys-apps/elfix )"
 
-PDEPEND="webstart? ( dev-java/icedtea-web:0[icedtea7] )
-	nsplugin? ( dev-java/icedtea-web:0[icedtea7,nsplugin] )
+PDEPEND="webstart? ( dev-java/icedtea-web:0[icedtea7(+)] )
+	nsplugin? ( dev-java/icedtea-web:0[icedtea7(+),nsplugin] )
 	pulseaudio? ( dev-java/icedtea-sound )"
 
 S="${WORKDIR}"/${ICEDTEA_PKG}
@@ -201,7 +201,9 @@ java_prepare() {
 	epatch "${FILESDIR}/${PN}-2.6.1-no-systemtap.patch"
 
 	# http://icedtea.classpath.org/bugzilla/show_bug.cgi?id=2612
-	ln -s "${FILESDIR}/${SLOT}-cacao-dynmaxheap.patch" patches || die
+	# http://icedtea.classpath.org/bugzilla/show_bug.cgi?id=2781
+	ln -s "${FILESDIR}/${SLOT}-cacao-pr-157.patch" patches || die
+	ln -s "${FILESDIR}/icedtea-bug-2781.patch" patches || die
 
 	# Link MUSL patches into icedtea build tree
 	ln -s "${FILESDIR}/${PN}-hotspot-musl.patch" patches || die
@@ -228,7 +230,8 @@ src_configure() {
 	DISTRIBUTION_PATCHES=""
 
 	# Gentoo Patches
-	DISTRIBUTION_PATCHES+="patches/${SLOT}-cacao-dynmaxheap.patch"
+	DISTRIBUTION_PATCHES+="patches/${SLOT}-cacao-pr-157.patch"
+	DISTRIBUTION_PATCHES+="patches/icedtea-bug-2781.patch"
 
 	# MUSL Patches
 	DISTRIBUTION_PATCHES+="patches/${PN}-hotspot-musl.patch "
