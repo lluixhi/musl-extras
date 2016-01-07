@@ -40,7 +40,7 @@ DEPEND="${RDEPEND}
 DISTUTILS_IN_SOURCE_BUILD=1
 
 PATCHES=(
-	"${FILESDIR}"/${P}-no-hardcode-blas.patch
+	"${FILESDIR}"/${PN}-1.10.2-no-hardcode-blas.patch
 	"${FILESDIR}"/${PN}-1.10.0-musl.patch
 )
 
@@ -106,13 +106,13 @@ python_prepare_all() {
 		[[ $(tc-getFC) == *gfortran* ]] && NUMPY_FCONFIG+=" --fcompiler=gnu95"
 	fi
 
-#	# don't version f2py, we will handle it.
+	# don't version f2py, we will handle it.
 	sed -i -e '/f2py_exe/s: + os\.path.*$::' numpy/f2py/setup.py || die
 
-#	# we don't have f2py-3.3
-	sed \
-		-e 's:test_f2py:_&:g' \
-		-i numpy/tests/test_scripts.py || die
+	# we don't have f2py-3.3
+#	sed \
+#		-e 's:test_f2py:_&:g' \
+#		-i numpy/tests/test_scripts.py || die
 
 	distutils-r1_python_prepare_all
 }
