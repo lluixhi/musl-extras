@@ -1,0 +1,220 @@
+diff -Naurw libbsd-0.8.1.orig/include/bsd/libutil.h libbsd-0.8.1/include/bsd/libutil.h
+--- libbsd-0.8.1.orig/include/bsd/libutil.h	2015-09-22 10:56:09.000000000 -0700
++++ libbsd-0.8.1/include/bsd/libutil.h	2016-01-09 18:21:27.607435795 -0800
+@@ -40,7 +40,7 @@
+ #define _LIBUTIL_H_
+ 
+ #include <features.h>
+-#include <sys/cdefs.h>
++#include "sys/cdefs.h"
+ #include <sys/types.h>
+ #include <stdint.h>
+ #include <stdio.h>
+diff -Naurw libbsd-0.8.1.orig/include/bsd/md5.h libbsd-0.8.1/include/bsd/md5.h
+--- libbsd-0.8.1.orig/include/bsd/md5.h	2015-12-13 15:58:59.000000000 -0800
++++ libbsd-0.8.1/include/bsd/md5.h	2016-01-09 18:21:38.877436131 -0800
+@@ -27,7 +27,7 @@
+ 	uint8_t buffer[MD5_BLOCK_LENGTH];	/* input buffer */
+ } MD5_CTX;
+ 
+-#include <sys/cdefs.h>
++#include "sys/cdefs.h"
+ #include <sys/types.h>
+ 
+ __BEGIN_DECLS
+diff -Naurw libbsd-0.8.1.orig/include/bsd/nlist.h libbsd-0.8.1/include/bsd/nlist.h
+--- libbsd-0.8.1.orig/include/bsd/nlist.h	2015-09-22 10:56:09.000000000 -0700
++++ libbsd-0.8.1/include/bsd/nlist.h	2016-01-09 18:21:47.320769716 -0800
+@@ -27,8 +27,8 @@
+ #ifndef LIBBSD_NLIST_H
+ #define LIBBSD_NLIST_H
+ 
+-#include <sys/cdefs.h>
+-#include <a.out.h>
++#include "sys/cdefs.h"
++#include <linux/a.out.h>
+ 
+ __BEGIN_DECLS
+ extern int nlist(const char *filename, struct nlist *list);
+diff -Naurw libbsd-0.8.1.orig/include/bsd/readpassphrase.h libbsd-0.8.1/include/bsd/readpassphrase.h
+--- libbsd-0.8.1.orig/include/bsd/readpassphrase.h	2011-07-05 11:58:44.000000000 -0700
++++ libbsd-0.8.1/include/bsd/readpassphrase.h	2016-01-09 18:17:44.767429155 -0800
+@@ -31,7 +31,7 @@
+ #define RPP_SEVENBIT    0x10		/* Strip the high bit from input. */
+ #define RPP_STDIN       0x20		/* Read from stdin, not /dev/tty */
+ 
+-#include <sys/cdefs.h>
++#include "sys/cdefs.h"
+ #include <sys/types.h>
+ 
+ __BEGIN_DECLS
+diff -Naurw libbsd-0.8.1.orig/include/bsd/stdio.h libbsd-0.8.1/include/bsd/stdio.h
+--- libbsd-0.8.1.orig/include/bsd/stdio.h	2015-09-22 22:59:34.000000000 -0700
++++ libbsd-0.8.1/include/bsd/stdio.h	2016-01-09 18:18:10.530763256 -0800
+@@ -38,7 +38,7 @@
+ #ifndef LIBBSD_STDIO_H
+ #define LIBBSD_STDIO_H
+ 
+-#include <sys/cdefs.h>
++#include "sys/cdefs.h"
+ #include <sys/types.h>
+ 
+ __BEGIN_DECLS
+diff -Naurw libbsd-0.8.1.orig/include/bsd/stdlib.h libbsd-0.8.1/include/bsd/stdlib.h
+--- libbsd-0.8.1.orig/include/bsd/stdlib.h	2015-09-22 22:14:21.000000000 -0700
++++ libbsd-0.8.1/include/bsd/stdlib.h	2016-01-09 18:22:09.844103720 -0800
+@@ -42,7 +42,7 @@
+ #ifndef LIBBSD_STDLIB_H
+ #define LIBBSD_STDLIB_H
+ 
+-#include <sys/cdefs.h>
++#include "sys/cdefs.h"
+ #include <sys/stat.h>
+ #include <stdint.h>
+ 
+diff -Naurw libbsd-0.8.1.orig/include/bsd/string.h libbsd-0.8.1/include/bsd/string.h
+--- libbsd-0.8.1.orig/include/bsd/string.h	2015-09-23 20:30:23.000000000 -0700
++++ libbsd-0.8.1/include/bsd/string.h	2016-01-09 18:19:58.687433145 -0800
+@@ -33,7 +33,7 @@
+ #ifndef LIBBSD_STRING_H
+ #define LIBBSD_STRING_H
+ 
+-#include <sys/cdefs.h>
++#include "sys/cdefs.h"
+ #include <sys/types.h>
+ 
+ __BEGIN_DECLS
+diff -Naurw libbsd-0.8.1.orig/include/bsd/stringlist.h libbsd-0.8.1/include/bsd/stringlist.h
+--- libbsd-0.8.1.orig/include/bsd/stringlist.h	2015-09-22 10:56:09.000000000 -0700
++++ libbsd-0.8.1/include/bsd/stringlist.h	2016-01-09 18:18:24.790763681 -0800
+@@ -31,7 +31,7 @@
+ 
+ #ifndef _STRINGLIST_H
+ #define _STRINGLIST_H
+-#include <sys/cdefs.h>
++#include "sys/cdefs.h"
+ #include <sys/types.h>
+ 
+ /*
+diff -Naurw libbsd-0.8.1.orig/include/bsd/sys/cdefs.h libbsd-0.8.1/include/bsd/sys/cdefs.h
+--- libbsd-0.8.1.orig/include/bsd/sys/cdefs.h	2015-09-22 22:59:27.000000000 -0700
++++ libbsd-0.8.1/include/bsd/sys/cdefs.h	2016-01-09 18:33:36.577457517 -0800
+@@ -24,11 +24,19 @@
+  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
++#if defined(__GLIBC__) || !defined(__linux__)
+ #ifdef LIBBSD_OVERLAY
+ #include_next <sys/cdefs.h>
+ #else
+ #include <sys/cdefs.h>
+ #endif
++#elif defined(__cplusplus)
++# define __BEGIN_DECLS extern "C" {
++# define __END_DECLS }
++#else
++# define __BEGIN_DECLS
++# define __END_DECLS
++#endif
+ 
+ #ifndef LIBBSD_SYS_CDEFS_H
+ #define LIBBSD_SYS_CDEFS_H
+diff -Naurw libbsd-0.8.1.orig/include/bsd/sys/queue.h libbsd-0.8.1/include/bsd/sys/queue.h
+--- libbsd-0.8.1.orig/include/bsd/sys/queue.h	2015-09-22 22:59:34.000000000 -0700
++++ libbsd-0.8.1/include/bsd/sys/queue.h	2016-01-09 18:19:24.290765454 -0800
+@@ -33,7 +33,7 @@
+ #ifndef _SYS_QUEUE_H_
+ #define	_SYS_QUEUE_H_
+ 
+-#include <sys/cdefs.h>
++#include "cdefs.h"
+ 
+ /*
+  * This file defines four types of data structures: singly-linked lists,
+diff -Naurw libbsd-0.8.1.orig/include/bsd/sys/tree.h libbsd-0.8.1/include/bsd/sys/tree.h
+--- libbsd-0.8.1.orig/include/bsd/sys/tree.h	2011-07-05 11:58:44.000000000 -0700
++++ libbsd-0.8.1/include/bsd/sys/tree.h	2016-01-09 18:19:29.530765610 -0800
+@@ -30,7 +30,7 @@
+ #ifndef	_SYS_TREE_H_
+ #define	_SYS_TREE_H_
+ 
+-#include <sys/cdefs.h>
++#include "cdefs.h"
+ 
+ /*
+  * This file defines data structures for different types of trees:
+diff -Naurw libbsd-0.8.1.orig/include/bsd/timeconv.h libbsd-0.8.1/include/bsd/timeconv.h
+--- libbsd-0.8.1.orig/include/bsd/timeconv.h	2015-09-22 10:56:09.000000000 -0700
++++ libbsd-0.8.1/include/bsd/timeconv.h	2016-01-09 18:17:56.564096173 -0800
+@@ -41,7 +41,7 @@
+ #ifndef _TIMECONV_H_
+ #define _TIMECONV_H_
+ 
+-#include <sys/cdefs.h>
++#include "sys/cdefs.h"
+ #include <stdint.h>
+ #include <time.h>
+ 
+diff -Naurw libbsd-0.8.1.orig/include/bsd/vis.h libbsd-0.8.1/include/bsd/vis.h
+--- libbsd-0.8.1.orig/include/bsd/vis.h	2011-07-05 11:58:44.000000000 -0700
++++ libbsd-0.8.1/include/bsd/vis.h	2016-01-09 18:20:26.057433961 -0800
+@@ -72,7 +72,7 @@
+  */
+ #define	UNVIS_END	1	/* no more characters */
+ 
+-#include <sys/cdefs.h>
++#include "sys/cdefs.h"
+ 
+ __BEGIN_DECLS
+ char	*vis(char *, int, int, int);
+diff -Naurw libbsd-0.8.1.orig/include/bsd/wchar.h libbsd-0.8.1/include/bsd/wchar.h
+--- libbsd-0.8.1.orig/include/bsd/wchar.h	2015-09-22 10:56:09.000000000 -0700
++++ libbsd-0.8.1/include/bsd/wchar.h	2016-01-09 18:22:54.100771706 -0800
+@@ -40,7 +40,7 @@
+ #define LIBBSD_WCHAR_H
+ 
+ #include <stddef.h>
+-#include <sys/cdefs.h>
++#include "sys/cdefs.h"
+ #include <sys/types.h>
+ 
+ __BEGIN_DECLS
+diff -Naurw libbsd-0.8.1.orig/src/flopen.c libbsd-0.8.1/src/flopen.c
+--- libbsd-0.8.1.orig/src/flopen.c	2011-07-05 09:56:44.000000000 -0700
++++ libbsd-0.8.1/src/flopen.c	2016-01-09 18:17:13.350761552 -0800
+@@ -32,6 +32,7 @@
+ #include <sys/stat.h>
+ 
+ #include <errno.h>
++#include <fcntl.h>
+ #include <stdarg.h>
+ #include <unistd.h>
+ #include <libutil.h>
+diff -Naurw libbsd-0.8.1.orig/src/funopen.c libbsd-0.8.1/src/funopen.c
+--- libbsd-0.8.1.orig/src/funopen.c	2015-09-22 10:56:09.000000000 -0700
++++ libbsd-0.8.1/src/funopen.c	2016-01-09 18:17:13.350761552 -0800
+@@ -137,6 +137,4 @@
+ 
+ 	return fopencookie(cookiewrap, mode, funcswrap);
+ }
+-#else
+-#error "Function funopen() needs to be ported."
+ #endif
+diff -Naurw libbsd-0.8.1.orig/src/nlist.c libbsd-0.8.1/src/nlist.c
+--- libbsd-0.8.1.orig/src/nlist.c	2015-09-22 22:59:34.000000000 -0700
++++ libbsd-0.8.1/src/nlist.c	2016-01-09 18:17:13.350761552 -0800
+@@ -39,11 +39,13 @@
+ #include <arpa/inet.h>
+ 
+ #include <errno.h>
+-#include <a.out.h>
++#include <fcntl.h>
+ #include <stdio.h>
+ #include <string.h>
+ #include <unistd.h>
+ 
++#include "nlist.h"
++
+ #if !defined(__NO_A_OUT_SUPPORT)
+ #define _NLIST_DO_AOUT
+ #endif
