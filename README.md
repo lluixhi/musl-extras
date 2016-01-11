@@ -7,7 +7,7 @@ pull in patches from Voidlinux and Alpine, and create its own.
 
 Features currently not found in other distros that support MUSL include:
 * GCC 5.3.0 (Hardened)
-* Linux Headers 4.3
+* Latest Linux Headers
 * Working xf86-video-intel
 * Latest ElfUtils
 * Icecat
