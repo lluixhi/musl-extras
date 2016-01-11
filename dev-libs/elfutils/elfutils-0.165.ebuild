@@ -1,8 +1,8 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI="4"
+EAPI="5"
 
 inherit eutils flag-o-matic multilib-minimal
 
@@ -41,7 +41,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/004-maybe-uninitialized.patch
 	epatch "${FILESDIR}"/005-memcpy-def.patch
 	epatch "${FILESDIR}"/006-skip-src.patch
-	epatch "${FILESDIR}"/008-musl-compat.patch
+	epatch "${FILESDIR}"/008-musl-compat-r1.patch
 	epatch "${FILESDIR}"/009-no-fts.patch
 
 	use static-libs || sed -i -e '/^lib_LIBRARIES/s:=.*:=:' -e '/^%.os/s:%.o$::' lib{asm,dw,elf}/Makefile.in
