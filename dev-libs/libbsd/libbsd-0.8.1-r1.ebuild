@@ -1,9 +1,9 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
 EAPI=5
-inherit eutils multilib
+inherit eutils multilib-minimal
 
 DESCRIPTION="An library to provide useful functions commonly found on BSD systems"
 HOMEPAGE="http://libbsd.freedesktop.org/wiki/"
@@ -29,14 +29,18 @@ pkg_setup() {
 	fi
 }
 
-src_configure() {
+multilib_src_configure() {
 	# The build system will install libbsd-ctor.a despite of USE="-static-libs"
 	# which is correct, see:
 	# http://cgit.freedesktop.org/libbsd/commit/?id=c5b959028734ca2281250c85773d9b5e1d259bc8
-	econf $(use_enable static-libs static)
+	ECONF_SOURCE="${S}" econf $(use_enable static-libs static)
 }
 
-src_install() {
-	default
+multilib_src_install() {
+	emake DESTDIR="${D}" install
 	prune_libtool_files
+}
+
+multilib_src_install_all() {
+	dodoc ${DOCS}
 }
