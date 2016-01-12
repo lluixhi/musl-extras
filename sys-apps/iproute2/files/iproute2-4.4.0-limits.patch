@@ -1,0 +1,11 @@
+diff -Naurw iproute2-4.4.0.orig/lib/rt_names.c iproute2-4.4.0/lib/rt_names.c
+--- iproute2-4.4.0.orig/lib/rt_names.c	2016-01-11 08:33:03.000000000 -0800
++++ iproute2-4.4.0/lib/rt_names.c	2016-01-12 13:43:26.913147717 -0800
+@@ -9,6 +9,7 @@
+  * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
+  */
+ 
++#include <limits.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <unistd.h>
