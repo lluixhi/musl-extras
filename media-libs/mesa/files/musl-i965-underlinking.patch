@@ -1,0 +1,26 @@
+From 09d5b4c04356c7bd56089605aed7742be89644c1 Mon Sep 17 00:00:00 2001
+From: Kylie McClain <somasis@exherbo.org>
+Date: Sat, 21 Nov 2015 16:39:20 -0500
+Subject: [PATCH] i965: don't underlink i965_dri.so, causes miserable failure
+ on musl libc
+
+---
+ src/mesa/drivers/dri/i965/Makefile.am | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/mesa/drivers/dri/i965/Makefile.am b/src/mesa/drivers/dri/i965/Makefile.am
+index 9d003e4..8797431 100644
+--- a/src/mesa/drivers/dri/i965/Makefile.am
++++ b/src/mesa/drivers/dri/i965/Makefile.am
+@@ -44,7 +44,7 @@ AM_CXXFLAGS = $(AM_CFLAGS)
+ 
+ noinst_LTLIBRARIES = libi965_dri.la libi965_compiler.la
+ libi965_dri_la_SOURCES = $(i965_FILES)
+-libi965_dri_la_LIBADD = libi965_compiler.la $(INTEL_LIBS)
++libi965_dri_la_LIBADD = libi965_compiler.la $(INTEL_LIBS) $(top_builddir)/src/mapi/shared-glapi/libglapi.la
+ 
+ libi965_compiler_la_SOURCES = $(i965_compiler_FILES)
+ 
+-- 
+2.6.3
+
