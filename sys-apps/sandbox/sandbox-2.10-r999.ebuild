@@ -7,7 +7,7 @@
 # period.
 #
 
-inherit eutils flag-o-matic toolchain-funcs multilib unpacker multiprocessing
+inherit eutils flag-o-matic toolchain-funcs multilib unpacker multiprocessing pax-utils
 
 DESCRIPTION="sandbox'd LD_PRELOAD hack"
 HOMEPAGE="https://www.gentoo.org/proj/en/portage/sandbox/"
@@ -16,7 +16,7 @@ SRC_URI="mirror://gentoo/${P}.tar.xz
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~sparc-fbsd ~x86-fbsd"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ia64 m68k ~mips ppc ~ppc64 s390 sh ~sparc ~x86 ~sparc-fbsd ~x86-fbsd"
 IUSE="multilib"
 
 DEPEND="app-arch/xz-utils
@@ -47,6 +47,7 @@ src_unpack() {
 	unpacker
 	cd "${S}"
 	epatch "${FILESDIR}"/${P}-memory-corruption.patch #568714
+	epatch "${FILESDIR}"/${P}-disable-same.patch
 
 	# Fix for MUSL
 	epatch "${FILESDIR}"/${PN}-2.6-musl.patch
@@ -57,6 +58,9 @@ src_unpack() {
 sb_configure() {
 	mkdir "${WORKDIR}/build-${ABI}"
 	cd "${WORKDIR}/build-${ABI}"
+
+	local myconf=()
+	host-is-pax && myconf+=( --disable-pch ) #301299 #425524 #572092
 
 	use multilib && multilib_toolchain_setup ${ABI}
 
