@@ -17,7 +17,7 @@ SRC_URI="http://llvm.org/releases/${PV}/${P}.src.tar.xz
 		http://llvm.org/releases/${PV}/cfe-${PV}.src.tar.xz
 		http://llvm.org/releases/${PV}/clang-tools-extra-${PV}.src.tar.xz )
 	lldb? ( http://llvm.org/releases/${PV}/lldb-${PV}.src.tar.xz )
-	!doc? ( http://dev.gentoo.org/~voyageur/distfiles/${P}-manpages.tar.bz2 )"
+	!doc? ( http://dev.gentoo.org/~voyageur/distfiles/${PN}-3.7.0-manpages.tar.bz2 )"
 
 LICENSE="UoI-NCSA"
 SLOT="0/${PV}"
@@ -150,9 +150,9 @@ src_prepare() {
 	# Make ocaml warnings non-fatal, bug #537308
 	sed -e "/RUN/s/-warn-error A//" -i test/Bindings/OCaml/*ml  || die
 	# Fix libdir for ocaml bindings install, bug #559134
-	epatch "${FILESDIR}"/cmake/${P}-ocaml-multilib.patch
+	epatch "${FILESDIR}"/cmake/${PN}-3.7.0-ocaml-multilib.patch
 	# Do not build/install ocaml docs with USE=-doc, bug #562008
-	epatch "${FILESDIR}"/cmake/${P}-ocaml-build_doc.patch
+	epatch "${FILESDIR}"/cmake/${PN}-3.7.0-ocaml-build_doc.patch
 
 	# Make it possible to override Sphinx HTML install dirs
 	# https://llvm.org/bugs/show_bug.cgi?id=23780
@@ -173,6 +173,9 @@ src_prepare() {
 	# Fix msan with newer kernels, #569894
 	epatch "${FILESDIR}"/llvm-3.7-msan-fix.patch
 
+	# disable use of SDK on OSX, bug #568758
+	sed -i -e 's/xcrun/false/' utils/lit/lit/util.py || die
+
 	if use clang; then
 		# Automatically select active system GCC's libraries, bugs #406163 and #417913
 		epatch "${FILESDIR}"/clang-3.5-gentoo-runtime-gcc-detection-v3.patch
@@ -189,7 +192,7 @@ src_prepare() {
 
 		# Do not force -march flags on arm platforms
 		# https://bugs.gentoo.org/show_bug.cgi?id=562706
-		epatch "${FILESDIR}"/cmake/${P}-compiler_rt_arm_march_flags.patch
+		epatch "${FILESDIR}"/cmake/${PN}-3.7.0-compiler_rt_arm_march_flags.patch
 
 		# Make it possible to override CLANG_LIBDIR_SUFFIX
 		# (that is used only to find LLVMgold.so)
@@ -240,7 +243,7 @@ src_prepare() {
 
 		# Fix build with ncurses[tinfo], #560474
 		# http://llvm.org/viewvc/llvm-project?view=revision&revision=247842
-		epatch "${FILESDIR}"/cmake/${P}-lldb_tinfo.patch
+		epatch "${FILESDIR}"/cmake/${PN}-3.7.0-lldb_tinfo.patch
 	fi
 
 	# Fix for MUSL
@@ -453,7 +456,7 @@ multilib_src_install() {
 
 	if multilib_is_native_abi; then
 		# Install man pages.
-		use doc || doman "${WORKDIR}"/${P}-manpages/*.1
+		use doc || doman "${WORKDIR}"/${PN}-3.7.0-manpages/*.1
 
 		# Symlink the gold plugin.
 		if use gold; then
@@ -555,8 +558,7 @@ multilib_src_install_all() {
 }
 
 pkg_postinst() {
-	if use clang; then
-		elog "To enable OpenMP support in clang, install sys-libs/libomp"
-		elog "and use the '-fopenmp=libomp' command line option"
+	if use clang && ! has_version sys-libs/libomp; then
+		elog "To enable OpenMP support in clang, install sys-libs/libomp."
 	fi
 }
