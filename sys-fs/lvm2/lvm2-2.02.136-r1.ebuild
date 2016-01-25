@@ -1,4 +1,4 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -13,12 +13,19 @@ SRC_URI="ftp://sources.redhat.com/pub/lvm2/${PN/lvm/LVM}.${PV}.tgz
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~amd64-linux ~x86-linux"
-IUSE="readline static static-libs systemd clvm cman lvm1 lvm2create_initrd selinux +udev +thin device-mapper-only"
-REQUIRED_USE="device-mapper-only? ( !clvm !cman !lvm1 !lvm2create_initrd !thin )
+IUSE="readline static static-libs systemd clvm cman corosync lvm1 lvm2create_initrd openais selinux +udev +thin device-mapper-only"
+REQUIRED_USE="device-mapper-only? ( !clvm !cman !corosync !lvm1 !lvm2create_initrd !openais !thin )
 	systemd? ( udev )
 	clvm? ( !systemd )"
 
-DEPEND_COMMON="clvm? ( cman? ( =sys-cluster/cman-3* ) =sys-cluster/libdlm-3* )
+DEPEND_COMMON="
+	clvm? (
+		cman? ( =sys-cluster/cman-3* )
+		corosync? ( sys-cluster/corosync )
+		openais? ( sys-cluster/openais )
+		=sys-cluster/libdlm-3*
+	)
+
 	readline? ( sys-libs/readline:0= )
 	udev? ( >=virtual/libudev-208:=[static-libs?] )"
 # /run is now required for locking during early boot. /var cannot be assumed to
@@ -173,6 +180,8 @@ src_configure() {
 		local clvmd=""
 		use cman && clvmd="cman"
 		#clvmd="${clvmd/cmangulm/all}"
+		use corosync && clvmd="${clvmd:+$clvmd,}corosync"
+		use openais && clvmd="${clvmd:+$clvmd,}openais"
 		[ -z "${clvmd}" ] && clvmd="none"
 		myconf="${myconf} --with-clvmd=${clvmd}"
 		myconf="${myconf} --with-pool=${buildmode}"
