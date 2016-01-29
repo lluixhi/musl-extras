@@ -36,7 +36,7 @@ S=${WORKDIR}/${MY_P}
 
 DOCS="alsoftrc.sample env-vars.txt hrtf.txt ChangeLog README"
 
-PATCHES=( "${FILESDIR}"/${P}-types.patch )
+PATCHES=( "${FILESDIR}"/${PN}-1.17.1-types.patch )
 
 src_configure() {
 	# -DEXAMPLES=OFF to avoid FFmpeg dependency wrt #481670
