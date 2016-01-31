@@ -1,4 +1,4 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -132,7 +132,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-0.18.conf.patch
 
 	# Fix for MUSL
-	epatch "${FILESDIR}"/${P}-musl.patch
+	epatch "${FILESDIR}"/${PN}-0.19.11-musl.patch
 }
 
 src_configure() {
@@ -225,6 +225,8 @@ src_install() {
 	newins doc/mpdconf.dist mpd.conf
 
 	newinitd "${FILESDIR}"/${PN}2.init ${PN}
+
+	systemd_newuserunit systemd/${PN}.service ${PN}.service
 
 	if use unicode; then
 		sed -i -e 's:^#filesystem_charset.*$:filesystem_charset "UTF-8":' \
