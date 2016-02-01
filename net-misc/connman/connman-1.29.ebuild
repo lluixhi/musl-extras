@@ -11,7 +11,7 @@ SRC_URI="mirror://kernel/linux/network/${PN}/${P}.tar.xz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~ppc ~ppc64 ~x86"
+KEYWORDS="amd64 arm ppc ppc64 x86"
 IUSE="bluetooth debug doc examples +ethernet l2tp ofono openvpn openconnect pptp policykit tools vpnc +wifi wispr"
 
 RDEPEND=">=dev-libs/glib-2.16
@@ -33,8 +33,9 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	# Fix build with MUSL
-	epatch "${FILESDIR}/${PN}-1.29-musl.patch"
-	epatch "${FILESDIR}/${PN}-1.29-musl-libresolv.patch"
+	epatch "${FILESDIR}/${PN}-musl.patch"
+	epatch "${FILESDIR}/${PN}-musl-libresolv.patch"
+	epacch "${FILESDIR}/${P}-musl-sockaddr.patch"
 
 	eautoreconf
 }
