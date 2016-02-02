@@ -1,6 +1,6 @@
 diff -Naurw openjdk.orig/common/autoconf/configure openjdk/common/autoconf/configure
---- openjdk.orig/common/autoconf/configure	2015-10-03 10:43:39.903611911 -0700
-+++ openjdk/common/autoconf/configure	2015-10-03 10:44:02.620279255 -0700
+--- openjdk.orig/common/autoconf/configure	2016-02-02 13:31:48.655932240 -0800
++++ openjdk/common/autoconf/configure	2016-02-02 13:36:24.860924385 -0800
 @@ -96,7 +96,7 @@
  }
  
@@ -11,8 +11,8 @@ diff -Naurw openjdk.orig/common/autoconf/configure openjdk/common/autoconf/confi
  if test -e $conf_custom_script_dir/generated-configure.sh; then
    # Test if open configure is newer than custom configure, if so, custom needs to
 diff -Naurw openjdk.orig/common/autoconf/jdk-options.m4 openjdk/common/autoconf/jdk-options.m4
---- openjdk.orig/common/autoconf/jdk-options.m4	2015-10-03 10:43:39.906945244 -0700
-+++ openjdk/common/autoconf/jdk-options.m4	2015-10-03 10:44:54.566947469 -0700
+--- openjdk.orig/common/autoconf/jdk-options.m4	2016-02-02 13:31:48.657932240 -0800
++++ openjdk/common/autoconf/jdk-options.m4	2016-02-02 13:36:24.860924385 -0800
 @@ -151,7 +151,7 @@
    AC_SUBST(JVM_VARIANT_ZEROSHARK)
    AC_SUBST(JVM_VARIANT_CORE)
@@ -23,9 +23,9 @@ diff -Naurw openjdk.orig/common/autoconf/jdk-options.m4 openjdk/common/autoconf/
      INCLUDE_SA=false
    fi
 diff -Naurw openjdk.orig/hotspot/make/linux/makefiles/defs.make openjdk/hotspot/make/linux/makefiles/defs.make
---- openjdk.orig/hotspot/make/linux/makefiles/defs.make	2015-10-03 10:43:38.693611875 -0700
-+++ openjdk/hotspot/make/linux/makefiles/defs.make	2015-10-03 10:46:50.536950925 -0700
-@@ -301,6 +301,9 @@
+--- openjdk.orig/hotspot/make/linux/makefiles/defs.make	2016-02-02 13:31:53.410932105 -0800
++++ openjdk/hotspot/make/linux/makefiles/defs.make	2016-02-02 13:36:24.861924385 -0800
+@@ -309,6 +309,9 @@
  
  # Serviceability Binaries
  # No SA Support for PPC, IA64, ARM or zero
@@ -35,9 +35,9 @@ diff -Naurw openjdk.orig/hotspot/make/linux/makefiles/defs.make openjdk/hotspot/
  ADD_SA_BINARIES/x86   = $(EXPORT_JRE_LIB_ARCH_DIR)/libsaproc.$(LIBRARY_SUFFIX) \
                          $(EXPORT_LIB_DIR)/sa-jdi.jar
  ADD_SA_BINARIES/sparc = $(EXPORT_JRE_LIB_ARCH_DIR)/libsaproc.$(LIBRARY_SUFFIX) \
-@@ -316,6 +319,11 @@
-     ADD_SA_BINARIES/sparc += $(EXPORT_JRE_LIB_ARCH_DIR)/libsaproc.debuginfo
+@@ -326,6 +329,11 @@
    endif
+ endif
  endif
 +else
 +ADD_SA_BINARIES/x86     =
@@ -48,8 +48,8 @@ diff -Naurw openjdk.orig/hotspot/make/linux/makefiles/defs.make openjdk/hotspot/
  ADD_SA_BINARIES/ia64  =
  ADD_SA_BINARIES/arm   =
 diff -Naurw openjdk.orig/hotspot/make/linux/makefiles/sa.make openjdk/hotspot/make/linux/makefiles/sa.make
---- openjdk.orig/hotspot/make/linux/makefiles/sa.make	2015-10-03 10:43:38.700278542 -0700
-+++ openjdk/hotspot/make/linux/makefiles/sa.make	2015-10-03 10:49:35.826955850 -0700
+--- openjdk.orig/hotspot/make/linux/makefiles/sa.make	2016-02-02 13:31:53.414932105 -0800
++++ openjdk/hotspot/make/linux/makefiles/sa.make	2016-02-02 13:36:24.861924385 -0800
 @@ -59,9 +59,11 @@
  
  # if $(AGENT_DIR) does not exist, we don't build SA
@@ -64,8 +64,8 @@ diff -Naurw openjdk.orig/hotspot/make/linux/makefiles/sa.make openjdk/hotspot/ma
  	   $(MAKE) -f sa.make $(GENERATED)/sa-jdi.jar; \
  	fi
 diff -Naurw openjdk.orig/hotspot/make/linux/makefiles/saproc.make openjdk/hotspot/make/linux/makefiles/saproc.make
---- openjdk.orig/hotspot/make/linux/makefiles/saproc.make	2015-10-03 10:43:38.700278542 -0700
-+++ openjdk/hotspot/make/linux/makefiles/saproc.make	2015-10-03 10:50:30.626957483 -0700
+--- openjdk.orig/hotspot/make/linux/makefiles/saproc.make	2016-02-02 13:31:53.745932095 -0800
++++ openjdk/hotspot/make/linux/makefiles/saproc.make	2016-02-02 13:36:24.861924385 -0800
 @@ -61,12 +61,15 @@
  
  # if $(AGENT_DIR) does not exist, we don't build SA
