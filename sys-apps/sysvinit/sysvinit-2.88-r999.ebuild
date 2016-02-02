@@ -12,7 +12,7 @@ SRC_URI="mirror://nongnu/${PN}/${P}dsf.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="alpha amd64 arm arm64 hppa ia64 m68k ~mips ppc ppc64 s390 sh sparc x86"
+KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 IUSE="selinux ibm static kernel_FreeBSD"
 
 CDEPEND="
@@ -52,7 +52,7 @@ src_prepare() {
 
 	# Mung inittab for specific architectures
 	cd "${WORKDIR}"
-	cp "${FILESDIR}"/inittab-2.87 inittab || die "cp inittab"
+	cp "${FILESDIR}"/inittab-2.88 inittab || die "cp inittab"
 	local insert=()
 	use ppc && insert=( '#psc0:12345:respawn:/sbin/agetty 115200 ttyPSC0 linux' )
 	use arm && insert=( '#f0:12345:respawn:/sbin/agetty 9600 ttyFB0 vt100' )
@@ -103,8 +103,6 @@ src_install() {
 
 	# dead symlink
 	rm -f "${D}"/usr/bin/lastb
-
-	doinitd "${FILESDIR}"/{reboot,shutdown}.sh
 }
 
 pkg_postinst() {
