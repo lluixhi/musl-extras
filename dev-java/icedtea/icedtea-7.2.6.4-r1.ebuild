@@ -231,8 +231,8 @@ src_configure() {
 	DISTRIBUTION_PATCHES=""
 
 	# Gentoo Patches
-	DISTRIBUTION_PATCHES+="patches/${SLOT}-cacao-pr-157.patch"
-	DISTRIBUTION_PATCHES+="patches/icedtea-bug-2781.patch"
+	DISTRIBUTION_PATCHES+="patches/${SLOT}-cacao-pr-157.patch "
+	DISTRIBUTION_PATCHES+="patches/icedtea-bug-2781.patch "
 
 	# MUSL Patches
 	DISTRIBUTION_PATCHES+="patches/${PN}-hotspot-musl.patch "
