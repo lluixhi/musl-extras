@@ -62,7 +62,7 @@ RESTRICT="test"
 
 IUSE="+alsa cacao cjk +cups debug doc examples +gtk headless-awt infinality
 	jamvm javascript +jbootstrap kerberos nsplugin nss pax_kernel
-	pulseaudio sctp selinux smartcard source +sunec test +webstart zero"
+	pulseaudio sctp selinux smartcard source +sunec systemtap test +webstart zero"
 
 REQUIRED_USE="gtk? ( !headless-awt )"
 
@@ -91,6 +91,7 @@ X_DEPEND="
 
 COMMON_DEP="
 	>=dev-libs/glib-2.26:2
+	systemtap? ( >=dev-util/systemtap-1 )
 	media-libs/fontconfig
 	>=media-libs/freetype-2.5.3:2=[infinality?]
 	>=media-libs/lcms-2.5
