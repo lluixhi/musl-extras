@@ -201,10 +201,12 @@ java_prepare() {
 	# SystemTap is broken for MUSL, don't try to install stp files.
 	epatch "${FILESDIR}/${PN}-2.6.1-no-systemtap.patch"
 
-	# http://icedtea.classpath.org/bugzilla/show_bug.cgi?id=2612
-	# http://icedtea.classpath.org/bugzilla/show_bug.cgi?id=2781
-	ln -s "${FILESDIR}/${SLOT}-cacao-pr-157.patch" patches || die
-	ln -s "${FILESDIR}/icedtea-bug-2781.patch" patches || die
+	if test "x${use_cacao}" = "xyes"; then
+		# http://icedtea.classpath.org/bugzilla/show_bug.cgi?id=2612
+		# http://icedtea.classpath.org/bugzilla/show_bug.cgi?id=2781
+		ln -s "${FILESDIR}/${SLOT}-cacao-pr-157.patch" patches || die
+		ln -s "${FILESDIR}/icedtea-bug-2781.patch" patches || die
+	fi
 
 	# Link MUSL patches into icedtea build tree
 	ln -s "${FILESDIR}/${PN}-hotspot-musl.patch" patches || die
@@ -230,9 +232,10 @@ src_configure() {
 	# Export patches for configure
 	DISTRIBUTION_PATCHES=""
 
-	# Gentoo Patches
-	DISTRIBUTION_PATCHES+="patches/${SLOT}-cacao-pr-157.patch "
-	DISTRIBUTION_PATCHES+="patches/icedtea-bug-2781.patch "
+	if test "x${use_cacao}" = "xyes"; then
+		DISTRIBUTION_PATCHES+="patches/${SLOT}-cacao-pr-157.patch "
+		DISTRIBUTION_PATCHES+="patches/icedtea-bug-2781.patch "
+	fi
 
 	# MUSL Patches
 	DISTRIBUTION_PATCHES+="patches/${PN}-hotspot-musl.patch "
