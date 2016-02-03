@@ -1,0 +1,54 @@
+diff -Naurw elfutils-0.163/configure.ac elfutils-0.163.new/configure.ac
+--- elfutils-0.163/configure.ac	2016-02-02 20:40:05.535953516 -0800
++++ elfutils-0.163.new/configure.ac	2016-02-02 20:38:56.244955486 -0800
+@@ -346,6 +346,16 @@
+ 	[libc_has_argp="false"]
+ )
+ 
++dnl Check if we have fts available from our libc
++AC_LINK_IFELSE(
++        [AC_LANG_PROGRAM(
++                [#include <fts.h>],
++                [fts_open("", 0, 0); return 0;]
++                )],
++        [libc_has_fts="true"],
++        [libc_has_fts="false"]
++)
++
+ dnl If our libc doesn't provide argp, then test for libargp
+ if test "$libc_has_argp" = "false" ; then
+ 	AC_MSG_WARN("libc does not have argp")
+@@ -361,6 +371,21 @@
+ fi
+ AC_SUBST([argp_LDADD])
+ 
++dnl If our libc doesn't provide fts, then test for libfts
++if test "$libc_has_fts" = "false" ; then
++	AC_MSG_WARN("libc does not have fts")
++	AC_CHECK_LIB([fts], [fts_open], [have_fts="true"], [have_fts="false"])
++
++	if test "$have_fts" = "false"; then
++		AC_MSG_ERROR("no libfts found")
++	else
++		fts_LDADD="-lfts"
++	fi
++else
++	fts_LDADD=""
++fi
++AC_SUBST([fts_LDADD])
++
+ dnl The directories with content.
+ 
+ dnl Documentation.
+diff -Naurw elfutils-0.163/libdw/Makefile.am elfutils-0.163.new/libdw/Makefile.am
+--- elfutils-0.163/libdw/Makefile.am	2015-06-10 12:44:33.000000000 -0700
++++ elfutils-0.163.new/libdw/Makefile.am	2016-02-02 20:39:24.036954696 -0800
+@@ -112,7 +112,7 @@
+ 		-Wl,--enable-new-dtags,-rpath,$(pkglibdir) \
+ 		-Wl,--version-script,$<,--no-undefined \
+ 		-Wl,--whole-archive $(filter-out $<,$^) -Wl,--no-whole-archive\
+-		-ldl $(argp_LDADD) $(zip_LIBS)
++		-ldl $(argp_LDADD) $(fts_LDADD) $(zip_LIBS)
+ 	@$(textrel_check)
+ 	ln -fs $@ $@.$(VERSION)
+ 

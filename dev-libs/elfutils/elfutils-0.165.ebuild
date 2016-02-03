@@ -4,7 +4,7 @@
 
 EAPI="5"
 
-inherit eutils flag-o-matic multilib-minimal
+inherit autotools eutils flag-o-matic multilib-minimal
 
 DESCRIPTION="Libraries/utilities to handle ELF objects (drop in replacement for libelf)"
 HOMEPAGE="https://fedorahosted.org/elfutils/"
@@ -30,7 +30,10 @@ DEPEND="${RDEPEND}
 	nls? ( sys-devel/gettext )
 	>=sys-devel/flex-2.5.4a
 	sys-devel/m4
-	sys-libs/argp-standalone"
+	elibc_musl? (
+		sys-libs/argp-standalone
+		sys-libs/fts-standalone
+	)"
 
 src_prepare() {
 	epatch "${FILESDIR}"/${PN}-0.118-PaX-support.patch
@@ -43,7 +46,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/005-memcpy-def.patch
 	epatch "${FILESDIR}"/006-skip-src.patch
 	epatch "${FILESDIR}"/008-musl-compat-r1.patch
-	epatch "${FILESDIR}"/009-no-fts.patch
+	epatch "${FILESDIR}"/009-fts-standalone-r1.patch
+
+	eautoreconf
 
 	use static-libs || sed -i -e '/^lib_LIBRARIES/s:=.*:=:' -e '/^%.os/s:%.o$::' lib{asm,dw,elf}/Makefile.in
 	sed -i 's:-Werror::' */Makefile.in
