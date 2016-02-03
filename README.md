@@ -12,6 +12,7 @@ Features currently not found in other distros that support MUSL include:
 * Latest ElfUtils
 * Icecat
 * Icedtea 8
+* SystemTap
 
 ## Note on Icedtea
 Icedtea requires a JDK to bootstrap it, and GCJ is broken.
