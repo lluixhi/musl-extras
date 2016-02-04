@@ -1,6 +1,18 @@
+diff -Naurw systemtap-2.9.orig/Makefile.am systemtap-2.9/Makefile.am
+--- systemtap-2.9.orig/Makefile.am	2016-02-03 17:29:35.156854189 -0800
++++ systemtap-2.9/Makefile.am	2016-02-03 17:49:50.808819617 -0800
+@@ -49,7 +49,7 @@
+ 	setupdwfl.cxx remote.cxx privilege.cxx cmdline.cxx \
+ 	tapset-dynprobe.cxx tapset-method.cxx translator-output.cxx \
+         stapregex.cxx stapregex-tree.cxx stapregex-parse.cxx \
+-	stapregex-dfa.cxx stringtable.cxx
++	stapregex-dfa.cxx stringtable.cxx obstack_printf.c
+ noinst_HEADERS = sdt_types.h
+ stap_LDADD = @stap_LIBS@ @sqlite3_LIBS@ @LIBINTL@ -lpthread
+ stap_DEPENDENCIES =
 diff -Naurw systemtap-2.9.orig/buildrun.cxx systemtap-2.9/buildrun.cxx
---- systemtap-2.9.orig/buildrun.cxx	2015-10-08 18:43:34.000000000 -0700
-+++ systemtap-2.9/buildrun.cxx	2016-02-02 17:32:44.064548736 -0800
+--- systemtap-2.9.orig/buildrun.cxx	2016-02-03 17:29:35.158854189 -0800
++++ systemtap-2.9/buildrun.cxx	2016-02-03 17:29:45.349853899 -0800
 @@ -788,13 +788,14 @@
    if (s.need_uprobes && !kernel_built_uprobes(s))
      {
@@ -18,26 +30,62 @@ diff -Naurw systemtap-2.9.orig/buildrun.cxx systemtap-2.9/buildrun.cxx
        staprun_cmd.push_back(opt_u);
      }
 diff -Naurw systemtap-2.9.orig/configure.ac systemtap-2.9/configure.ac
---- systemtap-2.9.orig/configure.ac	2015-10-08 18:43:34.000000000 -0700
-+++ systemtap-2.9/configure.ac	2016-02-02 18:58:13.467931648 -0800
-@@ -443,6 +443,14 @@
+--- systemtap-2.9.orig/configure.ac	2016-02-03 17:29:35.161854189 -0800
++++ systemtap-2.9/configure.ac	2016-02-03 17:45:48.771826500 -0800
+@@ -443,6 +443,50 @@
    fi
  fi
  
-+AC_CHECK_FUNC(obstack_printf,
-+              [AC_DEFINE(HAVE_OBSTACK_PRINTF)],
-+              [AC_CHECK_LIB(obstack, obstack_printf,[stap_LIBS="$stap_LIBS -lobstack"], [],[])])
++dnl Check if we have argp available from our libc
++AC_LINK_IFELSE(
++	[AC_LANG_PROGRAM(
++		[#include <argp.h>],
++		[int argc=1; char *argv[]={"test"}, argp_parse(0,argc,argv,0,0,0); return 0;]
++		)],
++	[libc_has_argp="true"],
++	[libc_has_argp="false"]
++)
 +
-+AC_CHECK_FUNC(argp_parse,
-+              [],
-+              [stap_LIBS="$stap_LIBS -largp"])
++dnl If our libc doesn't provide argp, then test for libargp
++if test "$libc_has_argp" = "false" ; then
++	AC_MSG_WARN("libc does not have argp")
++	AC_CHECK_LIB([argp], [argp_parse], [have_obstack="true"], [have_obstack="false"])
++
++	if test "$have_argp" = "false"; then
++		AC_MSG_ERROR("no libargp found")
++	else
++                stap_LIBS="$stap_LIBS -largp"
++	fi
++fi
++
++dnl Check if we have obstack available from our libc
++AC_LINK_IFELSE(
++	[AC_LANG_PROGRAM(
++		[#include <obstack.h>],
++		[_obstack_begin(0, 0, 0, 0, 0); return 0;]
++		)],
++	[libc_has_obstack="true", AC_DEFINE(HAVE_OBSTACK, 1)],
++	[libc_has_obstack="false"]
++)
++
++dnl If our libc doesn't provide obstack, then test for libobstack
++if test "$libc_has_obstack" = "false" ; then
++	AC_MSG_WARN("libc does not have obstack")
++	AC_CHECK_LIB([obstack], [_obstack_begin], [have_obstack="true"], [have_obstack="false"])
++
++	if test "$have_obstack" = "false"; then
++		AC_MSG_ERROR("no libobstack found")
++	else
++                stap_LIBS="$stap_LIBS -lobstack"
++	fi
++fi
 +
  AC_SUBST(stap_LIBS)
  AC_MSG_NOTICE([stap will link $stap_LIBS])
  
 diff -Naurw systemtap-2.9.orig/csclient.cxx systemtap-2.9/csclient.cxx
---- systemtap-2.9.orig/csclient.cxx	2015-10-08 18:43:34.000000000 -0700
-+++ systemtap-2.9/csclient.cxx	2016-02-02 18:19:54.603997025 -0800
+--- systemtap-2.9.orig/csclient.cxx	2016-02-03 17:29:35.161854189 -0800
++++ systemtap-2.9/csclient.cxx	2016-02-03 17:29:45.353853899 -0800
 @@ -75,6 +75,10 @@
  
  #define MOK_PUBLIC_CERT_NAME "signing_key.x509"
@@ -59,8 +107,8 @@ diff -Naurw systemtap-2.9.orig/csclient.cxx systemtap-2.9/csclient.cxx
      {
        // It can not be canonicalized. Use the name relative to
 diff -Naurw systemtap-2.9.orig/loc2c-test.c systemtap-2.9/loc2c-test.c
---- systemtap-2.9.orig/loc2c-test.c	2015-10-08 18:43:34.000000000 -0700
-+++ systemtap-2.9/loc2c-test.c	2016-02-02 18:49:04.949947247 -0800
+--- systemtap-2.9.orig/loc2c-test.c	2016-02-03 17:29:35.222854187 -0800
++++ systemtap-2.9/loc2c-test.c	2016-02-03 17:29:45.354853899 -0800
 @@ -11,7 +11,8 @@
  #include <stdio_ext.h>
  #include <stdlib.h>
@@ -81,8 +129,8 @@ diff -Naurw systemtap-2.9.orig/loc2c-test.c systemtap-2.9/loc2c-test.c
  	    }
  	}
 diff -Naurw systemtap-2.9.orig/loc2c.c systemtap-2.9/loc2c.c
---- systemtap-2.9.orig/loc2c.c	2015-10-08 18:43:34.000000000 -0700
-+++ systemtap-2.9/loc2c.c	2016-02-02 17:35:44.671543600 -0800
+--- systemtap-2.9.orig/loc2c.c	2016-02-03 17:29:35.222854187 -0800
++++ systemtap-2.9/loc2c.c	2016-02-03 17:51:01.664817602 -0800
 @@ -12,7 +12,7 @@
  #include <obstack.h>
  #include <stdio.h>
@@ -93,22 +141,45 @@ diff -Naurw systemtap-2.9.orig/loc2c.c systemtap-2.9/loc2c.c
  #include <elfutils/libdw.h>
  #include <elfutils/version.h>
 diff -Naurw systemtap-2.9.orig/loc2c.h systemtap-2.9/loc2c.h
---- systemtap-2.9.orig/loc2c.h	2015-10-08 18:43:34.000000000 -0700
-+++ systemtap-2.9/loc2c.h	2016-02-02 18:53:53.859939031 -0800
+--- systemtap-2.9.orig/loc2c.h	2016-02-03 17:29:35.222854187 -0800
++++ systemtap-2.9/loc2c.h	2016-02-03 17:51:24.996816938 -0800
 @@ -3,6 +3,10 @@
  struct obstack;			/* Use <obstack.h> */
  struct location;		/* Opaque */
  
-+#ifndef HAVE_OBSTACK_PRINTF
-+int obstack_printf(struct obstack *obst, const char *fmt, ...);
++#ifndef HAVE_OBSTACK
++#include "obstack_printf.c"
 +#endif
 +
  /* G++ 3.3 doesn't seem to like the __attribute__ constructs below. */
  #if (__GNUG__ == 3) && (__GNUC_MINOR__ == 3)
  #define __attribute__(x) /* nothing */
+diff -Naurw systemtap-2.9.orig/obstack_printf.c systemtap-2.9/obstack_printf.c
+--- systemtap-2.9.orig/obstack_printf.c	1969-12-31 16:00:00.000000000 -0800
++++ systemtap-2.9/obstack_printf.c	2016-02-03 17:51:28.907816827 -0800
+@@ -0,0 +1,19 @@
++#include <stdarg.h>
++#include <stdio.h>
++#include <obstack.h>
++
++#ifndef HAVE_OBSTACK
++static int obstack_printf(struct obstack *obst, const char *fmt, ...)
++{
++	char buf[1024];
++	va_list ap;
++	int len;
++
++	va_start(ap, fmt);
++	len = vsnprintf(buf, sizeof(buf), fmt, ap);
++	obstack_grow(obst, buf, len);
++	va_end(ap);
++
++	return len;
++}
++#endif
 diff -Naurw systemtap-2.9.orig/remote.cxx systemtap-2.9/remote.cxx
---- systemtap-2.9.orig/remote.cxx	2015-10-08 18:43:34.000000000 -0700
-+++ systemtap-2.9/remote.cxx	2016-02-02 17:33:11.175547965 -0800
+--- systemtap-2.9.orig/remote.cxx	2016-02-03 17:29:35.239854186 -0800
++++ systemtap-2.9/remote.cxx	2016-02-03 17:29:45.359853899 -0800
 @@ -459,7 +459,8 @@
  
          if (!s->uprobes_path.empty())
@@ -120,8 +191,8 @@ diff -Naurw systemtap-2.9.orig/remote.cxx systemtap-2.9/remote.cxx
                return rc;
  
 diff -Naurw systemtap-2.9.orig/sdt_types.h systemtap-2.9/sdt_types.h
---- systemtap-2.9.orig/sdt_types.h	2015-10-08 18:43:34.000000000 -0700
-+++ systemtap-2.9/sdt_types.h	2016-02-02 17:03:21.503598862 -0800
+--- systemtap-2.9.orig/sdt_types.h	2016-02-03 17:29:35.301854185 -0800
++++ systemtap-2.9/sdt_types.h	2016-02-03 17:29:45.360853899 -0800
 @@ -10,6 +10,13 @@
  #define UPROBE2_TYPE 0x32425055 /* "UPB2" */
  #define UPROBE3_TYPE 0x33425055 /* "UPB3" */
@@ -137,8 +208,8 @@ diff -Naurw systemtap-2.9.orig/sdt_types.h systemtap-2.9/sdt_types.h
    {
      uprobe1_type = UPROBE1_TYPE,
 diff -Naurw systemtap-2.9.orig/session.cxx systemtap-2.9/session.cxx
---- systemtap-2.9.orig/session.cxx	2015-10-08 18:43:34.000000000 -0700
-+++ systemtap-2.9/session.cxx	2016-02-02 16:38:28.030641335 -0800
+--- systemtap-2.9.orig/session.cxx	2016-02-03 17:29:35.301854185 -0800
++++ systemtap-2.9/session.cxx	2016-02-03 17:29:45.362853899 -0800
 @@ -1329,7 +1329,7 @@
  	      cerr << "ERROR: multiple --sysroot options not supported" << endl;
  	      return 1;
@@ -149,8 +220,8 @@ diff -Naurw systemtap-2.9.orig/session.cxx systemtap-2.9/session.cxx
  		  cerr << _F("ERROR: %s is an invalid directory for --sysroot", optarg) << endl;
  		  return 1;
 diff -Naurw systemtap-2.9.orig/staprun/staprun.h systemtap-2.9/staprun/staprun.h
---- systemtap-2.9.orig/staprun/staprun.h	2015-10-08 18:43:34.000000000 -0700
-+++ systemtap-2.9/staprun/staprun.h	2016-02-02 20:43:17.728948050 -0800
+--- systemtap-2.9.orig/staprun/staprun.h	2016-02-03 17:29:35.312854184 -0800
++++ systemtap-2.9/staprun/staprun.h	2016-02-03 17:29:45.363853898 -0800
 @@ -48,6 +48,10 @@
  #endif
  
