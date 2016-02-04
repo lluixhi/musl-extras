@@ -1,4 +1,4 @@
-# Copyright 1999-2012 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -9,7 +9,6 @@ inherit autotools
 DESCRIPTION="A standalone library to implement fts."
 HOMEPAGE="https://github.com/pullmoll/musl-fts"
 SRC_URI="https://github.com/pullmoll/musl-fts/archive/v${PV}.tar.gz -> ${P}.tar.gz"
-S=${WORKDIR}/musl-fts-${PV}
 KEYWORDS="~amd64 ~x86"
 
 LICENSE="BSD"
