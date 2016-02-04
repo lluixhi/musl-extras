@@ -33,7 +33,8 @@ DEPEND="${RDEPEND}
 	sys-devel/m4
 	elibc_musl? (
 		sys-libs/argp-standalone
-		sys-libs/fts-standalone
+		sys-libs/musl-fts
+		sys-libs/musl-obstack
 	)"
 
 src_prepare() {
@@ -41,13 +42,10 @@ src_prepare() {
 	epatch "${DISTDIR}"/${P}-portability.patch
 
 	# Add MUSL patches
-	epatch "${FILESDIR}"/002-argp-standalone.patch
-	epatch "${FILESDIR}"/003-libint-stub.patch
-	epatch "${FILESDIR}"/004-maybe-uninitialized.patch
-	epatch "${FILESDIR}"/005-memcpy-def.patch
-	epatch "${FILESDIR}"/006-skip-src.patch
-	epatch "${FILESDIR}"/008-musl-compat.patch
-	epatch "${FILESDIR}"/009-fts-standalone.patch
+	epatch "${FILESDIR}"/${P}-musl-obstack-fts.patch
+	epatch "${FILESDIR}"/${P}-musl-utils.patch
+	epatch "${FILESDIR}"/${P}-musl-fcntl_h.patch
+	epatch "${FILESDIR}"/${PN}-0.165-musl-libs.patch
 
 	eautoreconf
 

@@ -1,0 +1,11 @@
+diff -Naurw elfutils-0.163.orig/libelf/libelf.h elfutils-0.163/libelf/libelf.h
+--- elfutils-0.163.orig/libelf/libelf.h	2016-02-03 17:17:09.115875405 -0800
++++ elfutils-0.163/libelf/libelf.h	2016-02-03 17:16:42.977876149 -0800
+@@ -29,6 +29,7 @@
+ #ifndef _LIBELF_H
+ #define _LIBELF_H 1
+ 
++#include <fcntl.h>
+ #include <sys/types.h>
+ 
+ /* Get the ELF types.  */

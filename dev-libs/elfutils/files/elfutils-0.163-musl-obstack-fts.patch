@@ -1,0 +1,149 @@
+diff -Naurw elfutils-0.163.orig/configure.ac elfutils-0.163/configure.ac
+--- elfutils-0.163.orig/configure.ac	2016-02-03 16:42:27.686934599 -0800
++++ elfutils-0.163/configure.ac	2016-02-03 16:42:34.071934418 -0800
+@@ -303,6 +303,62 @@
+ fi
+ AC_SUBST([argp_LDADD])
+ 
++dnl Check if we have fts available from our libc
++AC_LINK_IFELSE(
++	[AC_LANG_PROGRAM(
++		[#if !defined(__x86_64__)
++		#undef  _FILE_OFFSET_BITS
++		#define _FILE_OFFSET_BITS 32
++		#endif
++		#include <fts.h>],
++		[FTS* fts = 0; return fts_close(fts); return 0;]
++		)],
++	[libc_has_fts="true"],
++	[libc_has_fts="false"]
++)
++
++dnl If our libc doesn't provide fts, then test for libfts
++if test "$libc_has_fts" = "false" ; then
++	AC_MSG_WARN("libc does not have fts")
++	AC_CHECK_LIB([fts], [fts_close], [have_fts="true"], [have_fts="false"])
++
++	if test "$have_fts" = "false"; then
++		AC_MSG_ERROR("no libfts found")
++	else
++		fts_LDADD="-lfts"
++	fi
++else
++	fts_LDADD=""
++fi
++AC_SUBST([fts_LDADD])
++
++dnl Check if we have obstack available from our libc
++AC_LINK_IFELSE(
++	[AC_LANG_PROGRAM(
++		[#include <obstack.h>],
++		[_obstack_begin(0, 0, 0, NULL, NULL); return 0;]
++		)],
++	[libc_has_obstack="true"],
++	[libc_has_obstack="false"]
++)
++
++dnl If our libc doesn't provide obstack, then test for libobstack
++if test "$libc_has_obstack" = "false" ; then
++	AC_MSG_WARN("libc does not have obstack")
++	AC_CHECK_LIB([obstack], [_obstack_begin], [have_obstack="true"], [have_obstack="false"])
++
++	if test "$have_obstack" = "false"; then
++		AC_MSG_ERROR("no libobstack found")
++	else
++		obstack_LDADD="-lobstack"
++	fi
++else
++	obstack_LDADD=""
++fi
++AC_SUBST([obstack_LDADD])
++
++dnl The directories with content.
++
+ dnl The directories with content.
+ 
+ dnl Documentation.
+diff -Naurw elfutils-0.163.orig/libdw/Makefile.am elfutils-0.163/libdw/Makefile.am
+--- elfutils-0.163.orig/libdw/Makefile.am	2016-02-03 16:42:27.600934602 -0800
++++ elfutils-0.163/libdw/Makefile.am	2016-02-03 16:43:34.839932689 -0800
+@@ -112,7 +112,7 @@
+ 		-Wl,--enable-new-dtags,-rpath,$(pkglibdir) \
+ 		-Wl,--version-script,$<,--no-undefined \
+ 		-Wl,--whole-archive $(filter-out $<,$^) -Wl,--no-whole-archive\
+-		-ldl $(argp_LDADD) $(zip_LIBS)
++		-ldl $(argp_LDADD) $(fts_LDADD) $(obstack_LDADD) $(zip_LIBS)
+ 	@$(textrel_check)
+ 	ln -fs $@ $@.$(VERSION)
+ 
+diff -Naurw elfutils-0.163.orig/src/Makefile.am elfutils-0.163/src/Makefile.am
+--- elfutils-0.163.orig/src/Makefile.am	2016-02-03 16:42:27.530934604 -0800
++++ elfutils-0.163/src/Makefile.am	2016-02-03 16:44:23.901931294 -0800
+@@ -103,27 +103,27 @@
+ ar_no_Wstack_usage = yes
+ unstrip_no_Wstack_usage = yes
+ 
+-readelf_LDADD = $(libdw) $(libebl) $(libelf) $(libeu) $(argp_LDADD) -ldl
+-nm_LDADD = $(libdw) $(libebl) $(libelf) $(libeu) $(argp_LDADD) -ldl \
++readelf_LDADD = $(libdw) $(libebl) $(libelf) $(libeu) $(argp_LDADD) $(fts_LDADD) $(obstack_LDADD) -ldl
++nm_LDADD = $(libdw) $(libebl) $(libelf) $(libeu) $(argp_LDADD) $(fts_LDADD) $(obstack_LDADD) -ldl \
+ 	   $(demanglelib)
+-size_LDADD = $(libelf) $(libeu) $(argp_LDADD)
+-strip_LDADD = $(libebl) $(libelf) $(libeu) $(argp_LDADD) -ldl
+-ld_LDADD = $(libebl) $(libelf) $(libeu) $(argp_LDADD) -ldl
++size_LDADD = $(libelf) $(libeu) $(argp_LDADD) $(fts_LDADD) $(obstack_LDADD)
++strip_LDADD = $(libebl) $(libelf) $(libeu) $(argp_LDADD) $(fts_LDADD) $(obstack_LDADD) -ldl
++ld_LDADD = $(libebl) $(libelf) $(libeu) $(argp_LDADD) $(fts_LDADD) $(obstack_LDADD) -ldl
+ if NATIVE_LD
+ # -ldl is always needed for libebl.
+ ld_LDADD += libld_elf.a
+ endif
+ ld_LDFLAGS = -rdynamic
+-elflint_LDADD  = $(libebl) $(libelf) $(libeu) $(argp_LDADD) -ldl
+-findtextrel_LDADD = $(libdw) $(libelf) $(argp_LDADD)
+-addr2line_LDADD = $(libdw) $(libelf) $(argp_LDADD) $(demanglelib)
+-elfcmp_LDADD = $(libebl) $(libelf) $(argp_LDADD) -ldl
+-objdump_LDADD  = $(libasm) $(libebl) $(libelf) $(libeu) $(argp_LDADD) -ldl
+-ranlib_LDADD = libar.a $(libelf) $(libeu) $(argp_LDADD)
+-strings_LDADD = $(libelf) $(libeu) $(argp_LDADD)
+-ar_LDADD = libar.a $(libelf) $(libeu) $(argp_LDADD)
+-unstrip_LDADD = $(libebl) $(libelf) $(libdw) $(libeu) $(argp_LDADD) -ldl
+-stack_LDADD = $(libebl) $(libelf) $(libdw) $(libeu) $(argp_LDADD) -ldl $(demanglelib)
++elflint_LDADD  = $(libebl) $(libelf) $(libeu) $(argp_LDADD) $(fts_LDADD) $(obstack_LDADD) -ldl
++findtextrel_LDADD = $(libdw) $(libelf) $(argp_LDADD) $(fts_LDADD) $(obstack_LDADD)
++addr2line_LDADD = $(libdw) $(libelf) $(argp_LDADD) $(fts_LDADD) $(obstack_LDADD) $(demanglelib)
++elfcmp_LDADD = $(libebl) $(libelf) $(argp_LDADD) $(fts_LDADD) $(obstack_LDADD) -ldl
++objdump_LDADD  = $(libasm) $(libebl) $(libelf) $(libeu) $(argp_LDADD) $(fts_LDADD) $(obstack_LDADD) -ldl
++ranlib_LDADD = libar.a $(libelf) $(libeu) $(argp_LDADD) $(fts_LDADD) $(obstack_LDADD)
++strings_LDADD = $(libelf) $(libeu) $(argp_LDADD) $(fts_LDADD) $(obstack_LDADD)
++ar_LDADD = libar.a $(libelf) $(libeu) $(argp_LDADD) $(fts_LDADD) $(obstack_LDADD)
++unstrip_LDADD = $(libebl) $(libelf) $(libdw) $(libeu) $(argp_LDADD) $(fts_LDADD) $(obstack_LDADD) -ldl
++stack_LDADD = $(libebl) $(libelf) $(libdw) $(libeu) $(argp_LDADD) $(fts_LDADD) $(obstack_LDADD) -ldl $(demanglelib)
+ 
+ ldlex.o: ldscript.c
+ ldlex_no_Werror = yes
+diff -Naurw elfutils-0.163.orig/src/nm.c elfutils-0.163/src/nm.c
+--- elfutils-0.163.orig/src/nm.c	2016-02-03 16:42:27.531934604 -0800
++++ elfutils-0.163/src/nm.c	2016-02-03 16:42:34.073934417 -0800
+@@ -46,6 +46,21 @@
+ #include <system.h>
+ #include "../libebl/libeblP.h"
+ 
++#if !defined(__GLIBC__)
++static int obstack_printf(struct obstack *obst, const char *fmt, ...)
++{
++	char buf[1024];
++	va_list ap;
++	int len;
++
++	va_start(ap, fmt);
++	len = vsnprintf(buf, sizeof(buf), fmt, ap);
++	obstack_grow(obst, buf, len);
++	va_end(ap);
++
++	return len;
++}
++#endif
+ 
+ /* Name and version of program.  */
+ static void print_version (FILE *stream, struct argp_state *state);

@@ -1,5 +1,4 @@
 sys-devel/gcc go gcj
 sys-devel/gdb server
-dev-libs/elfutils utils
 media-libs/mesa nptl d3d9
 x11-base/xorg-server nptl
