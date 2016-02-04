@@ -17,7 +17,7 @@ KEYWORDS="~amd64 ~x86"
 IUSE="static-libs"
 
 DEPEND="!sys-libs/glibc
-		!sys-libs/uclibc"
+	!sys-libs/uclibc"
 
 src_prepare() {
 	default
@@ -27,4 +27,10 @@ src_prepare() {
 src_configure() {
 	econf \
 	$(use_enable static-libs static)
+}
+
+src_install() {
+	default
+	insinto /usr/lib/pkgconfig
+	doins musl-obstack.pc
 }
