@@ -18,7 +18,10 @@ KEYWORDS="~alpha ~amd64 ~arm ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sparc ~x86"
 IUSE="sqlite"
 
 RDEPEND=">=dev-libs/elfutils-0.142
-	elibc_musl? ( sys-libs/argp-standalone )
+	elibc_musl? (
+		sys-libs/argp-standalone
+		sys-libs/musl-obstack
+	)
 	sys-libs/libcap
 	${PYTHON_DEPS}
 	sqlite? ( dev-db/sqlite:3 )"
