@@ -1,0 +1,18 @@
+--- security.c  2015-10-26 05:22:28.000000000 +0100
++++ security.c  2016-02-08 20:16:11.997771749 +0100
+@@ -72,6 +72,7 @@
+        int base_syscalls[] = {
+                /* We write the most w/scanelf.  */
+                SCMP_SYS(write),
++               SCMP_SYS(writev),
+ 
+                /* Then the stat family of functions.  */
+                SCMP_SYS(newfstatat),
+@@ -102,6 +103,7 @@
+                /* Then the file reading functions.  */
+                SCMP_SYS(pread64),
+                SCMP_SYS(read),
++               SCMP_SYS(readv),
+ 
+                /* Then the fd manipulation functions.  */
+                SCMP_SYS(fcntl),
