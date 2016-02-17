@@ -1,0 +1,21 @@
+diff -Naur efivar-0.23.orig/src/makeguids.c efivar-0.23/src/makeguids.c
+--- efivar-0.23.orig/src/makeguids.c	2016-02-15 11:38:42.000000000 -0800
++++ efivar-0.23/src/makeguids.c	2016-02-16 17:25:11.694827317 -0800
+@@ -153,13 +153,13 @@
+ #if BYTE_ORDER == BIG_ENDIAN\n\
+ #define cpu_to_be32(n) (n)\n\
+ #define cpu_to_be16(n) (n)\n\
+-#define cpu_to_le32(n) (__bswap_constant_32(n))\n\
+-#define cpu_to_le16(n) (__bswap_constant_16(n))\n\
++#define cpu_to_le32(n) (__bswap_32(n))\n\
++#define cpu_to_le16(n) (__bswap_16(n))\n\
+ #else\n\
+ #define cpu_to_le32(n) (n)\n\
+ #define cpu_to_le16(n) (n)\n\
+-#define cpu_to_be32(n) (__bswap_constant_32(n))\n\
+-#define cpu_to_be16(n) (__bswap_constant_16(n))\n\
++#define cpu_to_be32(n) (__bswap_32(n))\n\
++#define cpu_to_be16(n) (__bswap_16(n))\n\
+ #endif\n\
+ """);
+ 
