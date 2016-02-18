@@ -23,7 +23,7 @@ HOMEPAGE="http://www.musl-libc.org/"
 if [[ ${PV} != "9999" ]] ; then
 	PATCH_VER=""
 	SRC_URI="http://www.musl-libc.org/releases/${P}.tar.gz"
-	KEYWORDS="-* ~amd64 ~arm ~mips ~ppc ~x86"
+	KEYWORDS="-* ~amd64 ~arm ~arm64 ~mips ~ppc ~sh ~x86"
 fi
 
 LICENSE="MIT LGPL-2 GPL-2"
@@ -110,8 +110,10 @@ src_install() {
 		case ${target} in
 			amd64) arch="x86_64";;
 			arm)   arch="armhf";; # We only have hardfloat right now
+			arm64) arch="aarch64";;
 			mips)  arch="mips${endian}";;
 			ppc)   arch="powerpc";;
+			sh)    arch="sh";; # fdpic?
 			x86)   arch="i386";;
 		esac
 		cp "${FILESDIR}"/ldconfig.in "${T}" || die
