@@ -5,6 +5,7 @@
 EAPI=5
 
 XORG_DRI=dri
+XORG_EAUTORECONF=yes
 inherit linux-info xorg-2
 
 DESCRIPTION="X.Org driver for Intel cards"
@@ -39,15 +40,10 @@ RDEPEND="x11-libs/libXext
 	)
 "
 DEPEND="${RDEPEND}
-	x11-misc/util-macros
 	>=x11-proto/dri2proto-2.6
 	x11-proto/dri3proto
 	x11-proto/presentproto
 	x11-proto/resourceproto"
-
-src_prepare() {
-	eautoreconf
-}
 
 src_configure() {
 	XORG_CONFIGURE_OPTIONS=(
