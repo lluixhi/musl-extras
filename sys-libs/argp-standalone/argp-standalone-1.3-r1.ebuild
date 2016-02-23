@@ -4,7 +4,7 @@
 
 EAPI="4"
 
-inherit eutils autotools flag-o-matic
+inherit eutils autotools
 
 DESCRIPTION="Standalone argp library for use with uclibc"
 HOMEPAGE="http://www.lysator.liu.se/~nisse/misc/"
