@@ -10,6 +10,6 @@ KEYWORDS="~amd64 ~arm ~ppc64 ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos 
 
 RDEPEND="|| (
 		ppc64? ( dev-java/icedtea-bin:8 )
+		amd64? ( dev-java/icedtea:8 )
 		dev-java/oracle-jdk-bin:1.8
-		dev-java/icedtea:8
 	)"
