@@ -1,4 +1,4 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -133,6 +133,11 @@ src_install() {
 			rm GUI/kde4/p7zip_compress.desktop || die
 			insinto /usr/share/kde4/services/ServiceMenus
 			doins GUI/kde4/*.desktop
+			dodir /usr/local/share/kservices5/ServiceMenus
+			for item in "${D}"/usr/share/kde4/services/ServiceMenus/*.desktop; do
+				item="$(basename ${item})"
+				dosym "/usr/share/kde4/services/ServiceMenus/${item}" "/usr/local/share/kservices5/ServiceMenus/${item}"
+			done
 		fi
 	fi
 
