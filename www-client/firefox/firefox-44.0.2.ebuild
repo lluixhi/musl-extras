@@ -365,7 +365,7 @@ PROFILE_EOF
 
 	# Required in order to use plugins and even run firefox on hardened, with jit useflag.
 	if use jit; then
-		pax-mark m "${ED}"${MOZILLA_FIVE_HOME}/{firefox,firefox-bin,plugin-container}
+		pax-mark pm "${ED}"${MOZILLA_FIVE_HOME}/{firefox,firefox-bin,plugin-container}
 	else
 		pax-mark m "${ED}"${MOZILLA_FIVE_HOME}/plugin-container
 	fi
