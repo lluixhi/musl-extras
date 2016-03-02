@@ -134,8 +134,6 @@ src_prepare() {
 	EPATCH_FORCE="yes" \
 	epatch "${WORKDIR}/firefox"
 
-	epatch "${FILESDIR}"/44.0/non-executable-jit.patch
-
 	# Add MUSL patches
 	epatch "${FILESDIR}"/44.0/fix-xpcom.patch
 	epatch "${FILESDIR}"/44.0/patch-xpcom_components_Module.h
