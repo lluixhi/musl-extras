@@ -132,9 +132,11 @@ src_prepare() {
 	# Apply our patches
 	EPATCH_SUFFIX="patch" \
 	EPATCH_FORCE="yes" \
+	EPATCH_EXCLUDE="7005_dont-hardcode-libc-soname-in-python.patch" \
 	epatch "${WORKDIR}/firefox"
 
 	# Add MUSL patches
+	epatch "${FILESDIR}"/hardcode-musl-soname-in-python.patch
 	epatch "${FILESDIR}"/44.0/fix-xpcom.patch
 	epatch "${FILESDIR}"/44.0/patch-xpcom_components_Module.h
 

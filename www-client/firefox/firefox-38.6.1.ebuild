@@ -139,11 +139,15 @@ src_prepare() {
 	# Apply our patches
 	EPATCH_SUFFIX="patch" \
 	EPATCH_FORCE="yes" \
-	EPATCH_EXCLUDE="8011_bug1194520-freetype261_until_moz43.patch
+	EPATCH_EXCLUDE="
+			8011_bug1194520-freetype261_until_moz43.patch
+			7005_dont-hardcode-libc-soname-in-python.patch
 			8010_bug114311-freetype26.patch" \
 	epatch "${WORKDIR}/firefox"
 
 	## Begin MUSL patching ##
+
+	epatch "${FILESDIR}"/hardcode-musl-soname-in-python.patch
 
 	# Upstream
 	epatch "${FILESDIR}"/38.0/1130164.patch
