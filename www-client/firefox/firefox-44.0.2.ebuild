@@ -364,7 +364,11 @@ PROFILE_EOF
 	fi
 
 	# Required in order to use plugins and even run firefox on hardened, with jit useflag.
-	pax-mark m "${ED}"${MOZILLA_FIVE_HOME}/plugin-container
+	if use jit; then
+		pax-mark m "${ED}"${MOZILLA_FIVE_HOME}/{firefox,firefox-bin,plugin-container}
+	else
+		pax-mark m "${ED}"${MOZILLA_FIVE_HOME}/plugin-container
+	fi
 
 	# very ugly hack to make firefox not sigbus on sparc
 	# FIXME: is this still needed??
