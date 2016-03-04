@@ -9,9 +9,9 @@ diff -Naur plymouth-0.9.2.orig/src/libply/ply-command-parser.c plymouth-0.9.2/sr
 +static int
 +rpmatch (const char                              *response)
 +{
-+        if (strcmp(response, "yes") == 0)
++        if (response[0] == 'y' || response[0] == 'Y')
 +                return 1;
-+        else if (strcmp(response, "no") == 0)
++        else if (response[0] == 'n' || reponse[0] == 'N')
 +                return 0;
 +        else
 +                return -1;
