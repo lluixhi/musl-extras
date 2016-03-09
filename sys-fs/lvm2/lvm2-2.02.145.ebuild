@@ -45,6 +45,7 @@ RDEPEND="${DEPEND_COMMON}
 DEPEND="${DEPEND_COMMON}
 	virtual/pkgconfig
 	>=sys-devel/binutils-2.20.1-r1
+	sys-devel/autoconf-archive
 	static? (
 		selinux? ( sys-libs/libselinux[static-libs] )
 		udev? ( >=sys-fs/eudev-3.1.2[static-libs] )
@@ -82,8 +83,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-2.02.129-example.conf.in.patch
 
         # Musl fixes
-        epatch "${FILESDIR}"/${P}-fix-stdio-usage.patch
-        epatch "${FILESDIR}"/${P}-portability.patch
+        epatch "${FILESDIR}"/${PN}-2.02.136-fix-stdio-usage.patch
+        epatch "${FILESDIR}"/${PN}-2.02.136-portability.patch
 
 	sed -i \
 		-e "1iAR = $(tc-getAR)" \
@@ -107,7 +108,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-2.02.67-createinitrd.patch #301331
 	epatch "${FILESDIR}"/${PN}-2.02.99-locale-muck.patch #330373
 	epatch "${FILESDIR}"/${PN}-2.02.70-asneeded.patch # -Wl,--as-needed
-	epatch "${FILESDIR}"/${PN}-2.02.129-dynamic-static-ldflags.patch #332905
+	epatch "${FILESDIR}"/${PN}-2.02.139-dynamic-static-ldflags.patch #332905
 	epatch "${FILESDIR}"/${PN}-2.02.129-static-pkgconfig-libs.patch #370217, #439414 + blkid
 	epatch "${FILESDIR}"/${PN}-2.02.130-pthread-pkgconfig.patch #492450
 
