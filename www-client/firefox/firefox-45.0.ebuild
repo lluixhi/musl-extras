@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI="5"
+EAPI=6
 VIRTUALX_REQUIRED="pgo"
 WANT_AUTOCONF="2.1"
 MOZ_ESR=""
@@ -22,19 +22,19 @@ MOZ_PV="${MOZ_PV/_beta/b}" # Handle beta for SRC_URI
 MOZ_PV="${MOZ_PV/_rc/rc}" # Handle rc for SRC_URI
 
 if [[ ${MOZ_ESR} == 1 ]]; then
-	# ESR releases have slightly version numbers
+	# ESR releases have slightly different version numbers
 	MOZ_PV="${MOZ_PV}esr"
 fi
 
 # Patch version
-PATCH="${PN}-44.0-patches-0.4"
-MOZ_HTTP_URI="http://archive.mozilla.org/pub/${PN}/releases"
+PATCH="${PN}-45.0-patches-01"
+MOZ_HTTP_URI="https://archive.mozilla.org/pub/${PN}/releases"
 
 MOZCONFIG_OPTIONAL_GTK3=1
 MOZCONFIG_OPTIONAL_WIFI=1
 MOZCONFIG_OPTIONAL_JIT="enabled"
 
-inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.44 multilib pax-utils fdo-mime autotools virtualx mozlinguas
+inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.45 pax-utils fdo-mime autotools virtualx mozlinguas
 
 DESCRIPTION="Firefox Web Browser"
 HOMEPAGE="http://www.mozilla.com/firefox"
@@ -43,7 +43,7 @@ KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~ppc ~ppc64 ~x86 ~amd64-linux ~x86-linu
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="bindist hardened +hwaccel pgo selinux +gmp-autoupdate test"
+IUSE="bindist egl hardened +hwaccel pgo selinux +gmp-autoupdate test"
 RESTRICT="!bindist? ( bindist )"
 
 # More URIs appended below...
@@ -56,8 +56,8 @@ ASM_DEPEND=">=dev-lang/yasm-1.1"
 
 # Mesa 7.10 needed for WebGL + bugfixes
 RDEPEND="
-	>=dev-libs/nss-3.21
-	>=dev-libs/nspr-4.10.10-r1
+	>=dev-libs/nss-3.21.1
+	>=dev-libs/nspr-4.11
 	selinux? ( sec-policy/selinux-mozilla )"
 
 DEPEND="${RDEPEND}
@@ -80,7 +80,7 @@ else
 		${MOZ_HTTP_URI}/${MOZ_PV}/source/firefox-${MOZ_PV}.source.tar.xz"
 fi
 
-QA_PRESTRIPPED="usr/$(get_libdir)/${PN}/firefox"
+QA_PRESTRIPPED="usr/lib*/${PN}/firefox"
 
 BUILD_OBJ_DIR="${S}/ff"
 
@@ -130,18 +130,13 @@ src_unpack() {
 
 src_prepare() {
 	# Apply our patches
-	EPATCH_SUFFIX="patch" \
-	EPATCH_FORCE="yes" \
-	EPATCH_EXCLUDE="7005_dont-hardcode-libc-soname-in-python.patch" \
-	epatch "${WORKDIR}/firefox"
+	eapply "${WORKDIR}/firefox"
 
-	# Add MUSL patches
-	epatch "${FILESDIR}"/hardcode-musl-soname-in-python.patch
-	epatch "${FILESDIR}"/44.0/fix-xpcom.patch
-	epatch "${FILESDIR}"/44.0/patch-xpcom_components_Module.h
+	# MUSL patches
+	eapply "${FILESDIR}/44.0"
 
 	# Allow user to apply any additional patches without modifing ebuild
-	epatch_user
+	eapply_user
 
 	# Enable gnomebreakpad
 	if use debug ; then
@@ -211,8 +206,7 @@ src_configure() {
 	# Add full relro support for hardened
 	use hardened && append-ldflags "-Wl,-z,relro,-z,now"
 
-	# EGL use flag removed for now, as build failures ensue with firefox-44
-	#use egl && mozconfig_annotate 'Enable EGL as GL provider' --with-gl-provider=EGL
+	use egl && mozconfig_annotate 'Enable EGL as GL provider' --with-gl-provider=EGL
 
 	# Setup api key for location services
 	echo -n "${_google_api_key}" > "${S}"/google-api-key
