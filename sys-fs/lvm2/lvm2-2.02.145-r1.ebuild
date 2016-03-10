@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI=6
 inherit autotools eutils linux-info multilib systemd toolchain-funcs udev flag-o-matic
 
 DESCRIPTION="User-land utilities for LVM2 (device-mapper) software"
@@ -54,6 +54,25 @@ DEPEND="${DEPEND_COMMON}
 
 S=${WORKDIR}/${PN/lvm/LVM}.${PV}
 
+PATCHES=(
+	# Gentoo specific modification(s):
+	"${FILESDIR}"/${PN}-2.02.129-example.conf.in.patch
+
+	# Musl fixes
+	"${FILESDIR}"/${PN}-2.02.136-fix-stdio-usage.patch
+	"${FILESDIR}"/${PN}-2.02.136-portability.patch
+
+	# For upstream -- review and forward:
+	"${FILESDIR}"/${PN}-2.02.63-always-make-static-libdm.patch
+	"${FILESDIR}"/${PN}-2.02.56-lvm2create_initrd.patch
+	"${FILESDIR}"/${PN}-2.02.67-createinitrd.patch #301331
+	"${FILESDIR}"/${PN}-2.02.99-locale-muck.patch #330373
+	"${FILESDIR}"/${PN}-2.02.70-asneeded.patch # -Wl,--as-needed
+	"${FILESDIR}"/${PN}-2.02.139-dynamic-static-ldflags.patch #332905
+	"${FILESDIR}"/${PN}-2.02.129-static-pkgconfig-libs.patch #370217, #439414 + blkid
+	"${FILESDIR}"/${PN}-2.02.130-pthread-pkgconfig.patch #492450
+)
+
 pkg_setup() {
 	local CONFIG_CHECK="~SYSVIPC"
 
@@ -79,12 +98,7 @@ pkg_setup() {
 }
 
 src_prepare() {
-	# Gentoo specific modification(s):
-	epatch "${FILESDIR}"/${PN}-2.02.129-example.conf.in.patch
-
-        # Musl fixes
-        epatch "${FILESDIR}"/${PN}-2.02.136-fix-stdio-usage.patch
-        epatch "${FILESDIR}"/${PN}-2.02.136-portability.patch
+	default
 
 	sed -i \
 		-e "1iAR = $(tc-getAR)" \
@@ -102,16 +116,6 @@ src_prepare() {
 
 	sed -i -e "s:/usr/bin/true:$(type -P true):" scripts/blk_availability_systemd_red_hat.service.in || die #517514
 
-	# For upstream -- review and forward:
-	epatch "${FILESDIR}"/${PN}-2.02.63-always-make-static-libdm.patch
-	epatch "${FILESDIR}"/${PN}-2.02.56-lvm2create_initrd.patch
-	epatch "${FILESDIR}"/${PN}-2.02.67-createinitrd.patch #301331
-	epatch "${FILESDIR}"/${PN}-2.02.99-locale-muck.patch #330373
-	epatch "${FILESDIR}"/${PN}-2.02.70-asneeded.patch # -Wl,--as-needed
-	epatch "${FILESDIR}"/${PN}-2.02.139-dynamic-static-ldflags.patch #332905
-	epatch "${FILESDIR}"/${PN}-2.02.129-static-pkgconfig-libs.patch #370217, #439414 + blkid
-	epatch "${FILESDIR}"/${PN}-2.02.130-pthread-pkgconfig.patch #492450
-
 	# Without thin-privision-tools, there is nothing to install for target install_man7:
 	use thin || { sed -i -e '/^install_lvm2/s:install_man7::' man/Makefile.in || die; }
 
@@ -120,15 +124,15 @@ src_prepare() {
 
 src_configure() {
 	filter-flags -flto
-	local myconf
+	local myconf=()
 	local buildmode
 
-	myconf="${myconf} $(use_enable !device-mapper-only dmeventd)"
-	myconf="${myconf} $(use_enable !device-mapper-only cmdlib)"
-	myconf="${myconf} $(use_enable !device-mapper-only applib)"
-	myconf="${myconf} $(use_enable !device-mapper-only fsadm)"
-	myconf="${myconf} $(use_enable !device-mapper-only lvmetad)"
-	use device-mapper-only && myconf="${myconf} --disable-udev-systemd-background-jobs"
+	myconf+=( $(use_enable !device-mapper-only dmeventd) )
+	myconf+=( $(use_enable !device-mapper-only cmdlib) )
+	myconf+=( $(use_enable !device-mapper-only applib) )
+	myconf+=( $(use_enable !device-mapper-only fsadm) )
+	myconf+=( $(use_enable !device-mapper-only lvmetad) )
+	use device-mapper-only && myconf+=( --disable-udev-systemd-background-jobs )
 
 	# Most of this package does weird stuff.
 	# The build options are tristate, and --without is NOT supported
@@ -136,7 +140,7 @@ src_configure() {
 	if use static; then
 		buildmode="internal"
 		# This only causes the .static versions to become available
-		myconf="${myconf} --enable-static_link"
+		myconf+=( --enable-static_link )
 	else
 		buildmode="shared"
 	fi
@@ -144,30 +148,30 @@ src_configure() {
 
 	# dmeventd requires mirrors to be internal, and snapshot available
 	# so we cannot disable them
-	myconf="${myconf} --with-mirrors=${dmbuildmode}"
-	myconf="${myconf} --with-snapshots=${dmbuildmode}"
+	myconf+=( --with-mirrors=${dmbuildmode} )
+	myconf+=( --with-snapshots=${dmbuildmode} )
 	if use thin; then
-		myconf="${myconf} --with-thin=internal --with-cache=internal"
+		myconf+=( --with-thin=internal --with-cache=internal )
 		local texec
 		for texec in check dump repair restore; do
-			myconf="${myconf} --with-thin-${texec}=${EPREFIX}/sbin/thin_${texec}"
-			myconf="${myconf} --with-cache-${texec}=${EPREFIX}/sbin/cache_${texec}"
+			myconf+=( --with-thin-${texec}="${EPREFIX}"/sbin/thin_${texec} )
+			myconf+=( --with-cache-${texec}="${EPREFIX}"/sbin/cache_${texec} )
 		done
 	else
-		myconf="${myconf} --with-thin=none --with-cache=none"
+		myconf+=( --with-thin=none --with-cache=none )
 	fi
 
 	if use lvm1; then
-		myconf="${myconf} --with-lvm1=${buildmode}"
+		myconf+=( --with-lvm1=${buildmode} )
 	else
-		myconf="${myconf} --with-lvm1=none"
+		myconf+=( --with-lvm1=none )
 	fi
 
 	# disable O_DIRECT support on hppa, breaks pv detection (#99532)
-	use hppa && myconf="${myconf} --disable-o_direct"
+	use hppa && myconf+=( --disable-o_direct )
 
 	if use clvm; then
-		myconf="${myconf} --with-cluster=${buildmode}"
+		myconf+=( --with-cluster=${buildmode} )
 		# 4-state! Make sure we get it right, per bug 210879
 		# Valid options are: none, cman, gulm, all
 		#
@@ -184,10 +188,10 @@ src_configure() {
 		use corosync && clvmd="${clvmd:+$clvmd,}corosync"
 		use openais && clvmd="${clvmd:+$clvmd,}openais"
 		[ -z "${clvmd}" ] && clvmd="none"
-		myconf="${myconf} --with-clvmd=${clvmd}"
-		myconf="${myconf} --with-pool=${buildmode}"
+		myconf+=( --with-clvmd=${clvmd} )
+		myconf+=( --with-pool=${buildmode} )
 	else
-		myconf="${myconf} --with-clvmd=none --with-cluster=none"
+		myconf+=( --with-clvmd=none --with-cluster=none )
 	fi
 
 	econf \
@@ -208,8 +212,8 @@ src_configure() {
 		$(use_enable udev udev_sync) \
 		$(use_with udev udevdir "$(get_udevdir)"/rules.d) \
 		$(use_enable systemd udev-systemd-background-jobs) \
-		"$(systemd_with_unitdir)" \
-		${myconf} \
+		--with-systemdsystemunitdir="$(systemd_get_systemunitdir)" \
+		${myconf[@]} \
 		CLDFLAGS="${LDFLAGS}"
 }
 
