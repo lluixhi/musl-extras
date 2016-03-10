@@ -1,0 +1,23 @@
+diff -Naur firefox-45.0.orig/xpcom/base/nsMemoryReporterManager.cpp firefox-45.0/xpcom/base/nsMemoryReporterManager.cpp
+--- firefox-45.0.orig/xpcom/base/nsMemoryReporterManager.cpp	2016-03-09 20:14:07.180055877 -0800
++++ firefox-45.0/xpcom/base/nsMemoryReporterManager.cpp	2016-03-09 20:23:24.340829331 -0800
+@@ -47,7 +47,7 @@
+ #  include "mozmemory.h"
+ #endif  // MOZ_MEMORY
+ 
+-#if defined(XP_LINUX)
++#if defined(XP_LINUX) && defined(__GLIBC__)
+ 
+ #include <malloc.h>
+ #include <string.h>
+--- firefox-45.0.orig/xpcom/components/Module.h	2016-03-09 20:14:07.273056675 -0800
++++ firefox-45.0/xpcom/components/Module.h	2016-03-09 20:30:56.351539189 -0800
+@@ -125,7 +125,7 @@
+ #    define NSMODULE_SECTION __declspec(allocate(".kPStaticModules$M"), dllexport)
+ #  elif defined(__GNUC__)
+ #    if defined(__ELF__)
+-#      define NSMODULE_SECTION __attribute__((section(".kPStaticModules"), visibility("protected")))
++#      define NSMODULE_SECTION __attribute__((section(".kPStaticModules"), visibility("default")))
+ #    elif defined(__MACH__)
+ #      define NSMODULE_SECTION __attribute__((section("__DATA, .kPStaticModules"), visibility("default")))
+ #    elif defined (_WIN32)

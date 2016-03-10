@@ -133,7 +133,7 @@ src_prepare() {
 	eapply "${WORKDIR}/firefox"
 
 	# MUSL patches
-	eapply "${FILESDIR}/44.0"
+	eapply "${FILESDIR}/45.0"
 
 	# Allow user to apply any additional patches without modifing ebuild
 	eapply_user
