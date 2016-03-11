@@ -60,7 +60,7 @@ fi
 
 src_prepare() {
 	# Fix for MUSL
-	epatch "${FILESDIR}"/${P}-musl.patch
+	epatch "${FILESDIR}"/${PN}-4.3.1-musl.patch
 
 	epatch_user
 	if [[ ${PV} == 9999 ]]; then
