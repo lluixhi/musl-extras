@@ -57,7 +57,7 @@ REQUIRED_USE="ipv6? ( ssl? ( ^^ ( gcrypt nettle openssl ) ) )"
 S=${WORKDIR}/${PN}-s${PV}
 
 PATCHES=(
-	"${FILESDIR}/${PN}-20150815-missing-AI_IDN-NI_IDN.patch"
+	"${FILESDIR}/${PN}-20150815-missing-AI_IDN-AI_CANONIDN-NI_IDN.patch"
 	"${FILESDIR}/${PN}-20150815-remove-rdisc-glibc-assumption.patch"
 	"${FILESDIR}/${PN}-20150815-scope-delimiter.patch"
 	"${FILESDIR}/${PN}-20150815-fix-header-order.patch"
