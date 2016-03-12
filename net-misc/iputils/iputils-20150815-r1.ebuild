@@ -29,7 +29,7 @@ IUSE="arping caps clockdiff doc gcrypt idn ipv6 libressl nettle +openssl rarpd r
 LIB_DEPEND="caps? ( sys-libs/libcap[static-libs(+)] )
 	idn? ( net-dns/libidn[static-libs(+)] )
 	ipv6? ( ssl? (
-		gcrypt? ( dev-libs/libgcrypt[static-libs(+)] )
+		gcrypt? ( dev-libs/libgcrypt:0=[static-libs(+)] )
 		nettle? ( dev-libs/nettle[static-libs(+)] )
 		openssl? (
 			!libressl? ( dev-libs/openssl:0[static-libs(+)] )
@@ -57,6 +57,7 @@ REQUIRED_USE="ipv6? ( ssl? ( ^^ ( gcrypt nettle openssl ) ) )"
 S=${WORKDIR}/${PN}-s${PV}
 
 PATCHES=(
+	"${FILESDIR}/${PN}-20150815-missing-AI_IDN-NI_IDN.patch"
 	"${FILESDIR}/${PN}-20150815-remove-rdisc-glibc-assumption.patch"
 	"${FILESDIR}/${PN}-20150815-scope-delimiter.patch"
 	"${FILESDIR}/${PN}-20150815-fix-header-order.patch"
