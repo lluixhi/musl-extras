@@ -77,7 +77,7 @@ src_prepare() {
 	epatch "${FILESDIR}/2.84-miniupnp14.patch"
 	epatch "${FILESDIR}/2.84-libevent-2.1.5.patch"
 	epatch "${FILESDIR}/2.84-node_alloc-segfault.patch"
-        epatch "${FILESDIR}/${PN}-2.84-musl-missing-header.patch"
+	epatch "${FILESDIR}/${PN}-2.84-musl-missing-header.patch"
 
 	epatch_user
 	eautoreconf

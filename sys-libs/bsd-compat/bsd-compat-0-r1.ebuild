@@ -4,8 +4,6 @@
 
 EAPI=5
 
-inherit base
-
 DESCRIPTION="Provides BSD Libc compat headers"
 
 HOMEPAGE="https://www.alpinelinux.org"

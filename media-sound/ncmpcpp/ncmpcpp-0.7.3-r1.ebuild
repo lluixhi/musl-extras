@@ -39,7 +39,7 @@ src_prepare() {
 }
 
 src_configure() {
-    append-cppflags "-D_XOPEN_SOURCE=500"
+	append-cppflags "-D_XOPEN_SOURCE=500"
 	econf \
 		$(use_enable clock) \
 		$(use_enable outputs) \

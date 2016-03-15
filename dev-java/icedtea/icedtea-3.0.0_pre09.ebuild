@@ -63,7 +63,7 @@ LICENSE="Apache-1.1 Apache-2.0 GPL-1 GPL-2 GPL-2-with-linking-exception LGPL-2 M
 KEYWORDS="~amd64"
 
 IUSE="+alsa cacao cjk +cups debug doc examples +gtk headless-awt
-	jamvm +jbootstrap nsplugin pax_kernel
+	jamvm +jbootstrap libressl nsplugin pax_kernel
 	pulseaudio sctp selinux smartcard +source +sunec test +webstart zero"
 
 REQUIRED_USE="gtk? ( !headless-awt )"
@@ -147,7 +147,8 @@ DEPEND="${COMMON_DEP} ${ALSA_COMMON_DEP} ${CUPS_COMMON_DEP} ${X_COMMON_DEP} ${X_
 	app-arch/zip
 	app-misc/ca-certificates
 	dev-lang/perl
-	dev-libs/openssl
+	!libressl? ( dev-libs/openssl )
+	libressl? ( dev-libs/libressl )
 	sys-apps/attr
 	sys-apps/lsb-release
 	x11-libs/libXt
@@ -197,7 +198,7 @@ java_prepare() {
 	# Link MUSL patches into icedtea build tree
 	ln -s "${FILESDIR}/${PN}-hotspot-musl.patch" patches || die
 	ln -s "${FILESDIR}/${PN}8-hotspot-noagent-musl.patch" patches || die
-    ln -s "${FILESDIR}/${PN}-hotspot-uclibc-fixes.patch" patches || die
+	ln -s "${FILESDIR}/${PN}-hotspot-uclibc-fixes.patch" patches || die
 	ln -s "${FILESDIR}/${PN}8-jdk-execinfo.patch" patches || die
 	ln -s "${FILESDIR}/${PN}8-jdk-fix-libjvm-load.patch" patches || die
 	ln -s "${FILESDIR}/${PN}-jdk-fix-ipv6-init.patch" patches || die

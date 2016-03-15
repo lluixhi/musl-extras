@@ -52,7 +52,7 @@ src_install() {
 	dodoc README.Gentoo
 
 	# Rename glibc specific manpages
-	cd ${D}/usr/share/man
+	cd "${D}"/usr/share/man
 	mv man1/{iconv.1,glibc-iconv.1}
 	mv man1/{ldd.1,glibc-ldd.1}
 	mv man1/{getent.1,glibc-getent.1}
