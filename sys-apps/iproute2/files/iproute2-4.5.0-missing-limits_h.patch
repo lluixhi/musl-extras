@@ -1,0 +1,11 @@
+diff -Naur iproute2-4.5.0.orig/tc/tc_bpf.c iproute2-4.5.0/tc/tc_bpf.c
+--- iproute2-4.5.0.orig/tc/tc_bpf.c	2016-03-16 12:54:51.968431712 -0700
++++ iproute2-4.5.0/tc/tc_bpf.c	2016-03-16 12:55:16.198647178 -0700
+@@ -20,6 +20,7 @@
+ #include <errno.h>
+ #include <fcntl.h>
+ #include <stdarg.h>
++#include <limits.h>
+ 
+ #ifdef HAVE_ELF
+ #include <libelf.h>

@@ -44,6 +44,7 @@ src_prepare() {
 	# Fix for MUSL
 	epatch "${FILESDIR}"/${PN}-4.3.0-musl-noiptables.patch
 	epatch "${FILESDIR}"/${P}-musl.patch
+	epatch "${FILESDIR}"/${P}-musl-missing-limits_h.patch
 
 	sed -i \
 		-e '/^CC =/d' \
