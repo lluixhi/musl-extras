@@ -1,8 +1,8 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI="4"
+EAPI=5
 
 inherit eutils toolchain-funcs multilib
 
@@ -18,16 +18,21 @@ IUSE="libedit nls readline static static-libs"
 REQUIRED_USE="static? ( static-libs )"
 
 LIB_DEPEND=">=sys-apps/util-linux-2.17.2[static-libs(+)]
-	readline? ( sys-libs/readline[static-libs(+)] )
+	readline? ( sys-libs/readline:0=[static-libs(+)] )
 	!readline? ( libedit? ( dev-libs/libedit[static-libs(+)] ) )"
 RDEPEND="!static? ( ${LIB_DEPEND//\[static-libs(+)]} )
 	!<sys-fs/xfsdump-3"
 DEPEND="${RDEPEND}
 	static? (
 		${LIB_DEPEND}
-		readline? ( sys-libs/ncurses[static-libs] )
+		readline? ( sys-libs/ncurses:0=[static-libs] )
 	)
 	nls? ( sys-devel/gettext )"
+
+PATCHES=(
+	"${FILESDIR}"/${PN}-4.3.0-sharedlibs.patch
+	"${FILESDIR}"/${PN}-4.3.0-musl.patch
+)
 
 pkg_setup() {
 	if use readline && use libedit ; then
@@ -37,10 +42,7 @@ pkg_setup() {
 }
 
 src_prepare() {
-	# Fix for MUSL
-	epatch "${FILESDIR}"/${PN}-4.3.0-musl.patch
-
-	epatch "${FILESDIR}"/${PN}-4.3.0-sharedlibs.patch
+	epatch "${PATCHES[@]}"
 
 	# LLDFLAGS is used for programs, so apply -all-static when USE=static is enabled.
 	# Clear out -static from all flags since we want to link against dynamic xfs libs.
