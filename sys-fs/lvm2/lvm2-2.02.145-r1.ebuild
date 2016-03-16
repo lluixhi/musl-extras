@@ -27,6 +27,7 @@ DEPEND_COMMON="
 	)
 
 	readline? ( sys-libs/readline:0= )
+	systemd? ( >=sys-apps/systemd-205:0= )
 	udev? ( >=virtual/libudev-208:=[static-libs?] )"
 # /run is now required for locking during early boot. /var cannot be assumed to
 # be available -- thus, pull in recent enough baselayout for /run.
@@ -245,11 +246,11 @@ src_install() {
 
 	if use !device-mapper-only ; then
 		newinitd "${FILESDIR}"/dmeventd.initd-2.02.67-r1 dmeventd
-		newinitd "${FILESDIR}"/lvm.rc-2.02.105-r2 lvm
+		newinitd "${FILESDIR}"/lvm.rc-2.02.116-r6 lvm
 		newconfd "${FILESDIR}"/lvm.confd-2.02.28-r2 lvm
 
 		newinitd "${FILESDIR}"/lvm-monitoring.initd-2.02.105-r2 lvm-monitoring
-		newinitd "${FILESDIR}"/lvmetad.initd-2.02.105-r2 lvmetad
+		newinitd "${FILESDIR}"/lvmetad.initd-2.02.116-r3 lvmetad
 	fi
 
 	if use clvm; then
