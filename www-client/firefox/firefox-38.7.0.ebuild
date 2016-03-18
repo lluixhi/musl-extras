@@ -38,7 +38,7 @@ inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6
 DESCRIPTION="Firefox Web Browser"
 HOMEPAGE="http://www.mozilla.com/firefox"
 
-KEYWORDS="~alpha amd64 ~arm hppa ~ia64 ~ppc ppc64 x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~alpha amd64 ~arm ~hppa ~ia64 ppc ppc64 x86 ~amd64-linux ~x86-linux"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
@@ -55,7 +55,7 @@ ASM_DEPEND=">=dev-lang/yasm-1.1"
 
 # Mesa 7.10 needed for WebGL + bugfixes
 RDEPEND="
-	>=dev-libs/nss-3.20.1
+	>=dev-libs/nss-3.21.1
 	>=dev-libs/nspr-4.10.10
 	selinux? ( sec-policy/selinux-mozilla )"
 
@@ -397,7 +397,7 @@ src_install() {
 	echo "SEARCH_DIRS_MASK=${MOZILLA_FIVE_HOME}" >> ${T}/10firefox
 	doins "${T}"/10${PN} || die
 
-	# workaround to make icecat find libmozalloc.so on musl
+	# workaround to make firefox find libmozalloc.so on musl
 	insinto /etc/env.d
 	echo "LDPATH=${MOZILLA_FIVE_HOME}" >> "${T}"/20firefox
 	doins "${T}"/20firefox || die
