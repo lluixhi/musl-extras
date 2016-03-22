@@ -1,0 +1,12 @@
+diff -Naur mpd-0.19.14.orig/src/notify.hxx mpd-0.19.14/src/notify.hxx
+--- mpd-0.19.14.orig/src/notify.hxx	2014-10-24 15:28:53.000000000 -0700
++++ mpd-0.19.14/src/notify.hxx	2016-03-22 16:05:31.374134417 -0700
+@@ -28,7 +28,7 @@
+ 	Cond cond;
+ 	bool pending;
+ 
+-#if !defined(WIN32) && !defined(__NetBSD__) && !defined(__BIONIC__)
++#if defined(__GLIBC__)
+ 	constexpr
+ #endif
+ 	notify():pending(false) {}

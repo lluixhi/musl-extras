@@ -132,7 +132,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-0.18.conf.patch
 
 	# Fix for MUSL
-	epatch "${FILESDIR}"/${PN}-0.19.11-musl.patch
+	epatch "${FILESDIR}"/${P}-musl.patch
 }
 
 src_configure() {
@@ -227,6 +227,8 @@ src_install() {
 	newinitd "${FILESDIR}"/${PN}2.init ${PN}
 
 	systemd_newuserunit systemd/${PN}.service ${PN}.service
+	sed -i '/WantedBy=/c WantedBy=default.target' \
+		"${ED}"/usr/lib/systemd/user/mpd.service || die "sed failed"
 
 	if use unicode; then
 		sed -i -e 's:^#filesystem_charset.*$:filesystem_charset "UTF-8":' \
