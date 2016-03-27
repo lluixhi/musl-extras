@@ -16,13 +16,13 @@ ICEDTEA_VER=$(get_version_component_range 2-4)
 ICEDTEA_BRANCH=$(get_version_component_range 2-3)
 ICEDTEA_PKG=icedtea-${ICEDTEA_VER}
 ICEDTEA_PRE=$(get_version_component_range _)
-CORBA_TARBALL="2135da66cc53.tar.bz2"
-JAXP_TARBALL="bc6edb6c12a7.tar.bz2"
-JAXWS_TARBALL="271b555de438.tar.bz2"
-JDK_TARBALL="dc86038147b2.tar.bz2"
-LANGTOOLS_TARBALL="fd0a34cb97b4.tar.bz2"
-OPENJDK_TARBALL="4f1e498cad9c.tar.bz2"
-HOTSPOT_TARBALL="19d919ae5506.tar.bz2"
+CORBA_TARBALL="389551542e13.tar.bz2"
+JAXP_TARBALL="8a56658cb829.tar.bz2"
+JAXWS_TARBALL="9c049d7f5adc.tar.bz2"
+JDK_TARBALL="e727fe32654c.tar.bz2"
+LANGTOOLS_TARBALL="f6593c32cc46.tar.bz2"
+OPENJDK_TARBALL="8e728c41fec5.tar.bz2"
+HOTSPOT_TARBALL="04d7046d2d41.tar.bz2"
 
 CACAO_TARBALL="cacao-c182f119eaad.tar.gz"
 JAMVM_TARBALL="jamvm-ec18fb9e49e62dce16c5094ef1527eed619463aa.tar.gz"
@@ -79,7 +79,8 @@ X_COMMON_DEP="
 	>=x11-libs/libXi-1.1.3
 	>=x11-libs/libXrender-0.9.4
 	>=x11-libs/libXtst-1.0.3
-	x11-libs/libXt"
+	x11-libs/libXt
+	x11-libs/libXcomposite"
 X_DEPEND="
 	>=x11-libs/libXau-1.0.3
 	>=x11-libs/libXdmcp-1.0.2
@@ -194,19 +195,12 @@ src_unpack() {
 }
 
 java_prepare() {
-	if ! use cups; then
-		# CUPS is always needed at build time but you can at least make it dlopen.
-		sed -i 's/SYSTEM_CUPS="true"/SYSTEM_CUPS="false"/g' Makefile.in || die
-	fi
-
 	# SystemTap is broken for MUSL, don't try to install stp files.
 	epatch "${FILESDIR}/${PN}-2.6.1-no-systemtap.patch"
 
 	if test "x${use_cacao}" = "xyes"; then
 		# http://icedtea.classpath.org/bugzilla/show_bug.cgi?id=2612
-		# http://icedtea.classpath.org/bugzilla/show_bug.cgi?id=2781
 		ln -s "${FILESDIR}/${SLOT}-cacao-pr-157.patch" patches || die
-		ln -s "${FILESDIR}/icedtea-bug-2781.patch" patches || die
 	fi
 
 	# Link MUSL patches into icedtea build tree
@@ -235,7 +229,6 @@ src_configure() {
 
 	if test "x${use_cacao}" = "xyes"; then
 		DISTRIBUTION_PATCHES+="patches/${SLOT}-cacao-pr-157.patch "
-		DISTRIBUTION_PATCHES+="patches/icedtea-bug-2781.patch "
 	fi
 
 	# MUSL Patches
@@ -348,6 +341,7 @@ src_configure() {
 		$(use_enable !headless-awt system-gif) \
 		$(use_enable !headless-awt system-png) \
 		$(use_enable !debug optimizations) \
+		$(use_enable cups system-cups) \
 		$(use_enable doc docs) \
 		$(use_enable gtk system-gtk) \
 		$(use_enable infinality) \
