@@ -167,9 +167,18 @@ src_prepare() {
 	# https://llvm.org/bugs/show_bug.cgi?id=18341
 	epatch "${FILESDIR}"/cmake/0004-cmake-Do-not-install-libgtest.patch
 
-	# Fix llvm-config for shared linking and sane flags
+	# Fix llvm-config for shared linking, sane flags and return values
+	# in order:
+	# - backported r247159 that adds --build-system (needed for later code)
+	# - backported r252532 that adds better shared linking support
+	# - our fixes
+	# - backported r260343 that fixes cross-compilation
+	# combination of backported upstream r252532 with our patch
 	# https://bugs.gentoo.org/show_bug.cgi?id=565358
-	epatch "${FILESDIR}"/llvm-3.7-llvm-config.patch
+	epatch "${FILESDIR}"/llvm-3.7.1-llvm-config-0.patch
+	epatch "${FILESDIR}"/llvm-3.7.1-llvm-config-1.patch
+	epatch "${FILESDIR}"/llvm-3.7.1-llvm-config-2.patch
+	epatch "${FILESDIR}"/llvm-3.7.1-llvm-config-3.patch
 
 	# Fix msan with newer kernels, #569894
 	epatch "${FILESDIR}"/llvm-3.7-msan-fix.patch
