@@ -1,3 +1,2 @@
-sys-devel/gcc gcj
-media-libs/mesa nptl d3d9
-x11-base/xorg-server nptl
+sys-devel/gcc go gcj
+media-libs/mesa d3d9
