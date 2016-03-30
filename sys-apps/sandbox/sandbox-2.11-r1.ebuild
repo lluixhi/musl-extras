@@ -32,6 +32,8 @@ sandbox_death_notice() {
 }
 
 src_prepare() {
+	epatch "${FILESDIR}"/${P}-exec-hash.patch #578524
+
 	# Fix for MUSL
 	epatch "${FILESDIR}/${P}-musl.patch"
 	epatch "${FILESDIR}/${PN}-2.6-include-PROTECTED-symbols.patch"
