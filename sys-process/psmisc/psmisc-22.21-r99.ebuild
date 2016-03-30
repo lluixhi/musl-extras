@@ -29,6 +29,7 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-add-limits_h.patch"
 
 	epatch "${FILESDIR}/${P}-fuser_typo_fix.patch"
+	epatch "${FILESDIR}/${P}-sysmacros.patch"
 }
 
 src_configure() {
