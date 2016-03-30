@@ -1,9 +1,9 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
 EAPI="6"
-inherit systemd autotools eutils
+inherit systemd autotools
 
 DESCRIPTION="Provides a daemon for managing internet connections"
 HOMEPAGE="https://01.org/connman"
@@ -31,10 +31,15 @@ RDEPEND=">=dev-libs/glib-2.16
 DEPEND="${RDEPEND}
 	>=sys-kernel/linux-headers-2.6.39"
 
+PATCHES=(
+	"${FILESDIR}/${PN}-musl.patch"
+	"${FILESDIR}/${PN}-musl-libresolv.patch"
+	"${FILESDIR}/${PN}-1.31-iptables-1.6.0.patch"
+	"${FILESDIR}/${PN}-1.31-xtables.patch"
+)
+
 src_prepare() {
-	# Fix build with MUSL
-	epatch "${FILESDIR}/${PN}-musl.patch"
-	epatch "${FILESDIR}/${PN}-musl-libresolv.patch"
+	default
 
 	eautoreconf
 }

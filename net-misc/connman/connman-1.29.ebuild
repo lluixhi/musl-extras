@@ -3,7 +3,7 @@
 # $Id$
 
 EAPI="5"
-inherit base systemd autotools eutils
+inherit base systemd autotools
 
 DESCRIPTION="Provides a daemon for managing internet connections"
 HOMEPAGE="https://01.org/connman"
@@ -31,11 +31,14 @@ RDEPEND=">=dev-libs/glib-2.16
 DEPEND="${RDEPEND}
 	>=sys-kernel/linux-headers-2.6.39"
 
+PATCHES=(
+	"${FILESDIR}/${PN}-musl.patch"
+	"${FILESDIR}/${PN}-musl-libresolv.patch"
+	"${FILESDIR}/${P}-musl-sockaddr.patch"
+)
+
 src_prepare() {
-	# Fix build with MUSL
-	epatch "${FILESDIR}/${PN}-musl.patch"
-	epatch "${FILESDIR}/${PN}-musl-libresolv.patch"
-	epacch "${FILESDIR}/${P}-musl-sockaddr.patch"
+	default
 
 	eautoreconf
 }
