@@ -31,6 +31,7 @@ S=${WORKDIR}/${PN}_${PV}
 
 src_prepare() {
 	epatch \
+		"${FILESDIR}"/${P}-darwin.patch \
 		"${FILESDIR}"/${PN}-15.09-cve-musl.patch
 
 	if ! use pch; then
@@ -41,8 +42,6 @@ src_prepare() {
 		-e 's:-m32 ::g' \
 		-e 's:-m64 ::g' \
 		-e 's:-pipe::g' \
-		-e "/^CXX=/s:g++:$(tc-getCXX):" \
-		-e "/^CC=/s:gcc:$(tc-getCC):" \
 		-e '/ALLFLAGS/s:-s ::' \
 		-e "/OPTFLAGS=/s:=.*:=${CXXFLAGS}:" \
 		-i makefile* || die
@@ -66,17 +65,17 @@ src_prepare() {
 	elif use x86; then
 		cp -f makefile.linux_x86_asm_gcc_4.X makefile.machine || die
 	elif [[ ${CHOST} == *-darwin* ]] ; then
-		# Mac OS X needs this special makefile, because it has a non-GNU linker
-		[[ ${CHOST} == *64-* ]] \
-			&& cp -f makefile.macosx_64bits makefile.machine \
-			|| cp -f makefile.macosx_32bits makefile.machine
+		# Mac OS X needs this special makefile, because it has a non-GNU
+		# linker, it doesn't matter so much for bitwidth, for it doesn't
+		# do anything with it
+		cp -f makefile.macosx_llvm_64bits makefile.machine
 		# bundles have extension .bundle but don't die because USE=-rar
 		# removes the Rar directory
 		sed -i -e '/strcpy(name/s/\.so/.bundle/' \
 			CPP/Windows/DLL.cpp || die
 		sed -i -e '/^PROG=/s/\.so/.bundle/' \
-			CPP/7zip/Bundles/Format7zFree/makefile \
-			$(use rar && echo CPP/7zip/Compress/Rar/makefile) || die
+			CPP/7zip/Bundles/Format7zFree/makefile.list \
+			$(use rar && echo CPP/7zip/Compress/Rar/makefile.list) || die
 	elif use x86-fbsd; then
 		# FreeBSD needs this special makefile, because it hasn't -ldl
 		sed -e 's/-lc_r/-pthread/' makefile.freebsd > makefile.machine
@@ -94,9 +93,9 @@ src_prepare() {
 }
 
 src_compile() {
-	emake all3
+	emake CC=$(tc-getCC) CXX=$(tc-getCXX) all3
 	if use kde || use wxwidgets; then
-		emake -- 7zG
+		emake CC=$(tc-getCC) CXX=$(tc-getCXX) -- 7zG
 #		emake -- 7zFM
 	fi
 }
