@@ -38,13 +38,12 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	epatch "${FILESDIR}"/${PN}-0.118-PaX-support.patch
-	epatch "${FILESDIR}"/${PN}-old-glibc.patch
 
 	# Add MUSL patches
-	epatch "${FILESDIR}"/${P}-musl-obstack-fts.patch
-	epatch "${FILESDIR}"/${P}-musl-libs.patch
+	epatch "${FILESDIR}"/${PN}-0.165-musl-obstack-fts.patch
+	epatch "${FILESDIR}"/${PN}-0.165-musl-libs.patch
 	epatch "${FILESDIR}"/${PN}-0.163-musl-utils.patch
-	epatch "${FILESDIR}"/${P}-musl-utils.patch
+	epatch "${FILESDIR}"/${PN}-0.165-musl-utils.patch
 
 	eautoreconf
 
