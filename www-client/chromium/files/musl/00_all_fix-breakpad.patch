@@ -1,0 +1,101 @@
+diff -Naur chromium-50.0.2661.37.orig/breakpad/src/client/linux/dump_writer_common/ucontext_reader.h chromium-50.0.2661.37/breakpad/src/client/linux/dump_writer_common/ucontext_reader.h
+--- chromium-50.0.2661.37.orig/breakpad/src/client/linux/dump_writer_common/ucontext_reader.h	2016-03-16 12:01:16.000000000 -0700
++++ chromium-50.0.2661.37/breakpad/src/client/linux/dump_writer_common/ucontext_reader.h	2016-03-31 16:44:02.456413033 -0700
+@@ -37,6 +37,10 @@
+ #include "common/memory.h"
+ #include "google_breakpad/common/minidump_format.h"
+ 
++#ifndef __GLIBC__
++#define _libc_fpstate _fpstate
++#endif
++
+ namespace google_breakpad {
+ 
+ // Wraps platform-dependent implementations of accessors to ucontext structs.
+diff -Naur chromium-50.0.2661.37.orig/breakpad/src/client/linux/handler/exception_handler.cc chromium-50.0.2661.37/breakpad/src/client/linux/handler/exception_handler.cc
+--- chromium-50.0.2661.37.orig/breakpad/src/client/linux/handler/exception_handler.cc	2016-03-16 12:01:16.000000000 -0700
++++ chromium-50.0.2661.37/breakpad/src/client/linux/handler/exception_handler.cc	2016-03-31 16:47:36.395958816 -0700
+@@ -476,8 +476,10 @@
+   // ExceptionHandler::HandleSignal().
+   siginfo.si_code = SI_USER;
+   siginfo.si_pid = getpid();
+-  struct ucontext context;
++  struct ucontext context = {0};
++#if defined(__GLIBC__) || defined(__UCLIBC__)
+   getcontext(&context);
++#endif
+   return HandleSignal(sig, &siginfo, &context);
+ }
+ 
+@@ -647,9 +649,11 @@
+   sys_prctl(PR_SET_DUMPABLE, 1, 0, 0, 0);
+ 
+   CrashContext context;
++#if defined(__GLIBC__) || defined(__UCLIBC__)
+   int getcontext_result = getcontext(&context.context);
+   if (getcontext_result)
+     return false;
++#endif
+ 
+ #if defined(__i386__)
+   // In CPUFillFromUContext in minidumpwriter.cc the stack pointer is retrieved
+diff -Naur chromium-50.0.2661.37.orig/breakpad/src/client/linux/minidump_writer/minidump_writer.h chromium-50.0.2661.37/breakpad/src/client/linux/minidump_writer/minidump_writer.h
+--- chromium-50.0.2661.37.orig/breakpad/src/client/linux/minidump_writer/minidump_writer.h	2016-03-16 12:01:16.000000000 -0700
++++ chromium-50.0.2661.37/breakpad/src/client/linux/minidump_writer/minidump_writer.h	2016-03-31 16:44:02.508413409 -0700
+@@ -41,6 +41,10 @@
+ #include "client/linux/minidump_writer/linux_dumper.h"
+ #include "google_breakpad/common/minidump_format.h"
+ 
++#ifndef __GLIBC__
++#define _libc_fpstate _fpstate
++#endif
++
+ namespace google_breakpad {
+ 
+ class ExceptionHandler;
+diff -Naur chromium-50.0.2661.37.orig/breakpad/src/client/linux/minidump_writer/minidump_writer_unittest.cc chromium-50.0.2661.37/breakpad/src/client/linux/minidump_writer/minidump_writer_unittest.cc
+--- chromium-50.0.2661.37.orig/breakpad/src/client/linux/minidump_writer/minidump_writer_unittest.cc	2016-03-16 12:01:16.000000000 -0700
++++ chromium-50.0.2661.37/breakpad/src/client/linux/minidump_writer/minidump_writer_unittest.cc	2016-03-31 16:44:02.509413416 -0700
+@@ -125,6 +125,7 @@
+ 
+ // Test that mapping info can be specified when writing a minidump,
+ // and that it ends up in the module list of the minidump.
++#if defined(__GLIBC__) || defined(__UCLIBC__)
+ TEST(MinidumpWriterTest, MappingInfo) {
+   int fds[2];
+   ASSERT_NE(-1, pipe(fds));
+@@ -229,6 +230,7 @@
+ 
+   close(fds[1]);
+ }
++#endif // defined(__GLIBC__) || defined(__UCLIBC__)
+ 
+ // Test that mapping info can be specified, and that it overrides
+ // existing mappings that are wholly contained within the specified
+@@ -429,6 +431,7 @@
+ }
+ 
+ // Test that an additional memory region can be added to the minidump.
++#if defined(__GLIBC__) || defined(__UCLIBC__)
+ TEST(MinidumpWriterTest, AdditionalMemory) {
+   int fds[2];
+   ASSERT_NE(-1, pipe(fds));
+@@ -578,6 +581,7 @@
+ 
+   close(fds[1]);
+ }
++#endif // defined(__GLIBC__) || defined(__UCLIBC__)
+ 
+ // Test that limiting the size of the minidump works.
+ TEST(MinidumpWriterTest, MinidumpSizeLimit) {
+diff -Naur chromium-50.0.2661.37.orig/breakpad/src/common/linux/elf_core_dump.h chromium-50.0.2661.37/breakpad/src/common/linux/elf_core_dump.h
+--- chromium-50.0.2661.37.orig/breakpad/src/common/linux/elf_core_dump.h	2016-03-16 12:01:16.000000000 -0700
++++ chromium-50.0.2661.37/breakpad/src/common/linux/elf_core_dump.h	2016-03-31 16:44:02.518413481 -0700
+@@ -36,6 +36,7 @@
+ #include <elf.h>
+ #include <link.h>
+ #include <stddef.h>
++#include <sys/reg.h>
+ 
+ #include "common/memory_range.h"
+ 

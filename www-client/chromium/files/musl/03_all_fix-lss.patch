@@ -1,0 +1,18 @@
+diff -Naur chromium-50.0.2661.37.orig/third_party/lss/linux_syscall_support.h chromium-50.0.2661.37/third_party/lss/linux_syscall_support.h
+--- chromium-50.0.2661.37.orig/third_party/lss/linux_syscall_support.h	2016-03-16 12:02:01.000000000 -0700
++++ chromium-50.0.2661.37/third_party/lss/linux_syscall_support.h	2016-03-30 16:33:13.616145093 -0700
+@@ -1134,6 +1134,14 @@
+ #ifndef __NR_fallocate
+ #define __NR_fallocate          285
+ #endif
++
++#ifndef __NR_pread
++#define __NR_pread __NR_pread64
++#endif
++#ifndef __NR_pwrite
++#define __NR_pwrite __NR_pwrite64
++#endif
++
+ /* End of x86-64 definitions                                                 */
+ #elif defined(__mips__)
+ #if _MIPS_SIM == _MIPS_SIM_ABI32

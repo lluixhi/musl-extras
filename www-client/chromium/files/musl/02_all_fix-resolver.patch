@@ -1,0 +1,78 @@
+diff -Naur chromium-50.0.2661.37.orig/net/dns/dns_config_service_posix.cc chromium-50.0.2661.37/net/dns/dns_config_service_posix.cc
+--- chromium-50.0.2661.37.orig/net/dns/dns_config_service_posix.cc	2016-03-15 21:01:43.000000000 -0700
++++ chromium-50.0.2661.37/net/dns/dns_config_service_posix.cc	2016-03-30 18:30:00.821861856 -0700
+@@ -111,7 +111,7 @@
+ ConfigParsePosixResult ReadDnsConfig(DnsConfig* config) {
+   ConfigParsePosixResult result;
+   config->unhandled_options = false;
+-#if defined(OS_OPENBSD)
++#if defined(OS_OPENBSD) || (defined(OS_LINUX) && !defined(__UCLIBC__) && !defined(__GLIBC__))
+   // Note: res_ninit in glibc always returns 0 and sets RES_INIT.
+   // res_init behaves the same way.
+   memset(&_res, 0, sizeof(_res));
+diff -Naur chromium-50.0.2661.37.orig/net/dns/dns_reloader.cc chromium-50.0.2661.37/net/dns/dns_reloader.cc
+--- chromium-50.0.2661.37.orig/net/dns/dns_reloader.cc	2016-02-23 15:02:01.000000000 -0800
++++ chromium-50.0.2661.37/net/dns/dns_reloader.cc	2016-03-30 18:39:12.134339949 -0700
+@@ -4,8 +4,7 @@
+ 
+ #include "net/dns/dns_reloader.h"
+ 
+-#if defined(OS_POSIX) && !defined(OS_MACOSX) && !defined(OS_OPENBSD) && \
+-    !defined(OS_ANDROID)
++#if defined(__GLIBC__) || defined(__UCLIBC__)
+ 
+ #include <resolv.h>
+ 
+@@ -121,5 +120,4 @@
+ 
+ }  // namespace net
+ 
+-#endif  // defined(OS_POSIX) && !defined(OS_MACOSX) && !defined(OS_OPENBSD) &&
+-        // !defined(OS_ANDROID)
++#endif  // defined(__GLIBC__) || defined(__UCLIBC__)
+diff -Naur chromium-50.0.2661.37.orig/net/dns/dns_reloader.h chromium-50.0.2661.37/net/dns/dns_reloader.h
+--- chromium-50.0.2661.37.orig/net/dns/dns_reloader.h	2016-02-14 15:11:31.000000000 -0800
++++ chromium-50.0.2661.37/net/dns/dns_reloader.h	2016-03-30 18:39:31.362495965 -0700
+@@ -7,7 +7,7 @@
+ 
+ #include "build/build_config.h"
+ 
+-#if defined(OS_POSIX) && !defined(OS_MACOSX) && !defined(OS_OPENBSD)
++#if defined(__GLIBC__) || defined(__UCLIBC__)
+ namespace net {
+ 
+ // Call on the network thread before calling DnsReloaderMaybeReload() anywhere.
+@@ -18,6 +18,6 @@
+ void DnsReloaderMaybeReload();
+ 
+ }  // namespace net
+-#endif  // defined(OS_POSIX) && !defined(OS_MACOSX) && !defined(OS_OPENBSD)
++#endif  // defined(__GLIBC__) || defined(__UCLIBC__)
+ 
+ #endif  // NET_DNS_DNS_RELOADER_H_
+diff -Naur chromium-50.0.2661.37.orig/net/dns/host_resolver_impl.cc chromium-50.0.2661.37/net/dns/host_resolver_impl.cc
+--- chromium-50.0.2661.37.orig/net/dns/host_resolver_impl.cc	2016-03-15 21:01:43.000000000 -0700
++++ chromium-50.0.2661.37/net/dns/host_resolver_impl.cc	2016-03-30 18:39:49.409642074 -0700
+@@ -1889,8 +1889,7 @@
+ #endif
+   NetworkChangeNotifier::AddIPAddressObserver(this);
+   NetworkChangeNotifier::AddDNSObserver(this);
+-#if defined(OS_POSIX) && !defined(OS_MACOSX) && !defined(OS_OPENBSD) && \
+-    !defined(OS_ANDROID)
++#if defined(__GLIBC__) || defined(__UCLIBC__)
+   EnsureDnsReloaderInit();
+ #endif
+ 
+diff -Naur chromium-50.0.2661.37.orig/net/dns/host_resolver_proc.cc chromium-50.0.2661.37/net/dns/host_resolver_proc.cc
+--- chromium-50.0.2661.37.orig/net/dns/host_resolver_proc.cc	2016-02-14 15:11:31.000000000 -0800
++++ chromium-50.0.2661.37/net/dns/host_resolver_proc.cc	2016-03-30 18:40:08.683798118 -0700
+@@ -193,8 +193,7 @@
+   // Restrict result set to only this socket type to avoid duplicates.
+   hints.ai_socktype = SOCK_STREAM;
+ 
+-#if defined(OS_POSIX) && !defined(OS_MACOSX) && !defined(OS_OPENBSD) && \
+-    !defined(OS_ANDROID)
++#if defined(__GLIBC__) || defined(__UCLIBC__)
+   DnsReloaderMaybeReload();
+ #endif
+   int err = getaddrinfo(host.c_str(), NULL, &hints, &ai);

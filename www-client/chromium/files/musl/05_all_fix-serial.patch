@@ -1,0 +1,11 @@
+diff -Naur chromium-50.0.2661.37.orig/device/serial/serial_io_handler_posix.cc chromium-50.0.2661.37/device/serial/serial_io_handler_posix.cc
+--- chromium-50.0.2661.37.orig/device/serial/serial_io_handler_posix.cc	2016-03-15 15:01:14.000000000 -0700
++++ chromium-50.0.2661.37/device/serial/serial_io_handler_posix.cc	2016-03-31 14:08:56.406032621 -0700
+@@ -6,6 +6,7 @@
+ 
+ #include <sys/ioctl.h>
+ #include <termios.h>
++#include <asm-generic/ioctls.h>
+ 
+ #include "base/posix/eintr_wrapper.h"
+ #include "build/build_config.h"

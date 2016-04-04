@@ -1,0 +1,86 @@
+diff -Naur chromium-50.0.2661.37.orig/sandbox/linux/seccomp-bpf/trap.cc chromium-50.0.2661.37/sandbox/linux/seccomp-bpf/trap.cc
+--- chromium-50.0.2661.37.orig/sandbox/linux/seccomp-bpf/trap.cc	2016-02-23 15:02:02.000000000 -0800
++++ chromium-50.0.2661.37/sandbox/linux/seccomp-bpf/trap.cc	2016-03-30 17:45:23.810258274 -0700
+@@ -25,6 +25,11 @@
+ #include "sandbox/linux/system_headers/linux_seccomp.h"
+ #include "sandbox/linux/system_headers/linux_signal.h"
+ 
++// musl libc defines siginfo_t __si_fields instead of _sifields
++#if defined(OS_LINUX) && !defined(__GLIBC__)
++#define _sifields __si_fields
++#endif
++
+ namespace {
+ 
+ struct arch_sigsys {
+diff -Naur chromium-50.0.2661.37.orig/sandbox/linux/suid/sandbox.c chromium-50.0.2661.37/sandbox/linux/suid/sandbox.c
+--- chromium-50.0.2661.37.orig/sandbox/linux/suid/sandbox.c	2016-02-23 15:02:02.000000000 -0800
++++ chromium-50.0.2661.37/sandbox/linux/suid/sandbox.c	2016-03-30 17:42:28.679765158 -0700
+@@ -42,6 +42,15 @@
+ 
+ static bool DropRoot();
+ 
++#ifndef TEMP_FAILURE_RETRY
++#define TEMP_FAILURE_RETRY(expression)                  \
++        (__extension__                                  \
++         ({ long int __result;                          \
++            do __result = (long int) (expression);      \
++            while (__result == -1L && errno == EINTR);  \
++            __result; }))
++#endif
++
+ #define HANDLE_EINTR(x) TEMP_FAILURE_RETRY(x)
+ 
+ static void FatalError(const char* msg, ...)
+diff -Naur chromium-50.0.2661.37.orig/sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.c chromium-50.0.2661.37/sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.c
+--- chromium-50.0.2661.37.orig/sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.cc	2016-02-23 15:02:02.000000000 -0800
++++ chromium-50.0.2661.37/sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.cc	2016-03-30 17:42:28.679765158 -0700
+@@ -114,23 +114,13 @@
+ // CLONE_VM, nor CLONE_THREAD, which includes all fork() implementations.
+ ResultExpr RestrictCloneToThreadsAndEPERMFork() {
+   const Arg<unsigned long> flags(0);
++  const int required = CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND |
++                       CLONE_THREAD | CLONE_SYSVSEM;
++  const int safe = CLONE_SETTLS | CLONE_PARENT_SETTID | CLONE_CHILD_CLEARTID |
++                   CLONE_DETACHED;
++  const BoolExpr thread_clone_ok = (flags&~safe)==required;
+ 
+-  // TODO(mdempsky): Extend DSL to support (flags & ~mask1) == mask2.
+-  const uint64_t kAndroidCloneMask = CLONE_VM | CLONE_FS | CLONE_FILES |
+-                                     CLONE_SIGHAND | CLONE_THREAD |
+-                                     CLONE_SYSVSEM;
+-  const uint64_t kObsoleteAndroidCloneMask = kAndroidCloneMask | CLONE_DETACHED;
+-
+-  const uint64_t kGlibcPthreadFlags =
+-      CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | CLONE_THREAD |
+-      CLONE_SYSVSEM | CLONE_SETTLS | CLONE_PARENT_SETTID | CLONE_CHILD_CLEARTID;
+-  const BoolExpr glibc_test = flags == kGlibcPthreadFlags;
+-
+-  const BoolExpr android_test =
+-      AnyOf(flags == kAndroidCloneMask, flags == kObsoleteAndroidCloneMask,
+-            flags == kGlibcPthreadFlags);
+-
+-  return If(IsAndroid() ? android_test : glibc_test, Allow())
++  return If(thread_clone_ok, Allow())
+       .ElseIf((flags & (CLONE_VM | CLONE_THREAD)) == 0, Error(EPERM))
+       .Else(CrashSIGSYSClone());
+ }
+diff -Naur chromium-50.0.2661.37.orig/sandbox/linux/seccomp-bpf-helpers/syscall_sets.c chromium-50.0.2661.37/sandbox/linux/seccomp-bpf-helpers/syscall_sets.c
+--- chromium-50.0.2661.37.orig/sandbox/linux/seccomp-bpf-helpers/syscall_sets.cc	2016-02-23 15:02:02.000000000 -0800
++++ chromium-50.0.2661.37/sandbox/linux/seccomp-bpf-helpers/syscall_sets.cc	2016-03-30 17:42:28.679765158 -0700
+@@ -494,6 +494,7 @@
+     case __NR_mlock:
+     case __NR_munlock:
+     case __NR_munmap:
++    case __NR_mremap:
+       return true;
+     case __NR_madvise:
+     case __NR_mincore:
+@@ -509,7 +510,6 @@
+     case __NR_modify_ldt:
+ #endif
+     case __NR_mprotect:
+-    case __NR_mremap:
+     case __NR_msync:
+     case __NR_munlockall:
+     case __NR_readahead:

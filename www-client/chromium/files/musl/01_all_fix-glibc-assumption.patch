@@ -1,0 +1,22 @@
+diff -Naur chromium-50.0.2661.37.orig/chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.cc chromium-50.0.2661.37/chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.cc
+--- chromium-50.0.2661.37.orig/chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.cc	2016-03-15 15:01:12.000000000 -0700
++++ chromium-50.0.2661.37/chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.cc	2016-03-31 16:03:54.724951251 -0700
+@@ -37,7 +37,9 @@
+ #endif  // defined(OS_ANDROID) && defined(__arm__)
+ 
+ #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
++#if defined(__GLIBC__)
+ #include <gnu/libc-version.h>
++#endif // defined(__GLIBC__)
+ 
+ #include "base/version.h"
+ #if defined(USE_X11)
+@@ -168,7 +170,7 @@
+ }
+ 
+ void RecordLinuxGlibcVersion() {
+-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
++#if defined(__GLIBC__) && !defined(OS_CHROMEOS)
+   Version version(gnu_get_libc_version());
+ 
+   UMALinuxGlibcVersion glibc_version_result = UMA_LINUX_GLIBC_NOT_PARSEABLE;
