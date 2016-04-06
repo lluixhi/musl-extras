@@ -38,17 +38,3 @@ index 45bf52a..103ec0e 100644
 +#define _GLIBCXX_GTHREAD_USE_WEAK 0
 +
  #endif
-diff --git a/libstdc++-v3/configure.host b/libstdc++-v3/configure.host
-index 82ddc52..a349ce3 100644
---- a/libstdc++-v3/configure.host
-+++ b/libstdc++-v3/configure.host
-@@ -271,6 +271,9 @@ case "${host_os}" in
-   freebsd*)
-     os_include_dir="os/bsd/freebsd"
-     ;;
-+  linux-musl*)
-+    os_include_dir="os/generic"
-+    ;;
-   gnu* | linux* | kfreebsd*-gnu | knetbsd*-gnu)
-     if [ "$uclibc" = "yes" ]; then
-       os_include_dir="os/uclibc"
