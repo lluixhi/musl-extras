@@ -48,6 +48,8 @@ src_prepare() {
 	if use elibc_musl; then
 		cd "${S}"
 		epatch "${FILESDIR}"/${PV}/musl.patch
+		epatch "${FILESDIR}"/${PV}/musl-gthr.patch
+		epatch "${FILESDIR}"/${PV}/musl-stdint.patch
 		epatch "${FILESDIR}"/5.2.0/res_state.patch
 		epatch "${FILESDIR}"/4.9.3/musl-posix_memalign-c++.patch
 	fi
