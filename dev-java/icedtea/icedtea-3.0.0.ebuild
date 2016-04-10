@@ -10,20 +10,20 @@
 EAPI="5"
 SLOT="8"
 
-inherit autotools check-reqs gnome2-utils java-pkg-2 java-vm-2 mercurial multiprocessing pax-utils prefix versionator virtualx
+inherit check-reqs gnome2-utils java-pkg-2 java-vm-2 multiprocessing pax-utils prefix versionator virtualx
 
 ICEDTEA_VER=$(get_version_component_range 1-3)
 ICEDTEA_BRANCH=$(get_version_component_range 1-2)
 ICEDTEA_PKG=icedtea-${ICEDTEA_VER}
 ICEDTEA_PRE=$(get_version_component_range _)
-CORBA_TARBALL="834cf5ee24b3.tar.xz"
-JAXP_TARBALL="6527813420de.tar.xz"
-JAXWS_TARBALL="2ceaeebc6760.tar.xz"
-JDK_TARBALL="dfad9b612327.tar.xz"
-LANGTOOLS_TARBALL="076ec0ef64f0.tar.xz"
-OPENJDK_TARBALL="a358b13af298.tar.xz"
-NASHORN_TARBALL="bbc1966c6af9.tar.xz"
-HOTSPOT_TARBALL="dbf85d44da89.tar.xz"
+CORBA_TARBALL="37af47894175.tar.xz"
+JAXP_TARBALL="4ed5441e40e1.tar.xz"
+JAXWS_TARBALL="a81c04154cc5.tar.xz"
+JDK_TARBALL="3334efeacd83.tar.xz"
+LANGTOOLS_TARBALL="dd581e8047e6.tar.xz"
+OPENJDK_TARBALL="8ed8d26a3f9a.tar.xz"
+NASHORN_TARBALL="697c5f792bec.tar.xz"
+HOTSPOT_TARBALL="5e587a29a6aa.tar.xz"
 
 CACAO_TARBALL="cacao-c182f119eaad.tar.gz"
 JAMVM_TARBALL="jamvm-2.0.0.tar.gz"
@@ -45,7 +45,9 @@ ICEDTEA_URL="${DROP_URL}/icedtea${SLOT}/${ICEDTEA_VER}"
 
 DESCRIPTION="A harness to build OpenJDK using Free Software build tools and dependencies"
 HOMEPAGE="http://icedtea.classpath.org"
+SRC_PKG="${ICEDTEA_PKG}.tar.xz"
 SRC_URI="
+	http://icedtea.classpath.org/download/source/${SRC_PKG}
 	${ICEDTEA_URL}/openjdk.tar.xz -> ${OPENJDK_GENTOO_TARBALL}
 	${ICEDTEA_URL}/corba.tar.xz -> ${CORBA_GENTOO_TARBALL}
 	${ICEDTEA_URL}/jaxp.tar.xz -> ${JAXP_GENTOO_TARBALL}
@@ -56,8 +58,6 @@ SRC_URI="
 	${ICEDTEA_URL}/langtools.tar.xz -> ${LANGTOOLS_GENTOO_TARBALL}
 	${DROP_URL}/cacao/${CACAO_TARBALL} -> ${CACAO_GENTOO_TARBALL}
 	${DROP_URL}/jamvm/${JAMVM_TARBALL} -> ${JAMVM_GENTOO_TARBALL}"
-EHG_REPO_URI="http://icedtea.classpath.org/hg/icedtea"
-EHG_REVISION="${ICEDTEA_PKG}${ICEDTEA_PRE}"
 
 LICENSE="Apache-1.1 Apache-2.0 GPL-1 GPL-2 GPL-2-with-linking-exception LGPL-2 MPL-1.0 MPL-1.1 public-domain W3C"
 KEYWORDS="~amd64"
@@ -80,7 +80,8 @@ X_COMMON_DEP="
 	>=x11-libs/libXext-1.1.1
 	>=x11-libs/libXi-1.1.3
 	>=x11-libs/libXrender-0.9.4
-	>=x11-libs/libXtst-1.0.3"
+	>=x11-libs/libXtst-1.0.3
+	x11-libs/libXcomposite"
 X_DEPEND="
 	>=x11-libs/libXau-1.0.3
 	>=x11-libs/libXdmcp-1.0.2
@@ -191,7 +192,7 @@ pkg_setup() {
 }
 
 src_unpack() {
-	mercurial_src_unpack
+	unpack ${SRC_PKG}
 }
 
 java_prepare() {
@@ -209,8 +210,6 @@ java_prepare() {
 
 	# icedtea doesn't like some locales. #330433 #389717
 	export LANG="C" LC_ALL="C"
-
-	eautoreconf
 }
 
 src_configure() {
@@ -271,6 +270,7 @@ src_configure() {
 			ewarn 'Enabling JamVM on an architecture with HotSpot support; issues may result.'
 			ewarn 'If so, please rebuild with USE="-jamvm"'
 		fi
+		ewarn 'JamVM is known to still have issues with IcedTea 3.x; please rebuild with USE="-jamvm"'
 		jamvm_config="--enable-jamvm"
 	fi
 
@@ -280,6 +280,7 @@ src_configure() {
 			ewarn 'Enabling CACAO on an architecture with HotSpot support; issues may result.'
 			ewarn 'If so, please rebuild with USE="-cacao"'
 		fi
+		ewarn 'CACAO is known to still have issues with IcedTea 3.x; please rebuild with USE="-cacao"'
 		cacao_config="--enable-cacao"
 	fi
 
@@ -311,11 +312,10 @@ src_configure() {
 		--mandir="${EPREFIX}/usr/$(get_libdir)/icedtea${SLOT}/man" \
 		--docdir="${EPREFIX}/usr/share/doc/${PF}" \
 		--htmldir="${EPREFIX}/usr/share/doc/${PF}/html" \
-		--with-abs-install-dir=/usr/$(get_libdir)/icedtea${SLOT} \
 		--with-pkgversion="Gentoo ${PF}" \
 		--disable-downloading --disable-Werror --disable-tests \
 		--enable-system-lcms --enable-system-jpeg \
-		--enable-system-zlib --disable-pulse-java \
+		--enable-system-zlib --disable-systemtap-tests \
 		$(use_enable !headless-awt system-gif) \
 		$(use_enable !headless-awt system-png) \
 		$(use_enable !debug optimizations) \
