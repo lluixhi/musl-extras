@@ -2,12 +2,14 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI=6
 
 DESCRIPTION="Provides BSD Libc compat headers"
 
 HOMEPAGE="https://www.alpinelinux.org"
-SRC_URI=""
+SRC_URI="
+	${FILESDIR}/sys-tree.h.bz2
+	${FILESDIR}/sys-queue.h.bz2"
 
 LICENSE="BSD"
 
@@ -18,6 +20,6 @@ KEYWORDS="amd64 arm ~mips ppc x86"
 S="${WORKDIR}"
 src_install() {
 	insinto /usr/include/sys
-	newins "${FILESDIR}/sys-queue.h" queue.h
-	newins "${FILESDIR}/sys-tree.h" tree.h
+	newins "${WORKDIR}/sys-queue.h" queue.h
+	newins "${WORKDIR}/sys-tree.h" tree.h
 }
