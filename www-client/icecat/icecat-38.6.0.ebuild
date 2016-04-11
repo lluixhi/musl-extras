@@ -21,7 +21,7 @@ MOZ_PV=${PV}
 
 # Patch version
 PATCH="firefox-38.0-patches-04"
-MOZ_HTTP_URI="mirror://gnu/gnuzilla/"
+MOZ_HTTP_URI="mirror://gnu/gnuzilla"
 
 MOZCONFIG_OPTIONAL_WIFI=1
 MOZCONFIG_OPTIONAL_JIT="enabled"
@@ -31,7 +31,7 @@ inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6
 DESCRIPTION="Icecat Web Browser"
 HOMEPAGE="http://www.gnu.org/gnuzilla"
 
-KEYWORDS="~alpha amd64 ~arm hppa ~ia64 ~ppc ppc64 x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~alpha amd64 ~arm hppa ~ia64 ppc ppc64 x86 ~amd64-linux ~x86-linux"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
