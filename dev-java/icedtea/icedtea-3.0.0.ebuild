@@ -193,7 +193,7 @@ src_unpack() {
 
 java_prepare() {
 	# https://bugs.openjdk.java.net/browse/JDK-8067132
-	ln -s "${FILESDIR}"/${SLOT}-ccache.patch paches || die
+	ln -s "${FILESDIR}"/${SLOT}-ccache.patch patches || die
 
 	# Link MUSL patches into icedtea build tree
 	ln -s "${FILESDIR}/${PN}-hotspot-musl.patch" patches || die
