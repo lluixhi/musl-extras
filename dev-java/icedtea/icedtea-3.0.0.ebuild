@@ -3,10 +3,6 @@
 # $Id$
 # Build written by Andrew John Hughes (gnu_andrew@member.fsf.org)
 
-# *********************************************************
-# * IF YOU CHANGE THIS EBUILD, CHANGE ICEDTEA-6.* AS WELL *
-# *********************************************************
-
 EAPI="5"
 SLOT="8"
 
@@ -25,8 +21,8 @@ OPENJDK_TARBALL="8ed8d26a3f9a.tar.xz"
 NASHORN_TARBALL="697c5f792bec.tar.xz"
 HOTSPOT_TARBALL="5e587a29a6aa.tar.xz"
 
-CACAO_TARBALL="cacao-c182f119eaad.tar.gz"
-JAMVM_TARBALL="jamvm-2.0.0.tar.gz"
+CACAO_TARBALL="cacao-c182f119eaad.tar.xz"
+JAMVM_TARBALL="jamvm-ec18fb9e49e62dce16c5094ef1527eed619463aa.tar.gz"
 
 CORBA_GENTOO_TARBALL="icedtea-${ICEDTEA_BRANCH}-corba-${CORBA_TARBALL}"
 JAXP_GENTOO_TARBALL="icedtea-${ICEDTEA_BRANCH}-jaxp-${JAXP_TARBALL}"
@@ -60,11 +56,11 @@ SRC_URI="
 	${DROP_URL}/jamvm/${JAMVM_TARBALL} -> ${JAMVM_GENTOO_TARBALL}"
 
 LICENSE="Apache-1.1 Apache-2.0 GPL-1 GPL-2 GPL-2-with-linking-exception LGPL-2 MPL-1.0 MPL-1.1 public-domain W3C"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~arm ~ppc64 ~x86"
 
 IUSE="+alsa cacao cjk +cups debug doc examples +gtk headless-awt
 	jamvm +jbootstrap libressl nsplugin pax_kernel
-	pulseaudio sctp selinux smartcard +source +sunec test +webstart zero"
+	pulseaudio sctp selinux smartcard +source sunec test +webstart zero"
 
 REQUIRED_USE="gtk? ( !headless-awt )"
 
@@ -196,6 +192,9 @@ src_unpack() {
 }
 
 java_prepare() {
+	# https://bugs.openjdk.java.net/browse/JDK-8067132
+	ln -s "${FILESDIR}"/${SLOT}-ccache.patch paches || die
+
 	# Link MUSL patches into icedtea build tree
 	ln -s "${FILESDIR}/${PN}-hotspot-musl.patch" patches || die
 	ln -s "${FILESDIR}/${PN}8-hotspot-noagent-musl.patch" patches || die
@@ -218,6 +217,9 @@ src_configure() {
 
 	# Export MUSL patches for configure
 	DISTRIBUTION_PATCHES=""
+
+	# https://bugs.openjdk.java.net/browse/JDK-8067132
+	DISTRIBUTION_PATCHES+="patches/${SLOT}-ccache.patch "
 
 	DISTRIBUTION_PATCHES+="patches/${PN}-hotspot-musl.patch "
 	DISTRIBUTION_PATCHES+="patches/${PN}8-hotspot-noagent-musl.patch "
@@ -292,6 +294,14 @@ src_configure() {
 		zero_config="--enable-zero"
 	fi
 
+	# IcedTea itself doesn't handle ccache yet.
+	if has ccache ${FEATURES}; then
+		ewarn 'ccache has been known to break IcedTea. Disable it before filing bugs.'
+		export enable_ccache=yes
+	else
+		export enable_ccache=no
+	fi
+
 	config+=" --with-parallel-jobs=$(makeopts_jobs)"
 
 	unset JAVA_HOME JDK_HOME CLASSPATH JAVAC JAVACFLAGS
@@ -326,7 +336,9 @@ src_configure() {
 }
 
 src_compile() {
-	emake
+	# OpenJDK is quite picky about ccache and dies if you attempt to use
+	# it via wrapper symlinks like Gentoo normally does.
+	PATH=$(sed 's#[^:]*/ccache/bin:##g' <<< "${PATH}") emake
 }
 
 src_test() {
