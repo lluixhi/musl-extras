@@ -22,10 +22,11 @@ mirror://gentoo/${MY_P}-f2fs-tools.tar.gz"
 LICENSE="Apache-2.0 BSD-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86 ~arm-linux ~x86-linux"
-IUSE=""
+IUSE="libressl"
 
 RDEPEND="sys-libs/zlib:=
-	dev-libs/openssl:0=
+	!libressl? ( dev-libs/openssl:0= )
+	libressl? ( dev-libs/libressl:0= )
 	dev-libs/libpcre"
 DEPEND="${RDEPEND}"
 
@@ -52,6 +53,7 @@ src_prepare() {
 	sed -e 's|#include <dlfcn.h>|\0\n#include <stddef.h>\n#include <string.h>\n|' \
 		-i extras/f2fs_utils/f2fs_utils.c  || die
 	mv arch/*/trunk/Makefile ./ || die
+	sed -i '1i#include <sys/sysmacros.h>' core/adb/usb_linux.c || die #580058
 	tc-export CC
 }
 
