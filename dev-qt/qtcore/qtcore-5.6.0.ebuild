@@ -26,7 +26,7 @@ RDEPEND="${DEPEND}"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-5.5.1-libsystemd.patch" # bug 578316
-	"${FILESDIR}/${P}-musl-iconv.patch"
+	"${FILESDIR}/${PN}-5.5.1-musl-iconv.patch"
 )
 
 QT5_TARGET_SUBDIRS=(
