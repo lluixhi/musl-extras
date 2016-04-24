@@ -1,10 +1,10 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI=4
 
-WX_GTK_VER="3.0"
+WX_GTK_VER="2.8"
 
 inherit eutils multilib toolchain-funcs wxwidgets
 
@@ -14,24 +14,25 @@ SRC_URI="mirror://sourceforge/${PN}/${PN}_${PV}_src_all.tar.bz2"
 
 LICENSE="LGPL-2.1 rar? ( unRAR )"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~ppc ~ppc64 ~s390 ~sparc ~x86 ~x86-fbsd ~x86-freebsd ~x86-interix ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos ~sparc-solaris"
-IUSE="doc kde rar +pch static wxwidgets abi_x86_x32"
+KEYWORDS="alpha amd64 ~arm hppa ia64 ppc ppc64 ~s390 sparc x86 ~x86-fbsd ~x86-freebsd ~x86-interix ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos ~sparc-solaris"
+IUSE="doc kde rar +pch static wxwidgets"
 
 REQUIRED_USE="kde? ( wxwidgets )"
 
 RDEPEND="
-	kde? ( x11-libs/wxGTK:${WX_GTK_VER}[X] kde-base/kdelibs )
-	wxwidgets? ( x11-libs/wxGTK:${WX_GTK_VER}[X] )"
+	kde? ( x11-libs/wxGTK:2.8[X,-odbc] kde-base/kdelibs )
+	wxwidgets? ( x11-libs/wxGTK:2.8[X,-odbc] )"
 DEPEND="${RDEPEND}
 	amd64? ( dev-lang/yasm )
-	abi_x86_x32? ( >=dev-lang/yasm-1.2.0-r1 )
 	x86? ( dev-lang/nasm )"
 
 S=${WORKDIR}/${PN}_${PV}
 
 src_prepare() {
 	epatch \
-		"${FILESDIR}"/${P}-darwin.patch \
+		"${FILESDIR}"/${P}-execstack.patch \
+		"${FILESDIR}"/${P}-QA.patch \
+		"${FILESDIR}"/${P}-CVE-2015-1038.patch \
 		"${FILESDIR}"/${PN}-CVE-2015-1038-musl.patch
 
 	if ! use pch; then
@@ -41,41 +42,43 @@ src_prepare() {
 	sed \
 		-e 's:-m32 ::g' \
 		-e 's:-m64 ::g' \
+		-e 's:-O::g' \
 		-e 's:-pipe::g' \
-		-e '/ALLFLAGS/s:-s ::' \
-		-e "/OPTFLAGS=/s:=.*:=${CXXFLAGS}:" \
+		-e "/^CC/s:\$(ALLFLAGS):${CFLAGS} \$(ALLFLAGS):g" \
+		-e "/^CXX/s:\$(ALLFLAGS):${CXXFLAGS} \$(ALLFLAGS):g" \
 		-i makefile* || die
 
 	# remove non-free RAR codec
 	if use rar; then
 		ewarn "Enabling nonfree RAR decompressor"
 	else
-		sed \
-			-e '/Rar/d' \
-			-e '/RAR/d' \
-			-i makefile* CPP/7zip/Bundles/Format7zFree/makefile || die
+		sed -e '/Rar/d' -i makefile* || die
 		rm -rf CPP/7zip/Compress/Rar || die
+		epatch "${FILESDIR}"/9.04-makefile.patch
 	fi
 
-	if use abi_x86_x32; then
-		sed -i -e "/^ASM=/s:amd64:x32:" makefile* || die
-		cp -f makefile.linux_amd64_asm makefile.machine || die
-	elif use amd64; then
+	sed -i \
+		-e "/^CXX=/s:g++:$(tc-getCXX):" \
+		-e "/^CC=/s:gcc:$(tc-getCC):" \
+		-e '/ALLFLAGS/s:-s ::' \
+		makefile* || die "changing makefiles"
+
+	if use amd64; then
 		cp -f makefile.linux_amd64_asm makefile.machine || die
 	elif use x86; then
 		cp -f makefile.linux_x86_asm_gcc_4.X makefile.machine || die
 	elif [[ ${CHOST} == *-darwin* ]] ; then
-		# Mac OS X needs this special makefile, because it has a non-GNU
-		# linker, it doesn't matter so much for bitwidth, for it doesn't
-		# do anything with it
-		cp -f makefile.macosx_llvm_64bits makefile.machine
+		# Mac OS X needs this special makefile, because it has a non-GNU linker
+		[[ ${CHOST} == *64-* ]] \
+			&& cp -f makefile.macosx_64bits makefile.machine \
+			|| cp -f makefile.macosx_32bits makefile.machine
 		# bundles have extension .bundle but don't die because USE=-rar
 		# removes the Rar directory
 		sed -i -e '/strcpy(name/s/\.so/.bundle/' \
 			CPP/Windows/DLL.cpp || die
 		sed -i -e '/^PROG=/s/\.so/.bundle/' \
-			CPP/7zip/Bundles/Format7zFree/makefile.list \
-			$(use rar && echo CPP/7zip/Compress/Rar/makefile.list) || die
+			CPP/7zip/Bundles/Format7zFree/makefile \
+			$(use rar && echo CPP/7zip/Compress/Rar/makefile) || die
 	elif use x86-fbsd; then
 		# FreeBSD needs this special makefile, because it hasn't -ldl
 		sed -e 's/-lc_r/-pthread/' makefile.freebsd > makefile.machine
@@ -86,17 +89,16 @@ src_prepare() {
 	fi
 
 	if use kde || use wxwidgets; then
-		need-wxwidgets unicode
 		einfo "Preparing dependency list"
 		emake depend
 	fi
 }
 
 src_compile() {
-	emake CC=$(tc-getCC) CXX=$(tc-getCXX) all3
+	emake all3
 	if use kde || use wxwidgets; then
-		emake CC=$(tc-getCC) CXX=$(tc-getCXX) -- 7zG
-#		emake -- 7zFM
+		emake -- 7zG
+		emake -- 7zFM
 	fi
 }
 
@@ -112,14 +114,13 @@ src_install() {
 
 	if use kde || use wxwidgets; then
 		make_wrapper 7zG "/usr/$(get_libdir)/${PN}/7zG"
-#		make_wrapper 7zFM "/usr/$(get_libdir)/${PN}/7zFM"
+		make_wrapper 7zFM "/usr/$(get_libdir)/${PN}/7zFM"
 
-#		make_desktop_entry 7zFM "${PN} FM" ${PN} "GTK;Utility;Archiving;Compression"
+		make_desktop_entry 7zFM "${PN} FM" ${PN} "GTK;Utility;Archiving;Compression"
 
 		dobin GUI/p7zipForFilemanager
 		exeinto /usr/$(get_libdir)/${PN}
-#		doexe bin/7z{G,FM}
-		doexe bin/7zG
+		doexe bin/7z{G,FM}
 
 		insinto /usr/$(get_libdir)/${PN}
 		doins -r GUI/{Lang,help}
@@ -131,11 +132,6 @@ src_install() {
 			rm GUI/kde4/p7zip_compress.desktop || die
 			insinto /usr/share/kde4/services/ServiceMenus
 			doins GUI/kde4/*.desktop
-			dodir /usr/share/kservices5/ServiceMenus
-			for item in "${D}"/usr/share/kde4/services/ServiceMenus/*.desktop; do
-				item="$(basename ${item})"
-				dosym "/usr/share/kde4/services/ServiceMenus/${item}" "/usr/share/kservices5/ServiceMenus/${item}"
-			done
 		fi
 	fi
 
@@ -154,7 +150,7 @@ src_install() {
 	dodoc ChangeLog README TODO
 
 	if use doc; then
-		dodoc DOC/*.txt
-		dohtml -r DOC/MANUAL/*
+		dodoc DOCS/*.txt
+		dohtml -r DOCS/MANUAL/*
 	fi
 }
