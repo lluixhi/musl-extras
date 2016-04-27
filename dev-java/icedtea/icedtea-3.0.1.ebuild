@@ -12,14 +12,15 @@ ICEDTEA_VER=$(get_version_component_range 1-3)
 ICEDTEA_BRANCH=$(get_version_component_range 1-2)
 ICEDTEA_PKG=icedtea-${ICEDTEA_VER}
 ICEDTEA_PRE=$(get_version_component_range _)
-CORBA_TARBALL="37af47894175.tar.xz"
-JAXP_TARBALL="4ed5441e40e1.tar.xz"
-JAXWS_TARBALL="a81c04154cc5.tar.xz"
-JDK_TARBALL="3334efeacd83.tar.xz"
-LANGTOOLS_TARBALL="dd581e8047e6.tar.xz"
-OPENJDK_TARBALL="8ed8d26a3f9a.tar.xz"
-NASHORN_TARBALL="697c5f792bec.tar.xz"
-HOTSPOT_TARBALL="5e587a29a6aa.tar.xz"
+
+CORBA_TARBALL="a6736e860d67.tar.xz"
+JAXP_TARBALL="c7145fc644df.tar.xz"
+JAXWS_TARBALL="412389386184.tar.xz"
+JDK_TARBALL="dab76de2f91c.tar.xz"
+LANGTOOLS_TARBALL="ad6886e3a101.tar.xz"
+OPENJDK_TARBALL="6a70821528ba.tar.xz"
+NASHORN_TARBALL="c89dc17f7c75.tar.xz"
+HOTSPOT_TARBALL="7bb48ba4de4f.tar.xz"
 
 CACAO_TARBALL="cacao-c182f119eaad.tar.xz"
 JAMVM_TARBALL="jamvm-ec18fb9e49e62dce16c5094ef1527eed619463aa.tar.gz"
@@ -60,9 +61,9 @@ KEYWORDS="~amd64 ~arm ~ppc64 ~x86"
 
 IUSE="+alsa cacao cjk +cups debug doc examples +gtk headless-awt
 	jamvm +jbootstrap libressl nsplugin pax_kernel
-	pulseaudio sctp selinux smartcard +source sunec test +webstart zero"
+	pulseaudio sctp selinux smartcard +source +sunec test +webstart zero"
 
-REQUIRED_USE="gtk? ( !headless-awt ) test? ( sunec )"
+REQUIRED_USE="gtk? ( !headless-awt )"
 
 # Ideally the following were optional at build time.
 ALSA_COMMON_DEP="
@@ -192,9 +193,6 @@ src_unpack() {
 }
 
 java_prepare() {
-	# https://bugs.openjdk.java.net/browse/JDK-8067132
-	ln -s "${FILESDIR}"/${SLOT}-ccache.patch patches || die
-
 	# Link MUSL patches into icedtea build tree
 	ln -s "${FILESDIR}/${PN}-hotspot-musl.patch" patches || die
 	ln -s "${FILESDIR}/${PN}8-hotspot-noagent-musl.patch" patches || die
@@ -217,9 +215,6 @@ src_configure() {
 
 	# Export MUSL patches for configure
 	DISTRIBUTION_PATCHES=""
-
-	# https://bugs.openjdk.java.net/browse/JDK-8067132
-	DISTRIBUTION_PATCHES+="patches/${SLOT}-ccache.patch "
 
 	DISTRIBUTION_PATCHES+="patches/${PN}-hotspot-musl.patch "
 	DISTRIBUTION_PATCHES+="patches/${PN}8-hotspot-noagent-musl.patch "
