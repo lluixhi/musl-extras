@@ -1,5 +1,26 @@
---- openjdk.orig/jdk/src/share/native/com/sun/java/util/jar/pack/zip.cpp
-+++ openjdk/jdk/src/share/native/com/sun/java/util/jar/pack/zip.cpp
+diff -Naur openjdk.orig/jdk/src/share/instrument/JarFacade.c openjdk/jdk/src/share/instrument/JarFacade.c
+--- openjdk.orig/jdk/src/share/instrument/JarFacade.c	2016-04-27 16:32:37.681010892 -0700
++++ openjdk/jdk/src/share/instrument/JarFacade.c	2016-04-27 16:46:18.518437726 -0700
+@@ -23,14 +23,13 @@
+  * questions.
+  */
+ 
+-#ifdef _WIN32
++#ifndef __solaris__
+ /*
+- * Win* needs this include. However, Linux and Solaris do not.
+  * Having this include on Solaris SPARC breaks having non US-ASCII
+  * characters in the value of the Premain-Class attribute.
+  */
+ #include <ctype.h>
+-#endif /* _WIN32 */
++#endif /* __solaris__ */
+ #include <string.h>
+ #include <stdlib.h>
+ 
+diff -Naur openjdk.orig/jdk/src/share/native/com/sun/java/util/jar/pack/zip.cpp openjdk/jdk/src/share/native/com/sun/java/util/jar/pack/zip.cpp
+--- openjdk.orig/jdk/src/share/native/com/sun/java/util/jar/pack/zip.cpp	2016-04-27 16:32:37.692010983 -0700
++++ openjdk/jdk/src/share/native/com/sun/java/util/jar/pack/zip.cpp	2016-04-27 16:34:18.919854766 -0700
 @@ -46,6 +46,8 @@
  
  #include "zip.h"
@@ -9,8 +30,9 @@
  #ifdef NO_ZLIB
  
  inline bool jar::deflate_bytes(bytes& head, bytes& tail) {
---- openjdk.orig/jdk/src/share/native/com/sun/java/util/jar/pack/zip.h
-+++ openjdk/jdk/src/share/native/com/sun/java/util/jar/pack/zip.h
+diff -Naur openjdk.orig/jdk/src/share/native/com/sun/java/util/jar/pack/zip.h openjdk/jdk/src/share/native/com/sun/java/util/jar/pack/zip.h
+--- openjdk.orig/jdk/src/share/native/com/sun/java/util/jar/pack/zip.h	2016-04-27 16:32:37.692010983 -0700
++++ openjdk/jdk/src/share/native/com/sun/java/util/jar/pack/zip.h	2016-04-27 16:34:18.920854774 -0700
 @@ -23,9 +23,7 @@
   * questions.
   */
@@ -22,8 +44,9 @@
  
  struct unpacker;
  
---- openjdk.orig/jdk/src/share/native/sun/awt/medialib/mlib_types.h
-+++ openjdk/jdk/src/share/native/sun/awt/medialib/mlib_types.h
+diff -Naur openjdk.orig/jdk/src/share/native/sun/awt/medialib/mlib_types.h openjdk/jdk/src/share/native/sun/awt/medialib/mlib_types.h
+--- openjdk.orig/jdk/src/share/native/sun/awt/medialib/mlib_types.h	2016-04-27 16:32:37.760011550 -0700
++++ openjdk/jdk/src/share/native/sun/awt/medialib/mlib_types.h	2016-04-27 16:34:18.920854774 -0700
 @@ -27,6 +27,7 @@
  #ifndef MLIB_TYPES_H
  #define MLIB_TYPES_H
@@ -32,8 +55,32 @@
  #include <limits.h>
  #if defined(_MSC_VER)
  #include <float.h>                      /* for FLT_MAX and DBL_MAX */
---- openjdk.orig/jdk/src/solaris/native/java/net/Inet4AddressImpl.c
-+++ openjdk/jdk/src/solaris/native/java/net/Inet4AddressImpl.c
+diff -Naur openjdk.orig/jdk/src/share/native/sun/misc/URLClassPath.c openjdk/jdk/src/share/native/sun/misc/URLClassPath.c
+--- openjdk.orig/jdk/src/share/native/sun/misc/URLClassPath.c	2016-04-27 16:32:37.829012125 -0700
++++ openjdk/jdk/src/share/native/sun/misc/URLClassPath.c	2016-04-27 16:41:55.357003589 -0700
+@@ -23,6 +23,7 @@
+  * questions.
+  */
+ 
++#include <stdlib.h>
+ #include <string.h>
+ 
+ #include "jni.h"
+diff -Naur openjdk.orig/jdk/src/solaris/native/common/openjdk/jdk_util_md.h openjdk/jdk/src/solaris/native/common/openjdk/jdk_util_md.h
+--- openjdk.orig/jdk/src/solaris/native/common/openjdk/jdk_util_md.h	2016-04-27 16:32:37.998013534 -0700
++++ openjdk/jdk/src/solaris/native/common/openjdk/jdk_util_md.h	2016-04-27 16:36:10.984818284 -0700
+@@ -37,7 +37,7 @@
+ #define ISNAND(d) isnan(d)
+ #elif defined(__linux__) || defined(_ALLBSD_SOURCE)
+ #include <math.h>
+-#define ISNANF(f) isnanf(f)
++#define ISNANF(f) isnan(f)
+ #define ISNAND(d) isnan(d)
+ #elif defined(_AIX)
+ #include <math.h>
+diff -Naur openjdk.orig/jdk/src/solaris/native/java/net/Inet4AddressImpl.c openjdk/jdk/src/solaris/native/java/net/Inet4AddressImpl.c
+--- openjdk.orig/jdk/src/solaris/native/java/net/Inet4AddressImpl.c	2016-04-27 16:32:38.003013576 -0700
++++ openjdk/jdk/src/solaris/native/java/net/Inet4AddressImpl.c	2016-04-27 16:34:18.921854783 -0700
 @@ -47,7 +47,7 @@
  
  #include "java_net_Inet4AddressImpl.h"
@@ -43,8 +90,9 @@
  #define HAS_GLIBC_GETHOSTBY_R   1
  #endif
  
---- openjdk.orig/jdk/src/solaris/native/java/net/NetworkInterface.c
-+++ openjdk/jdk/src/solaris/native/java/net/NetworkInterface.c
+diff -Naur openjdk.orig/jdk/src/solaris/native/java/net/NetworkInterface.c openjdk/jdk/src/solaris/native/java/net/NetworkInterface.c
+--- openjdk.orig/jdk/src/solaris/native/java/net/NetworkInterface.c	2016-04-27 16:32:38.003013576 -0700
++++ openjdk/jdk/src/solaris/native/java/net/NetworkInterface.c	2016-04-27 16:34:18.922854791 -0700
 @@ -47,7 +47,6 @@
  
  #ifdef __linux__
@@ -53,9 +101,10 @@
  #include <sys/utsname.h>
  #include <stdio.h>
  #endif
---- openjdk.orig/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c
-+++ openjdk/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c
-@@ -35,7 +35,6 @@
+diff -Naur openjdk.orig/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c openjdk/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c
+--- openjdk.orig/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c	2016-04-27 16:32:38.003013576 -0700
++++ openjdk/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c	2016-04-27 16:34:18.923854799 -0700
+@@ -41,7 +41,6 @@
  #endif
  #ifdef __linux__
  #include <unistd.h>
@@ -63,8 +112,9 @@
  #include <sys/utsname.h>
  #include <netinet/ip.h>
  
---- openjdk.orig/jdk/src/solaris/native/java/net/PlainSocketImpl.c
-+++ openjdk/jdk/src/solaris/native/java/net/PlainSocketImpl.c
+diff -Naur openjdk.orig/jdk/src/solaris/native/java/net/PlainSocketImpl.c openjdk/jdk/src/solaris/native/java/net/PlainSocketImpl.c
+--- openjdk.orig/jdk/src/solaris/native/java/net/PlainSocketImpl.c	2016-04-27 16:32:38.004013584 -0700
++++ openjdk/jdk/src/solaris/native/java/net/PlainSocketImpl.c	2016-04-27 16:34:18.924854807 -0700
 @@ -43,7 +43,6 @@
  #endif
  #ifdef __linux__
@@ -73,8 +123,9 @@
  #endif
  
  #include "jvm.h"
---- openjdk.orig/jdk/src/solaris/native/java/net/linux_close.c
-+++ openjdk/jdk/src/solaris/native/java/net/linux_close.c
+diff -Naur openjdk.orig/jdk/src/solaris/native/java/net/linux_close.c openjdk/jdk/src/solaris/native/java/net/linux_close.c
+--- openjdk.orig/jdk/src/solaris/native/java/net/linux_close.c	2016-04-27 16:32:38.004013584 -0700
++++ openjdk/jdk/src/solaris/native/java/net/linux_close.c	2016-04-27 16:34:18.924854807 -0700
 @@ -56,7 +56,7 @@
  /*
   * Signal to unblock thread
@@ -94,8 +145,9 @@
      sa.sa_handler = sig_wakeup;
      sa.sa_flags   = 0;
      sigemptyset(&sa.sa_mask);
---- openjdk.orig/jdk/src/solaris/native/sun/nio/ch/NativeThread.c
-+++ openjdk/jdk/src/solaris/native/sun/nio/ch/NativeThread.c
+diff -Naur openjdk.orig/jdk/src/solaris/native/sun/nio/ch/NativeThread.c openjdk/jdk/src/solaris/native/sun/nio/ch/NativeThread.c
+--- openjdk.orig/jdk/src/solaris/native/sun/nio/ch/NativeThread.c	2016-04-27 16:32:38.052013984 -0700
++++ openjdk/jdk/src/solaris/native/sun/nio/ch/NativeThread.c	2016-04-27 16:34:18.925854816 -0700
 @@ -36,7 +36,7 @@
    #include <pthread.h>
    #include <sys/signal.h>
