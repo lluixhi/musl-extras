@@ -66,9 +66,9 @@ diff -Naur openjdk.orig/jdk/src/share/native/sun/misc/URLClassPath.c openjdk/jdk
  #include <string.h>
  
  #include "jni.h"
-diff -Naur openjdk.orig/jdk/src/solaris/native/common/openjdk/jdk_util_md.h openjdk/jdk/src/solaris/native/common/openjdk/jdk_util_md.h
---- openjdk.orig/jdk/src/solaris/native/common/openjdk/jdk_util_md.h	2016-04-27 16:32:37.998013534 -0700
-+++ openjdk/jdk/src/solaris/native/common/openjdk/jdk_util_md.h	2016-04-27 16:36:10.984818284 -0700
+diff -Naur openjdk.orig/jdk/src/solaris/native/common/jdk_util_md.h openjdk/jdk/src/solaris/native/common/jdk_util_md.h
+--- openjdk.orig/jdk/src/solaris/native/common/jdk_util_md.h	2016-04-27 16:32:37.998013534 -0700
++++ openjdk/jdk/src/solaris/native/common/jdk_util_md.h	2016-04-27 16:36:10.984818284 -0700
 @@ -37,7 +37,7 @@
  #define ISNAND(d) isnan(d)
  #elif defined(__linux__) || defined(_ALLBSD_SOURCE)
