@@ -78,6 +78,11 @@ TARBALL_PV=${PV}
 SRC_URI="mirror://gentoo/${PN}-${TARBALL_PV}.tar.bz2
 	$(prefix_src_archives ${PN}-${TARBALL_PV}.tar.bz2)"
 
+PATCHES=(
+	"${FILESDIR}/portage-2.3.0_rc1.patch"
+	"${FILESDIR}/portage-2.2.26-fix-check_locale.patch"
+)
+
 pkg_setup() {
 	use epydoc && DISTUTILS_ALL_SUBPHASE_IMPLS=( python2.7 )
 }
@@ -85,7 +90,6 @@ pkg_setup() {
 python_prepare_all() {
 	distutils-r1_python_prepare_all
 
-	epatch "${FILESDIR}"/${PN}-2.2.26-fix-check_locale.patch
 
 	if ! use ipc ; then
 		einfo "Disabling ipc..."
