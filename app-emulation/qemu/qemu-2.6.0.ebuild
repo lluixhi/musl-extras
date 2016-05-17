@@ -1,8 +1,7 @@
 # Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Id$
 
-EAPI=5
+EAPI="5"
 
 PYTHON_COMPAT=( python2_7 )
 PYTHON_REQ_USE="ncurses,readline"
@@ -12,17 +11,13 @@ PLOCALES="de_DE fr_FR hu it tr zh_CN"
 inherit eutils flag-o-matic linux-info toolchain-funcs multilib python-r1 \
 	user udev fcaps readme.gentoo pax-utils l10n
 
-BACKPORTS=
-
 if [[ ${PV} = *9999* ]]; then
 	EGIT_REPO_URI="git://git.qemu.org/qemu.git"
 	inherit git-2
 	SRC_URI=""
 else
-	SRC_URI="http://wiki.qemu-project.org/download/${P}.tar.bz2
-	${BACKPORTS:+
-		https://dev.gentoo.org/~cardoe/distfiles/${P}-${BACKPORTS}.tar.xz}"
-	KEYWORDS="amd64 ~arm64 ~ppc ~ppc64 x86 ~x86-fbsd"
+	SRC_URI="http://wiki.qemu-project.org/download/${P}.tar.bz2"
+	KEYWORDS="~amd64 ~arm64 ~ppc ~ppc64 ~x86 ~x86-fbsd"
 fi
 
 DESCRIPTION="QEMU + Kernel-based Virtual Machine userland tools"
@@ -338,17 +333,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-2.2.0-_sigev_un.patch
 
 	epatch "${FILESDIR}"/qemu-2.5.0-cflags.patch
-	[[ -n ${BACKPORTS} ]] && \
-		EPATCH_FORCE=yes EPATCH_SUFFIX="patch" EPATCH_SOURCE="${S}/patches" \
-			epatch
-
-	epatch "${FILESDIR}"/${PN}-2.5.0-CVE-2016-2198.patch #573314
-	epatch "${FILESDIR}"/${PN}-2.5.0-rng-stack-corrupt-{0,1,2,3}.patch #576420
-	epatch "${FILESDIR}"/${PN}-2.5.1-stellaris_enet-overflow.patch #579614
-	epatch "${FILESDIR}"/${PN}-2.5.1-CVE-2016-4020.patch #580040
-	epatch "${FILESDIR}"/${PN}-2.5.1-CVE-2015-8558.patch #568246 #580426
 	epatch "${FILESDIR}"/${PN}-2.5.0-sysmacros.patch
-	epatch "${FILESDIR}"/${PN}-2.5.1-xfs-linux-headers.patch #577810
 
 	# Fix ld and objcopy being called directly
 	tc-export AR LD OBJCOPY
