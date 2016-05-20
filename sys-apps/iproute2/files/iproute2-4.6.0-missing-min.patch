@@ -1,0 +1,14 @@
+diff -Naur iproute2-4.6.0.orig/ip/ipaddress.c iproute2-4.6.0/ip/ipaddress.c
+--- iproute2-4.6.0.orig/ip/ipaddress.c	2016-05-19 18:24:39.458902584 -0700
++++ iproute2-4.6.0/ip/ipaddress.c	2016-05-19 18:25:23.270314480 -0700
+@@ -36,6 +36,10 @@
+ #include "ip_common.h"
+ #include "color.h"
+ 
++#ifndef MIN
++#define MIN(a, b) ((a) < (b) ? (a) : (b))
++#endif
++
+ enum {
+ 	IPADD_LIST,
+ 	IPADD_FLUSH,

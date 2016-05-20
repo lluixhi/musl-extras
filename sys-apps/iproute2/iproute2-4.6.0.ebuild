@@ -37,14 +37,21 @@ DEPEND="${RDEPEND}
 	>=sys-kernel/linux-headers-3.16
 	elibc_glibc? ( >=sys-libs/glibc-2.7 )"
 
-src_prepare() {
-	epatch "${FILESDIR}"/${PN}-3.1.0-mtu.patch #291907
-	use ipv6 || epatch "${FILESDIR}"/${PN}-4.2.0-no-ipv6.patch #326849
+PATCHES=(
+	"${FILESDIR}"/${PN}-3.1.0-mtu.patch #291907
+	"${FILESDIR}"/${PN}-4.5.0-no-iptables.patch #577464
+	"${FILESDIR}"/${PN}-4.6.0-musl.patch
+	"${FILESDIR}"/${PN}-4.6.0-missing-min.patch
+)
 
-	# Fix for MUSL
-	epatch "${FILESDIR}"/${PN}-4.3.0-musl-noiptables.patch
-	epatch "${FILESDIR}"/${P}-musl.patch
-	epatch "${FILESDIR}"/${P}-missing-limits_h.patch
+src_prepare() {
+	if ! use ipv6 ; then
+		PATCHES+=(
+			"${FILESDIR}"/${PN}-4.2.0-no-ipv6.patch #326849
+		)
+	fi
+
+	epatch "${PATCHES[@]}"
 
 	sed -i \
 		-e '/^CC =/d' \

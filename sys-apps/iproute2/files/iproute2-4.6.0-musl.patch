@@ -1,0 +1,67 @@
+diff -Naur iproute2-4.6.0.orig/include/libiptc/ipt_kernel_headers.h iproute2-4.6.0/include/libiptc/ipt_kernel_headers.h
+--- iproute2-4.6.0.orig/include/libiptc/ipt_kernel_headers.h	2016-05-19 18:29:50.829829960 -0700
++++ iproute2-4.6.0/include/libiptc/ipt_kernel_headers.h	2016-05-19 18:30:07.816989305 -0700
+@@ -6,7 +6,6 @@
+ #include <limits.h>
+ 
+ #include <netinet/ip.h>
+-#include <netinet/in.h>
+ #include <netinet/ip_icmp.h>
+ #include <netinet/tcp.h>
+ #include <netinet/udp.h>
+diff -Naur iproute2-4.6.0.orig/include/linux/if_bridge.h iproute2-4.6.0/include/linux/if_bridge.h
+--- iproute2-4.6.0.orig/include/linux/if_bridge.h	2016-05-19 18:29:50.833829997 -0700
++++ iproute2-4.6.0/include/linux/if_bridge.h	2016-05-19 18:30:07.817989314 -0700
+@@ -15,7 +15,6 @@
+ 
+ #include <linux/types.h>
+ #include <linux/if_ether.h>
+-#include <linux/in6.h>
+ 
+ #define SYSFS_BRIDGE_ATTR	"bridge"
+ #define SYSFS_BRIDGE_FDB	"brforward"
+diff -Naur iproute2-4.6.0.orig/include/linux/netfilter.h iproute2-4.6.0/include/linux/netfilter.h
+--- iproute2-4.6.0.orig/include/linux/netfilter.h	2016-05-19 18:29:50.837830035 -0700
++++ iproute2-4.6.0/include/linux/netfilter.h	2016-05-19 18:30:07.817989314 -0700
+@@ -4,8 +4,6 @@
+ #include <linux/types.h>
+ 
+ #include <linux/sysctl.h>
+-#include <linux/in.h>
+-#include <linux/in6.h>
+ 
+ /* Responses from hook functions. */
+ #define NF_DROP 0
+diff -Naur iproute2-4.6.0.orig/include/linux/xfrm.h iproute2-4.6.0/include/linux/xfrm.h
+--- iproute2-4.6.0.orig/include/linux/xfrm.h	2016-05-19 18:29:50.842830082 -0700
++++ iproute2-4.6.0/include/linux/xfrm.h	2016-05-19 18:30:07.817989314 -0700
+@@ -1,7 +1,6 @@
+ #ifndef _LINUX_XFRM_H
+ #define _LINUX_XFRM_H
+ 
+-#include <linux/in6.h>
+ #include <linux/types.h>
+ 
+ /* All of the structures in this file may not change size as they are
+diff -Naur iproute2-4.6.0.orig/include/xtables.h iproute2-4.6.0/include/xtables.h
+--- iproute2-4.6.0.orig/include/xtables.h	2016-05-19 18:29:50.843830091 -0700
++++ iproute2-4.6.0/include/xtables.h	2016-05-19 18:37:25.530015226 -0700
+@@ -13,7 +13,6 @@
+ #include <stddef.h>
+ #include <stdint.h>
+ #include <netinet/in.h>
+-#include <net/if.h>
+ #include <linux/types.h>
+ #include <linux/netfilter.h>
+ #include <linux/netfilter/x_tables.h>
+diff -Naur iproute2-4.6.0.orig/tc/m_xt.c iproute2-4.6.0/tc/m_xt.c
+--- iproute2-4.6.0.orig/tc/m_xt.c	2016-05-19 18:29:50.878830420 -0700
++++ iproute2-4.6.0/tc/m_xt.c	2016-05-19 18:33:35.372900996 -0700
+@@ -14,7 +14,6 @@
+ #include <sys/socket.h>
+ #include <netinet/in.h>
+ #include <arpa/inet.h>
+-#include <net/if.h>
+ #include <limits.h>
+ #include <linux/netfilter.h>
+ #include <linux/netfilter_ipv4/ip_tables.h>
