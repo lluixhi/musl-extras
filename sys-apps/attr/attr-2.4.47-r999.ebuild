@@ -4,7 +4,7 @@
 
 EAPI="4"
 
-inherit eutils toolchain-funcs multilib-minimal
+inherit eutils libtool toolchain-funcs multilib-minimal
 
 DESCRIPTION="Extended attributes tools"
 HOMEPAGE="http://savannah.nongnu.org/projects/attr"
@@ -24,6 +24,7 @@ RDEPEND="abi_x86_32? (
 
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-cdecls.patch
+	epatch "${FILESDIR}"/${P}-fix-missing-sys_types_h.patch
 
 	sed -i \
 		-e "/^PKG_DOC_DIR/s:@pkg_name@:${PF}:" \
@@ -31,6 +32,8 @@ src_prepare() {
 		include/builddefs.in \
 		|| die
 	strip-linguas -u po
+	elibtoolize #580792
+
 	multilib_copy_sources # https://savannah.nongnu.org/bugs/index.php?39736
 }
 
