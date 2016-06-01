@@ -1,4 +1,4 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -92,8 +92,8 @@ src_prepare() {
 	[[ -n ${RPM} ]] && rpm_spec_epatch "${WORKDIR}"/gdb.spec
 	! use vanilla && [[ -n ${PATCH_VER} ]] && EPATCH_SUFFIX="patch" epatch "${WORKDIR}"/patch
 
-	epatch "${FILESDIR}"/${P}-linux_nat.patch
-	epatch "${FILESDIR}"/${P}-missing-stat_h.patch
+	epatch "${FILESDIR}"/${PN}-7.11-linux_nat.patch
+	epatch "${FILESDIR}"/${PN}-7.11-missing-stat_h.patch
 
 	epatch_user
 	strip-linguas -u bfd/po opcodes/po
