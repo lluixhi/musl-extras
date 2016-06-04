@@ -1,0 +1,11 @@
+diff -Naur weston-1.11.0.orig/shared/xalloc.h weston-1.11.0/shared/xalloc.h
+--- weston-1.11.0.orig/shared/xalloc.h	2016-06-04 12:16:02.644013743 -0700
++++ weston-1.11.0/shared/xalloc.h	2016-06-04 12:15:41.029778929 -0700
+@@ -30,6 +30,7 @@
+ extern "C" {
+ #endif
+ 
++#include <stdint.h>
+ #include <stdlib.h>
+ #include <string.h>
+ 
