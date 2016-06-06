@@ -1,13 +1,13 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
 EAPI="5"
 
-inherit toolchain-funcs flag-o-matic
+inherit autotools toolchain-funcs flag-o-matic
 
 DESCRIPTION="DOS filesystem tools - provides mkdosfs, mkfs.msdos, mkfs.vfat"
-HOMEPAGE="http://www.daniel-baumann.ch/software/dosfstools/"
+HOMEPAGE="https://github.com/dosfstools/dosfstools"
 SRC_URI="https://github.com/dosfstools/dosfstools/releases/download/v${PV}/${P}.tar.xz"
 
 LICENSE="GPL-3"
@@ -20,10 +20,16 @@ DEPEND="${CDEPEND}
 	udev? ( virtual/pkgconfig )"
 RDEPEND="${CDEPEND}"
 
-#RESTRICT="test" # there is no test target #239071
+RESTRICT="test" # there is no test target #239071
+
+PATCHES=(
+	"${FILESDIR}/${P}-udevlibs.patch"
+	"${FILESDIR}/${P}-musl.patch"
+)
 
 src_prepare() {
-	epatch "${FILESDIR}"/${P}-musl.patch
+	epatch "${PATCHES[@]}"
+	eautoreconf
 }
 
 src_configure() {
@@ -31,4 +37,13 @@ src_configure() {
 		--docdir=/usr/share/doc/${PF} \
 		$(use_enable compat compat-symlinks) \
 		$(use_with udev)
+}
+
+src_install() {
+	default
+	if ! use compat; then
+		# Keep fsck -t vfat and mkfs -t vfat working, bug 584980.
+		dosym fsck.fat /usr/sbin/fsck.vfat
+		dosym mkfs.fat /usr/sbin/mkfs.vfat
+	fi
 }
