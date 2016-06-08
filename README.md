@@ -6,13 +6,14 @@ This repo exists to be bleeding edge, fix/update the hardened dev patches,
 pull in patches from Voidlinux and Alpine, and create its own.
 
 Features currently not found in other distros that support MUSL include:
-* GCC 5.3.0 (Hardened)
+* GCC 6.1.0
 * Latest Linux Headers
 * Working xf86-video-intel
 * Latest ElfUtils
 * Icecat
 * Icedtea 8
 * SystemTap
+* Possibly more?
 
 ## Note on Icedtea
 Icedtea requires a JDK to bootstrap it, and GCJ is broken.
