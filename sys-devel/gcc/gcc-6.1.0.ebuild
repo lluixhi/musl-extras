@@ -39,6 +39,8 @@ src_prepare() {
 	toolchain_src_prepare
 	if use elibc_musl; then
 		cd "${S}"
-		epatch "${FILESDIR}"/${PV}/musl-cpu.patch
+		epatch "${FILESDIR}"/4.9.3/posix_memalign.patch
+		epatch "${FILESDIR}"/5.2.0/res_state.patch
+		epatch "${FILESDIR}"/${PV}/cpu_indicator.patch
 	fi
 }
