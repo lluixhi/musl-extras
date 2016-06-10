@@ -37,6 +37,9 @@ fi
 
 src_prepare() {
 	toolchain_src_prepare
+
+	epatch "${FILESDIR}"/${PV}/3-arg-phi.patch
+
 	if use elibc_musl; then
 		cd "${S}"
 		epatch "${FILESDIR}"/4.9.3/posix_memalign.patch
