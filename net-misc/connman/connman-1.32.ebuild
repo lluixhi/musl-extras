@@ -35,7 +35,6 @@ PATCHES=(
 	"${FILESDIR}/${PN}-musl.patch"
 	"${FILESDIR}/${PN}-1.32-execinfo.patch"
 	"${FILESDIR}/${PN}-musl-libresolv.patch"
-	"${FILESDIR}/${PN}-1.31-iptables-1.6.0.patch"
 	"${FILESDIR}/${PN}-1.31-xtables.patch"
 )
 
