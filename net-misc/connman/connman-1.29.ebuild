@@ -33,6 +33,7 @@ DEPEND="${RDEPEND}
 
 PATCHES=(
 	"${FILESDIR}/${PN}-musl.patch"
+	"${FILESDIR}/${PN}-musl-log.patch"
 	"${FILESDIR}/${PN}-musl-libresolv.patch"
 	"${FILESDIR}/${P}-musl-sockaddr.patch"
 )
