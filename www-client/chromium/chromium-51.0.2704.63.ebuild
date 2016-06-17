@@ -5,12 +5,12 @@
 EAPI="5"
 PYTHON_COMPAT=( python2_7 )
 
-CHROMIUM_LANGS="am ar bg bn ca cs da de el en_GB es es_LA et fa fi fil fr gu he
+CHROMIUM_LANGS="am ar bg bn ca cs da de el en_GB es es_419 et fa fi fil fr gu he
 	hi hr hu id it ja kn ko lt lv ml mr ms nb nl pl pt_BR pt_PT ro ru sk sl sr
 	sv sw ta te th tr uk vi zh_CN zh_TW"
 
 inherit check-reqs chromium eutils flag-o-matic multilib multiprocessing pax-utils \
-	portability python-any-r1 readme.gentoo toolchain-funcs versionator virtualx
+	portability python-any-r1 readme.gentoo-r1 toolchain-funcs versionator virtualx
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://chromium.org/"
@@ -22,7 +22,8 @@ KEYWORDS="amd64 ~arm ~arm64 x86"
 IUSE="cups gn gnome gnome-keyring gtk3 +hangouts hidpi hotwording kerberos neon pic +proprietary-codecs pulseaudio selinux +system-ffmpeg +tcmalloc widevine"
 RESTRICT="!system-ffmpeg? ( proprietary-codecs? ( bindist ) )"
 
-REQUIRED_USE="gn? ( kerberos !system-ffmpeg )"
+# TODO: bootstrapped gn binary hangs when using tcmalloc with portage's sandbox.
+REQUIRED_USE="gn? ( kerberos !system-ffmpeg !tcmalloc )"
 
 # Native Client binaries are compiled with different set of flags, bug #452066.
 QA_FLAGS_IGNORED=".*\.nexe"
@@ -81,7 +82,6 @@ RDEPEND="
 		media-libs/flac:=
 		>=media-libs/harfbuzz-0.9.41:=[icu(+)]
 		>=media-libs/libjpeg-turbo-1.2.0-r1:=
-		media-libs/libpng:0=
 		>=media-libs/libwebp-0.4.0:=
 		sys-libs/zlib:=[minizip]
 	)"
@@ -188,12 +188,11 @@ pkg_setup() {
 }
 
 src_prepare() {
-	epatch "${FILESDIR}/${PN}-system-ffmpeg-r2.patch"
+	epatch "${FILESDIR}/${PN}-system-ffmpeg-r3.patch"
 	epatch "${FILESDIR}/${PN}-system-jinja-r8.patch"
 	epatch "${FILESDIR}/${PN}-widevine-r1.patch"
 	epatch "${FILESDIR}/${PN}-last-commit-position-r0.patch"
 	epatch "${FILESDIR}/${PN}-snapshot-toolchain-r1.patch"
-	epatch "${FILESDIR}/chromium-whitelist-arm64-syscalls.patch"
 
 	EPATCH_SOURCE="${FILESDIR}/musl" EPATCH_SUFFIX="patch" \
 	EPATCH_MULTI_MSG="Applying musl patches ..." epatch
@@ -250,6 +249,7 @@ src_prepare() {
 		'third_party/analytics' \
 		'third_party/angle' \
 		'third_party/angle/src/third_party/compiler' \
+		'third_party/angle/src/third_party/libXNVCtrl' \
 		'third_party/angle/src/third_party/murmurhash' \
 		'third_party/angle/src/third_party/trace_event' \
 		'third_party/boringssl' \
@@ -284,12 +284,13 @@ src_prepare() {
 		'third_party/libaddressinput' \
 		'third_party/libjingle' \
 		'third_party/libphonenumber' \
+		'third_party/libpng' \
 		'third_party/libsecret' \
 		'third_party/libsrtp' \
 		'third_party/libudev' \
 		'third_party/libusb' \
-		'third_party/libvpx_new' \
-		'third_party/libvpx_new/source/libvpx/third_party/x86inc' \
+		'third_party/libvpx' \
+		'third_party/libvpx/source/libvpx/third_party/x86inc' \
 		'third_party/libxml/chromium' \
 		'third_party/libwebm' \
 		'third_party/libyuv' \
@@ -298,7 +299,6 @@ src_prepare() {
 		'third_party/mesa' \
 		'third_party/modp_b64' \
 		'third_party/mt19937ar' \
-		'third_party/npapi' \
 		'third_party/openh264' \
 		'third_party/openmax_dl' \
 		'third_party/opus' \
@@ -357,6 +357,7 @@ src_configure() {
 	# Use system-provided libraries.
 	# TODO: use_system_hunspell (upstream changes needed).
 	# TODO: use_system_icu (bug #576370).
+	# TODO: use_system_libpng (bug #578212).
 	# TODO: use_system_libsrtp (bug #459932).
 	# TODO: use_system_libusb (http://crbug.com/266149).
 	# TODO: use_system_libvpx (http://crbug.com/494939).
@@ -373,7 +374,6 @@ src_configure() {
 		-Duse_system_jsoncpp=1
 		-Duse_system_libevent=1
 		-Duse_system_libjpeg=1
-		-Duse_system_libpng=1
 		-Duse_system_libwebp=1
 		-Duse_system_libxml=1
 		-Duse_system_libxslt=1
@@ -410,6 +410,7 @@ src_configure() {
 		$(gyp_use widevine enable_widevine)"
 
 	myconf_gn+=" use_cups=$(usex cups true false)"
+	myconf_gn+=" use_allocator=$(usex tcmalloc \"tcmalloc\" \"none\")"
 
 	# Use explicit library dependencies instead of dlopen.
 	# This makes breakages easier to detect by revdep-rebuild.

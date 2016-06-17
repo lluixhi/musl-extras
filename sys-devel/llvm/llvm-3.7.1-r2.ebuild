@@ -21,7 +21,7 @@ SRC_URI="http://llvm.org/releases/${PV}/${P}.src.tar.xz
 
 LICENSE="UoI-NCSA"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~sparc ~x86 ~amd64-fbsd ~x86-fbsd ~x64-freebsd ~amd64-linux ~arm-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos"
+KEYWORDS="amd64 arm ~arm64 ~ppc ~ppc64 ~sparc x86 ~amd64-fbsd ~x86-fbsd ~x64-freebsd ~amd64-linux ~arm-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos"
 IUSE="clang debug doc gold libedit +libffi lldb multitarget ncurses ocaml
 	python +static-analyzer test xml video_cards_radeon
 	kernel_Darwin kernel_FreeBSD"
@@ -177,6 +177,10 @@ src_prepare() {
 	if use clang; then
 		# Automatically select active system GCC's libraries, bugs #406163 and #417913
 		eapply "${FILESDIR}"/clang-3.5-gentoo-runtime-gcc-detection-v3.patch
+
+		# Support gcc4.9 search paths
+		# https://github.com/llvm-mirror/clang/commit/af4db76e059c1a3
+		eapply "${FILESDIR}"/clang-3.8-gcc4.9-search-path.patch
 
 		eapply "${FILESDIR}"/clang-3.6-gentoo-install.patch
 

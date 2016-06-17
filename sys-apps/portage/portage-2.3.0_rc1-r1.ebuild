@@ -90,7 +90,6 @@ pkg_setup() {
 python_prepare_all() {
 	distutils-r1_python_prepare_all
 
-
 	if ! use ipc ; then
 		einfo "Disabling ipc..."
 		sed -e "s:_enable_ipc_daemon = True:_enable_ipc_daemon = False:" \
@@ -130,10 +129,7 @@ python_prepare_all() {
 			-i cnf/make.globals || die "sed failed"
 
 		einfo "Adjusting repos.conf ..."
-		sed -e "s|^\(main-repo = \).*|\\1gentoo_prefix|" \
-			-e "s|^\\[gentoo\\]|[gentoo_prefix]|" \
-			-e "s|^\(location = \)\(/usr/portage\)|\\1${EPREFIX}\\2|" \
-			-e "s|^\(sync-uri = \).*|\\1rsync://prefix.gentooexperimental.org/gentoo-portage-prefix|" \
+		sed -e "s|^\(location = \)\(/usr/portage\)|\\1${EPREFIX}\\2|" \
 			-i cnf/repos.conf || die "sed failed"
 
 		einfo "Adding FEATURES=force-prefix to make.globals ..."
@@ -363,7 +359,7 @@ pkg_postinst() {
 
 	einfo ""
 	einfo "This release of portage NO LONGER contains the repoman code base."
-	einfo "Repoman has it's own ebuild and release package."
+	einfo "Repoman has its own ebuild and release package."
 	einfo "For repoman functionality please emerge app-portage/repoman"
 	einfo "Please report any bugs you may encounter."
 	einfo ""

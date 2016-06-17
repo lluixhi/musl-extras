@@ -16,7 +16,7 @@ if [[ ${PV} == "99999999" ]] ; then
 else
 	SRC_URI="http://www.skbuff.net/iputils/iputils-s${PV}.tar.bz2
 		https://dev.gentoo.org/~polynomial-c/iputils-s${PV}-manpages.tar.xz"
-	KEYWORDS="alpha amd64 ~arm ~arm64 hppa ~ia64 ~m68k ~mips ~ppc ppc64 ~s390 ~sh ~sparc x86 ~ppc-aix ~amd64-linux ~x86-linux"
+	KEYWORDS="alpha amd64 arm arm64 hppa ia64 m68k ~mips ppc ppc64 s390 sh sparc x86 ~ppc-aix ~amd64-linux ~x86-linux"
 fi
 
 DESCRIPTION="Network monitoring tools including ping and ping6"
@@ -37,7 +37,7 @@ LIB_DEPEND="caps? ( sys-libs/libcap[static-libs(+)] )
 	) )"
 RDEPEND="arping? ( !net-misc/arping )
 	rarpd? ( !net-misc/rarpd )
-	traceroute? ( !net-misc/traceroute )
+	traceroute? ( !net-analyzer/traceroute )
 	!static? ( ${LIB_DEPEND//\[static-libs(+)]} )"
 DEPEND="${RDEPEND}
 	static? ( ${LIB_DEPEND} )
@@ -90,6 +90,14 @@ src_configure() {
 	use ipv6 || IPV6_TARGETS=()
 }
 
+ldflag_resolv() {
+	# See if the system includes a libresolv. #584132
+	echo "main(){}" > "${T}"/resolv.c
+	if ${CC} ${CFLAGS} ${LDFLAGS} "${T}"/resolv.c -lresolv -o "${T}"/resolv 2>/dev/null ; then
+		echo -lresolv
+	fi
+}
+
 src_compile() {
 	tc-export CC
 	emake \
@@ -97,6 +105,7 @@ src_compile() {
 		USE_IDN=$(usex idn) \
 		USE_GCRYPT=$(usex gcrypt) \
 		USE_CRYPTO=$(usex ssl) \
+		LDFLAG_RESOLV=$(ldflag_resolv) \
 		IPV4_TARGETS="${IPV4_TARGETS[*]}" \
 		IPV6_TARGETS="${IPV6_TARGETS[*]}"
 

@@ -1,18 +1,25 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI="5"
+
+if [[ ${PV} == "9999" ]] ; then
+	inherit git-r3
+	EGIT_REPO_URI="git://git.kernel.org/pub/scm/utils/kernel/kexec/kexec-tools.git"
+	AUTOTOOLS_AUTORECONF=true
+else
+	SRC_URI="mirror://kernel/linux/utils/kernel/kexec/${P}.tar.xz"
+	KEYWORDS="~amd64 ~x86"
+fi
 
 inherit autotools-utils linux-info systemd
 
 DESCRIPTION="Load another kernel from the currently executing Linux kernel"
 HOMEPAGE="https://kernel.org/pub/linux/utils/kernel/kexec/"
-SRC_URI="mirror://kernel/linux/utils/kernel/kexec/${P}.tar.xz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
 IUSE="booke lzma xen zlib"
 
 REQUIRED_USE="lzma? ( zlib )"
@@ -27,7 +34,6 @@ CONFIG_CHECK="~KEXEC"
 PATCHES=(
 	"${FILESDIR}"/${PN}-2.0.4-disable-kexec-test.patch
 	"${FILESDIR}"/${PN}-2.0.4-out-of-source.patch
-	"${FILESDIR}"/${PN}-2.0.9-hardened.patch
 	"${FILESDIR}"/${PN}-2.0.9-gnu-source.patch
 )
 
@@ -51,7 +57,7 @@ src_install() {
 
 	dodoc "${FILESDIR}"/README.Gentoo
 
-	newinitd "${FILESDIR}"/kexec.init-2.0.4-r3 kexec
+	newinitd "${FILESDIR}"/kexec.init-2.0.12 kexec
 	newconfd "${FILESDIR}"/kexec.conf-2.0.4 kexec
 
 	insinto /etc
