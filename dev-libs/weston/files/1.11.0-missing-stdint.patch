@@ -9,3 +9,6 @@ diff -Naur weston-1.11.0.orig/shared/xalloc.h weston-1.11.0/shared/xalloc.h
  #include <stdlib.h>
  #include <string.h>
  
+ #weston-launch
+#include <err.h>
+#replace standart gclibc <error.h> which not supported in musl witn err.h
