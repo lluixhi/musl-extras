@@ -93,7 +93,7 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig
 "
 
-PATCHES=( "${FILESDIR}/${PV}-missing-stdint.patch" )
+PATCHES=( "${FILESDIR}/${PV}-musl.patch" )
 
 src_prepare() {
 	if [[ ${PV} = 9999* ]]; then
