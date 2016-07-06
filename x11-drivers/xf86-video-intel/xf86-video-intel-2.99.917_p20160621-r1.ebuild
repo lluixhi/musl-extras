@@ -11,7 +11,7 @@ inherit linux-info xorg-2
 DESCRIPTION="X.Org driver for Intel cards"
 
 KEYWORDS="~amd64 ~x86 ~amd64-fbsd -x86-fbsd"
-IUSE="debug +dri3 +sna +udev uxa xvmc"
+IUSE="debug dri3 +sna +udev uxa xvmc"
 COMMIT_ID="c28e62f94f15c9f5c4fb0744588f08ae18e4a9b5"
 SRC_URI="https://cgit.freedesktop.org/xorg/driver/xf86-video-intel/snapshot/${COMMIT_ID}.tar.xz -> ${P}.tar.xz"
 
@@ -49,7 +49,7 @@ src_configure() {
 	XORG_CONFIGURE_OPTIONS=(
 		$(use_enable debug)
 		$(use_enable dri)
-		$(use_enable dri3)
+		$(use_enable dri dri3)
 		$(usex dri3 "--with-default-dri=3")
 		$(use_enable sna)
 		$(use_enable udev)
@@ -72,5 +72,12 @@ pkg_postinst() {
 		ewarn "	      i915 driver"
 		ewarn "      [*]       Enable modesetting on intel by default"
 		echo
+	fi
+	if use dri3; then
+		ewarn "There are reports of crashes when using DRI3, we recommend"
+		ewarn "to be careful when enabling this option. Check the following"
+		ewarn "bugs for discussion and a workaround patch for libdrm:"
+		ewarn "https://bugs.freedesktop.org/show_bug.cgi?id=71759"
+		ewarn "https://bugs.gentoo.org/show_bug.cgi?id=582544"
 	fi
 }
