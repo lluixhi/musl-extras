@@ -44,8 +44,8 @@ done
 
 IUSE="${IUSE_VIDEO_CARDS}
 	bindist +classic d3d9 debug +dri3 +egl +gallium +gbm gles1 gles2 +llvm
-	+nptl opencl osmesa pax_kernel openmax pic selinux +udev vaapi vdpau
-	wayland xvmc xa kernel_FreeBSD"
+	+nptl opencl osmesa pax_kernel openmax pic selinux +udev vaapi valgrind
+	vdpau wayland xvmc xa kernel_FreeBSD"
 
 REQUIRED_USE="
 	d3d9?   ( dri3 gallium )
@@ -95,28 +95,22 @@ RDEPEND="
 	>=x11-libs/libxcb-1.9.3:=[${MULTILIB_USEDEP}]
 	x11-libs/libXfixes:=[${MULTILIB_USEDEP}]
 	llvm? ( !kernel_FreeBSD? (
-		video_cards_radeonsi? ( || (
-			>=dev-libs/elfutils-0.155-r1:=[${MULTILIB_USEDEP}]
-			>=dev-libs/libelf-0.8.13-r2:=[${MULTILIB_USEDEP}]
-			) )
+		video_cards_radeonsi? ( virtual/libelf:0=[${MULTILIB_USEDEP}] )
 		!video_cards_r600? (
-			video_cards_radeon? ( || (
-				>=dev-libs/elfutils-0.155-r1:=[${MULTILIB_USEDEP}]
-				>=dev-libs/libelf-0.8.13-r2:=[${MULTILIB_USEDEP}]
-				) )
+			video_cards_radeon? ( virtual/libelf:0=[${MULTILIB_USEDEP}] )
 		) )
 		>=sys-devel/llvm-3.6.0:=[${MULTILIB_USEDEP}]
 	)
 	opencl? (
 				app-eselect/eselect-opencl
 				dev-libs/libclc
-				!kernel_FreeBSD? ( || (
-					>=dev-libs/elfutils-0.155-r1:=[${MULTILIB_USEDEP}]
-					>=dev-libs/libelf-0.8.13-r2:=[${MULTILIB_USEDEP}]
-				) )
+				!kernel_FreeBSD? ( virtual/libelf:0=[${MULTILIB_USEDEP}] )
 			)
 	openmax? ( >=media-libs/libomxil-bellagio-0.9.3:=[${MULTILIB_USEDEP}] )
-	vaapi? ( >=x11-libs/libva-1.6.0:=[${MULTILIB_USEDEP}] )
+	vaapi? (
+		>=x11-libs/libva-1.6.0:=[${MULTILIB_USEDEP}]
+		video_cards_nouveau? ( !<=x11-libs/libva-vdpau-driver-0.7.4-r3 )
+	)
 	vdpau? ( >=x11-libs/libvdpau-1.1:=[${MULTILIB_USEDEP}] )
 	wayland? ( >=dev-libs/wayland-1.2.0:=[${MULTILIB_USEDEP}] )
 	xvmc? ( >=x11-libs/libXvMC-1.0.8:=[${MULTILIB_USEDEP}] )
@@ -148,6 +142,7 @@ DEPEND="${RDEPEND}
 	)
 	sys-devel/gettext
 	virtual/pkgconfig
+	valgrind? ( dev-util/valgrind )
 	>=x11-proto/dri2proto-2.8-r1:=[${MULTILIB_USEDEP}]
 	dri3? (
 		>=x11-proto/dri3proto-1.0:=[${MULTILIB_USEDEP}]
@@ -302,6 +297,7 @@ multilib_src_configure() {
 		$(use_enable gles2) \
 		$(use_enable nptl glx-tls) \
 		$(use_enable !udev sysfs) \
+		--enable-valgrind=$(usex valgrind auto no) \
 		--enable-llvm-shared-libs \
 		--with-dri-drivers=${DRI_DRIVERS} \
 		--with-gallium-drivers=${GALLIUM_DRIVERS} \
