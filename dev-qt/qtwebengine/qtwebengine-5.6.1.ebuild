@@ -78,6 +78,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-5.6.0-musl-stackframe.patch"
 	"${FILESDIR}/${PN}-5.6.0-musl-sandbox.patch"
 	"${FILESDIR}/${PN}-5.6.0-musl-sysctl.patch"
+	"${FILESDIR}/${PN}-5.6.0-musl-off_t.patch"
 )
 
 src_prepare() {
