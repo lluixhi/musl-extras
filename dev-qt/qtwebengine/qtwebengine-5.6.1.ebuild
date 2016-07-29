@@ -76,6 +76,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-5.6.0-musl-resolver.patch"
 	"${FILESDIR}/${PN}-5.6.0-musl-siginfo.patch"
 	"${FILESDIR}/${PN}-5.6.0-musl-stackframe.patch"
+	"${FILESDIR}/${PN}-5.6.0-musl-sandbox.patch"
 )
 
 src_prepare() {
