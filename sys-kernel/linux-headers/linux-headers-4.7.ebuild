@@ -26,7 +26,7 @@ src_unpack() {
 
 src_prepare() {
 	[[ -n ${PATCH_VER} ]] && EPATCH_SUFFIX="patch" epatch "${WORKDIR}"/${PV}
-	epatch "${FILESDIR}"/libc-4.6-portability.patch
+	epatch "${FILESDIR}"/libc-4.7-portability.patch
 }
 
 src_install() {
