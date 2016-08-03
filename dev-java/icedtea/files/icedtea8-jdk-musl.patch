@@ -1,6 +1,6 @@
 diff -Naur openjdk.orig/jdk/src/share/native/com/sun/java/util/jar/pack/zip.cpp openjdk/jdk/src/share/native/com/sun/java/util/jar/pack/zip.cpp
---- openjdk.orig/jdk/src/share/native/com/sun/java/util/jar/pack/zip.cpp	2016-08-03 13:03:59.546502591 -0700
-+++ openjdk/jdk/src/share/native/com/sun/java/util/jar/pack/zip.cpp	2016-08-03 13:06:04.409940787 -0700
+--- openjdk.orig/jdk/src/share/native/com/sun/java/util/jar/pack/zip.cpp	2016-08-03 13:15:49.841683878 -0700
++++ openjdk/jdk/src/share/native/com/sun/java/util/jar/pack/zip.cpp	2016-08-03 13:16:04.760855719 -0700
 @@ -46,6 +46,8 @@
  
  #include "zip.h"
@@ -11,8 +11,8 @@ diff -Naur openjdk.orig/jdk/src/share/native/com/sun/java/util/jar/pack/zip.cpp 
  
  inline bool jar::deflate_bytes(bytes& head, bytes& tail) {
 diff -Naur openjdk.orig/jdk/src/share/native/com/sun/java/util/jar/pack/zip.h openjdk/jdk/src/share/native/com/sun/java/util/jar/pack/zip.h
---- openjdk.orig/jdk/src/share/native/com/sun/java/util/jar/pack/zip.h	2016-08-03 13:03:59.546502591 -0700
-+++ openjdk/jdk/src/share/native/com/sun/java/util/jar/pack/zip.h	2016-08-03 13:05:25.985498208 -0700
+--- openjdk.orig/jdk/src/share/native/com/sun/java/util/jar/pack/zip.h	2016-08-03 13:15:49.841683878 -0700
++++ openjdk/jdk/src/share/native/com/sun/java/util/jar/pack/zip.h	2016-08-03 13:16:04.761855731 -0700
 @@ -23,9 +23,7 @@
   * questions.
   */
@@ -25,8 +25,8 @@ diff -Naur openjdk.orig/jdk/src/share/native/com/sun/java/util/jar/pack/zip.h op
  struct unpacker;
  
 diff -Naur openjdk.orig/jdk/src/share/native/sun/awt/medialib/mlib_types.h openjdk/jdk/src/share/native/sun/awt/medialib/mlib_types.h
---- openjdk.orig/jdk/src/share/native/sun/awt/medialib/mlib_types.h	2016-08-03 13:03:59.603503248 -0700
-+++ openjdk/jdk/src/share/native/sun/awt/medialib/mlib_types.h	2016-08-03 13:07:02.825613627 -0700
+--- openjdk.orig/jdk/src/share/native/sun/awt/medialib/mlib_types.h	2016-08-03 13:15:49.898684535 -0700
++++ openjdk/jdk/src/share/native/sun/awt/medialib/mlib_types.h	2016-08-03 13:16:04.761855731 -0700
 @@ -27,6 +27,7 @@
  #ifndef MLIB_TYPES_H
  #define MLIB_TYPES_H
@@ -36,8 +36,8 @@ diff -Naur openjdk.orig/jdk/src/share/native/sun/awt/medialib/mlib_types.h openj
  #if defined(_MSC_VER)
  #include <float.h>                      /* for FLT_MAX and DBL_MAX */
 diff -Naur openjdk.orig/jdk/src/solaris/native/common/jdk_util_md.h openjdk/jdk/src/solaris/native/common/jdk_util_md.h
---- openjdk.orig/jdk/src/solaris/native/common/jdk_util_md.h	2016-08-03 13:03:59.766505125 -0700
-+++ openjdk/jdk/src/solaris/native/common/jdk_util_md.h	2016-08-03 13:08:27.902593557 -0700
+--- openjdk.orig/jdk/src/solaris/native/common/jdk_util_md.h	2016-08-03 13:15:50.061686412 -0700
++++ openjdk/jdk/src/solaris/native/common/jdk_util_md.h	2016-08-03 13:16:04.761855731 -0700
 @@ -37,7 +37,7 @@
  #define ISNAND(d) isnan(d)
  #elif defined(__linux__) || defined(_ALLBSD_SOURCE)
@@ -48,8 +48,8 @@ diff -Naur openjdk.orig/jdk/src/solaris/native/common/jdk_util_md.h openjdk/jdk/
  #elif defined(_AIX)
  #include <math.h>
 diff -Naur openjdk.orig/jdk/src/solaris/native/java/net/Inet4AddressImpl.c openjdk/jdk/src/solaris/native/java/net/Inet4AddressImpl.c
---- openjdk.orig/jdk/src/solaris/native/java/net/Inet4AddressImpl.c	2016-08-03 13:03:59.769505160 -0700
-+++ openjdk/jdk/src/solaris/native/java/net/Inet4AddressImpl.c	2016-08-03 13:08:59.878961866 -0700
+--- openjdk.orig/jdk/src/solaris/native/java/net/Inet4AddressImpl.c	2016-08-03 13:15:50.064686447 -0700
++++ openjdk/jdk/src/solaris/native/java/net/Inet4AddressImpl.c	2016-08-03 13:16:04.762855742 -0700
 @@ -47,7 +47,7 @@
  
  #include "java_net_Inet4AddressImpl.h"
@@ -60,8 +60,8 @@ diff -Naur openjdk.orig/jdk/src/solaris/native/java/net/Inet4AddressImpl.c openj
  #endif
  
 diff -Naur openjdk.orig/jdk/src/solaris/native/java/net/NetworkInterface.c openjdk/jdk/src/solaris/native/java/net/NetworkInterface.c
---- openjdk.orig/jdk/src/solaris/native/java/net/NetworkInterface.c	2016-08-03 13:03:59.770505171 -0700
-+++ openjdk/jdk/src/solaris/native/java/net/NetworkInterface.c	2016-08-03 13:09:12.098102607 -0700
+--- openjdk.orig/jdk/src/solaris/native/java/net/NetworkInterface.c	2016-08-03 13:15:50.064686447 -0700
++++ openjdk/jdk/src/solaris/native/java/net/NetworkInterface.c	2016-08-03 13:16:04.762855742 -0700
 @@ -47,7 +47,6 @@
  
  #ifdef __linux__
@@ -71,8 +71,8 @@ diff -Naur openjdk.orig/jdk/src/solaris/native/java/net/NetworkInterface.c openj
  #include <stdio.h>
  #endif
 diff -Naur openjdk.orig/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c openjdk/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c
---- openjdk.orig/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c	2016-08-03 13:03:59.770505171 -0700
-+++ openjdk/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c	2016-08-03 13:09:27.749282880 -0700
+--- openjdk.orig/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c	2016-08-03 13:15:50.064686447 -0700
++++ openjdk/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c	2016-08-03 13:16:04.763855754 -0700
 @@ -41,7 +41,6 @@
  #endif
  #ifdef __linux__
@@ -81,9 +81,20 @@ diff -Naur openjdk.orig/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.
  #include <sys/utsname.h>
  #include <netinet/ip.h>
  
+diff -Naur openjdk.orig/jdk/src/solaris/native/java/net/PlainSocketImpl.c openjdk/jdk/src/solaris/native/java/net/PlainSocketImpl.c
+--- openjdk.orig/jdk/src/solaris/native/java/net/PlainSocketImpl.c	2016-08-03 13:15:50.064686447 -0700
++++ openjdk/jdk/src/solaris/native/java/net/PlainSocketImpl.c	2016-08-03 13:16:25.948099757 -0700
+@@ -43,7 +43,6 @@
+ #endif
+ #ifdef __linux__
+ #include <unistd.h>
+-#include <sys/sysctl.h>
+ #endif
+ 
+ #include "jvm.h"
 diff -Naur openjdk.orig/jdk/src/solaris/native/java/net/linux_close.c openjdk/jdk/src/solaris/native/java/net/linux_close.c
---- openjdk.orig/jdk/src/solaris/native/java/net/linux_close.c	2016-08-03 13:03:59.771505183 -0700
-+++ openjdk/jdk/src/solaris/native/java/net/linux_close.c	2016-08-03 13:10:23.809928595 -0700
+--- openjdk.orig/jdk/src/solaris/native/java/net/linux_close.c	2016-08-03 13:15:50.065686458 -0700
++++ openjdk/jdk/src/solaris/native/java/net/linux_close.c	2016-08-03 13:16:04.764855765 -0700
 @@ -56,7 +56,7 @@
  /*
   * Signal to unblock thread
@@ -104,8 +115,8 @@ diff -Naur openjdk.orig/jdk/src/solaris/native/java/net/linux_close.c openjdk/jd
      sa.sa_flags   = 0;
      sigemptyset(&sa.sa_mask);
 diff -Naur openjdk.orig/jdk/src/solaris/native/sun/nio/ch/NativeThread.c openjdk/jdk/src/solaris/native/sun/nio/ch/NativeThread.c
---- openjdk.orig/jdk/src/solaris/native/sun/nio/ch/NativeThread.c	2016-08-03 13:03:59.805505574 -0700
-+++ openjdk/jdk/src/solaris/native/sun/nio/ch/NativeThread.c	2016-08-03 13:10:50.524236294 -0700
+--- openjdk.orig/jdk/src/solaris/native/sun/nio/ch/NativeThread.c	2016-08-03 13:15:50.098686838 -0700
++++ openjdk/jdk/src/solaris/native/sun/nio/ch/NativeThread.c	2016-08-03 13:16:04.764855765 -0700
 @@ -36,7 +36,7 @@
    #include <pthread.h>
    #include <sys/signal.h>
