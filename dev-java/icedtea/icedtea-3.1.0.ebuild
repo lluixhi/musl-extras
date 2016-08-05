@@ -59,7 +59,7 @@ SRC_URI="
 	${DROP_URL}/cacao/${CACAO_TARBALL} -> ${CACAO_GENTOO_TARBALL}
 	${DROP_URL}/jamvm/${JAMVM_TARBALL} -> ${JAMVM_GENTOO_TARBALL}"
 
-LICENSE="Apache-1.1 Apache-2.0 GPL-1 GPL-2 GPL-2-with-linking-exception LGPL-2 MPL-1.0 MPL-1.1 public-domain W3C"
+LICENSE="Apache-1.1 Apache-2.0 GPL-1 GPL-2 GPL-2-with-classpath-exception LGPL-2 MPL-1.0 MPL-1.1 public-domain W3C"
 KEYWORDS="~amd64 ~arm ~ppc64 ~x86"
 
 IUSE="+alsa cacao +cups doc examples +gtk headless-awt infinality
@@ -335,7 +335,7 @@ src_configure() {
 		$(use_enable !headless-awt system-png) \
 		$(use_enable doc docs) \
 		$(use_enable infinality) \
-		$(use_with pax_kernel pax "${EPREFIX}/usr/sbin/paxmark.sh") \
+		--with-pax="${EPREFIX}"$(usex pax_kernel /usr/sbin/paxmark.sh /bin/true) \
 		$(use_enable sunec) \
 		${zero_config} ${cacao_config} ${jamvm_config} ${hs_config}
 }
