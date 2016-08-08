@@ -15,7 +15,7 @@ else
 fi
 
 DESCRIPTION="kernel routing and traffic control utilities"
-HOMEPAGE="http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2"
+HOMEPAGE="https://wiki.linuxfoundation.org/networking/iproute2"
 
 LICENSE="GPL-2"
 SLOT="0"
@@ -41,7 +41,6 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-3.1.0-mtu.patch #291907
 	"${FILESDIR}"/${PN}-4.5.0-no-iptables.patch #577464
 	"${FILESDIR}"/${PN}-4.6.0-musl.patch
-	"${FILESDIR}"/${PN}-4.6.0-missing-min.patch
 )
 
 src_prepare() {
