@@ -40,7 +40,7 @@ DEPEND="${RDEPEND}
 PATCHES=(
 	"${FILESDIR}"/${PN}-3.1.0-mtu.patch #291907
 	"${FILESDIR}"/${PN}-4.5.0-no-iptables.patch #577464
-	"${FILESDIR}"/${PN}-4.6.0-musl.patch
+	"${FILESDIR}"/${PN}-4.7.0-musl.patch
 )
 
 src_prepare() {
