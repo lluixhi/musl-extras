@@ -1,8 +1,7 @@
 # Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Id$
 
-EAPI=5
+EAPI="5"
 
 inherit eutils toolchain-funcs multilib
 
@@ -13,7 +12,7 @@ SRC_URI="ftp://oss.sgi.com/projects/xfs/cmd_tars/${P}.tar.gz
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="alpha amd64 arm hppa ia64 ~mips ppc ppc64 s390 sh sparc x86"
+KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 IUSE="libedit nls readline static static-libs"
 REQUIRED_USE="static? ( static-libs )"
 
@@ -30,10 +29,10 @@ DEPEND="${RDEPEND}
 	nls? ( sys-devel/gettext )"
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-4.3.0-sharedlibs.patch
-	"${FILESDIR}"/${PN}-4.5.0-linguas.patch
+	"${FILESDIR}"/${PN}-4.7.0-sharedlibs.patch
+	"${FILESDIR}"/${PN}-4.7.0-libxcmd-link.patch
 	"${FILESDIR}"/${PN}-4.3.0-cross-compile.patch
-	"${FILESDIR}"/${PN}-4.3.0-musl.patch
+	"${FILESDIR}"/${PN}-4.7.0-musl.patch
 )
 
 pkg_setup() {
@@ -55,16 +54,11 @@ src_prepare() {
 	find -name Makefile -exec \
 		sed -i -r -e '/^LLDFLAGS [+]?= -static(-libtool-libs)?$/d' {} +
 
-	# libdisk has broken blkid conditional checking
-	sed -i \
-		-e '/LIB_SUBDIRS/s:libdisk::' \
-		Makefile || die
-
-	# TODO: write a patch for configure.in to use pkg-config for the uuid-part
+	# TODO: Write a patch for configure.ac to use pkg-config for the uuid-part.
 	if use static && use readline ; then
 		sed -i \
-			-e 's|-lreadline|\0 -lncurses|' \
-			-e 's|-lblkid|\0 -luuid|' \
+			-e 's|-lreadline|& -lncurses|' \
+			-e 's|-lblkid|& -luuid|' \
 			configure || die
 	fi
 }
@@ -82,7 +76,6 @@ src_configure() {
 	fi
 
 	econf \
-		--libexecdir=/usr/$(get_libdir) \
 		--enable-lib64=no \
 		$(use_enable nls gettext) \
 		$(use_enable readline) \
@@ -98,7 +91,7 @@ src_install() {
 	emake -j1 DIST_ROOT="${ED}" install-dev
 
 	# handle is for xfsdump, the rest for xfsprogs
-	gen_usr_ldscript -a xfs xlog
+	gen_usr_ldscript -a handle xcmd xfs xlog
 	# removing unnecessary .la files if not needed
 	use static-libs || find "${ED}" -name '*.la' -delete
 }
