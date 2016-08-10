@@ -31,7 +31,7 @@ pkg_setup() {
 src_prepare() {
 	local PATCHES=(
 		"${FILESDIR}"/${PN}-2.9.3-kernel-types.patch
-	    "${FILESDIR}"/${PN}-2.9.4-realpath.patch
+		"${FILESDIR}"/${PN}-2.9.4-realpath.patch
 	)
 	# sandbox violation with mtab writability wrt #438250
 	# don't sed configure.in without eautoreconf because of maintainer mode

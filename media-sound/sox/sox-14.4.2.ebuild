@@ -40,7 +40,7 @@ DOCS=( AUTHORS ChangeLog NEWS README )
 
 src_prepare() {
 	sed -i -e 's:CFLAGS="-g":CFLAGS="$CFLAGS -g":' configure.ac || die #386027
-	sed -i '/error FIX NEEDED HERE/d' src/formats.c
+	sed -i '/error FIX NEEDED HERE/d' src/formats.c || die
 
 	eautoreconf
 }

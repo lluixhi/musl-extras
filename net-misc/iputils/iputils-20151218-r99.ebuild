@@ -20,7 +20,7 @@ else
 fi
 
 DESCRIPTION="Network monitoring tools including ping and ping6"
-HOMEPAGE="http://www.linuxfoundation.org/collaborate/workgroups/networking/iputils"
+HOMEPAGE="https://wiki.linuxfoundation.org/networking/iputils"
 
 LICENSE="BSD-4"
 SLOT="0"
@@ -117,7 +117,7 @@ src_compile() {
 src_install() {
 	into /
 	dobin ping $(usex ipv6 'ping6' '')
-	use ipv6 && dosym ping.8 "${EPREFIX}"/usr/share/man/man8/ping6.8
+	use ipv6 && dosym ping.8 /usr/share/man/man8/ping6.8
 	doman doc/ping.8
 
 	if use arping ; then
@@ -140,7 +140,7 @@ src_install() {
 
 	if use tracepath && use ipv6 ; then
 		dosbin tracepath6
-		dosym tracepath.8 "${EPREFIX}"/usr/share/man/man8/tracepath6.8
+		dosym tracepath.8 /usr/share/man/man8/tracepath6.8
 	fi
 
 	if use traceroute && use ipv6 ; then
