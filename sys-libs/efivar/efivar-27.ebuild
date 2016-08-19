@@ -2,16 +2,16 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI=6
 
-inherit eutils multilib toolchain-funcs
+inherit toolchain-funcs
 
 DESCRIPTION="Tools and library to manipulate EFI variables"
 HOMEPAGE="https://github.com/rhinstaller/efivar"
-SRC_URI="https://github.com/rhinstaller/${PN}/releases/download/${PV}/${P}.tar.bz2"
+SRC_URI="https://github.com/rhinstaller/efivar/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="GPL-2"
-SLOT="0"
+SLOT="0/${PV}"
 KEYWORDS="~amd64 ~ia64 ~x86"
 
 RDEPEND="dev-libs/popt"
@@ -19,10 +19,9 @@ DEPEND="${RDEPEND}
 	>=sys-kernel/linux-headers-3.18"
 
 src_prepare() {
-	epatch "${FILESDIR}/0.21-nvme_ioctl.h.patch"
-	epatch "${FILESDIR}/0.23-sysmacros.patch"
-	epatch "${FILESDIR}/0.23-musl.patch"
-	epatch_user
+	eapply "${FILESDIR}/0.23-musl.patch"
+	eapply "${FILESDIR}/27-strndupa.patch"
+	default
 }
 
 src_configure() {
