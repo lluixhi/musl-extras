@@ -1,0 +1,144 @@
+diff --git a/libatomic/testsuite/Makefile.am b/libatomic/testsuite/Makefile.am
+index 561b7e2..d9af02a 100644
+--- a/libatomic/testsuite/Makefile.am
++++ b/libatomic/testsuite/Makefile.am
+@@ -11,3 +11,5 @@ EXPECT = $(shell if test -f $(top_builddir)/../expect/expect; then \
+ _RUNTEST = $(shell if test -f $(top_srcdir)/../dejagnu/runtest; then \
+ 	     echo $(top_srcdir)/../dejagnu/runtest; else echo runtest; fi)
+ RUNTEST = "$(_RUNTEST) $(AM_RUNTESTFLAGS)"
++
++export CC
+diff --git a/libatomic/testsuite/Makefile.in b/libatomic/testsuite/Makefile.in
+index 34f83e0..8392e01 100644
+--- a/libatomic/testsuite/Makefile.in
++++ b/libatomic/testsuite/Makefile.in
+@@ -428,6 +428,8 @@ uninstall-am:
+ 	uninstall uninstall-am
+ 
+ 
++export CC
++
+ # Tell versions [3.59,3.63) of GNU make to not export all variables.
+ # Otherwise a system limit (for SysV at least) may be exceeded.
+ .NOEXPORT:
+diff --git a/libatomic/testsuite/lib/libatomic.exp b/libatomic/testsuite/lib/libatomic.exp
+index cafab54..6ba67e8 100644
+--- a/libatomic/testsuite/lib/libatomic.exp
++++ b/libatomic/testsuite/lib/libatomic.exp
+@@ -90,7 +90,7 @@ proc libatomic_init { args } {
+ 	if [info exists TOOL_EXECUTABLE] {
+ 	    set GCC_UNDER_TEST $TOOL_EXECUTABLE
+ 	} else {
+-	    set GCC_UNDER_TEST "[find_gcc]"
++	    set GCC_UNDER_TEST "[getenv CC]"
+ 	}
+     }
+ 
+diff --git a/libgomp/testsuite/Makefile.am b/libgomp/testsuite/Makefile.am
+index 66a9d94..821ab31 100644
+--- a/libgomp/testsuite/Makefile.am
++++ b/libgomp/testsuite/Makefile.am
+@@ -25,3 +25,5 @@ libgomp-test-support.exp: libgomp-test-support.pt.exp Makefile
+ 	mv $@.tmp $@
+ 
+ all-local: libgomp-test-support.exp
++
++export CC
+diff --git a/libgomp/testsuite/Makefile.in b/libgomp/testsuite/Makefile.in
+index 4dbb406..7bd8b86 100644
+--- a/libgomp/testsuite/Makefile.in
++++ b/libgomp/testsuite/Makefile.in
+@@ -475,6 +475,8 @@ libgomp-test-support.exp: libgomp-test-support.pt.exp Makefile
+ 
+ all-local: libgomp-test-support.exp
+ 
++export CC
++
+ # Tell versions [3.59,3.63) of GNU make to not export all variables.
+ # Otherwise a system limit (for SysV at least) may be exceeded.
+ .NOEXPORT:
+diff --git a/libgomp/testsuite/lib/libgomp.exp b/libgomp/testsuite/lib/libgomp.exp
+index 1cb4991..0333363 100644
+--- a/libgomp/testsuite/lib/libgomp.exp
++++ b/libgomp/testsuite/lib/libgomp.exp
+@@ -108,7 +108,7 @@ proc libgomp_init { args } {
+ 	if [info exists TOOL_EXECUTABLE] {
+ 	    set GCC_UNDER_TEST $TOOL_EXECUTABLE
+ 	} else {
+-	    set GCC_UNDER_TEST "[find_gcc]"
++	    set GCC_UNDER_TEST "[getenv CC]"
+ 	}
+     }
+ 
+diff --git a/libitm/testsuite/Makefile.am b/libitm/testsuite/Makefile.am
+index 561b7e2..d9af02a 100644
+--- a/libitm/testsuite/Makefile.am
++++ b/libitm/testsuite/Makefile.am
+@@ -11,3 +11,5 @@ EXPECT = $(shell if test -f $(top_builddir)/../expect/expect; then \
+ _RUNTEST = $(shell if test -f $(top_srcdir)/../dejagnu/runtest; then \
+ 	     echo $(top_srcdir)/../dejagnu/runtest; else echo runtest; fi)
+ RUNTEST = "$(_RUNTEST) $(AM_RUNTESTFLAGS)"
++
++export CC
+diff --git a/libitm/testsuite/Makefile.in b/libitm/testsuite/Makefile.in
+index 4d79781..49a333a 100644
+--- a/libitm/testsuite/Makefile.in
++++ b/libitm/testsuite/Makefile.in
+@@ -438,6 +438,8 @@ uninstall-am:
+ 	uninstall uninstall-am
+ 
+ 
++export CC
++
+ # Tell versions [3.59,3.63) of GNU make to not export all variables.
+ # Otherwise a system limit (for SysV at least) may be exceeded.
+ .NOEXPORT:
+diff --git a/libitm/testsuite/lib/libitm.exp b/libitm/testsuite/lib/libitm.exp
+index 0416296..8679e92 100644
+--- a/libitm/testsuite/lib/libitm.exp
++++ b/libitm/testsuite/lib/libitm.exp
+@@ -90,7 +90,7 @@ proc libitm_init { args } {
+ 	if [info exists TOOL_EXECUTABLE] {
+ 	    set GCC_UNDER_TEST $TOOL_EXECUTABLE
+ 	} else {
+-	    set GCC_UNDER_TEST "[find_gcc]"
++	    set GCC_UNDER_TEST "[getenv CC]"
+ 	}
+     }
+ 
+diff --git a/libvtv/testsuite/Makefile.am b/libvtv/testsuite/Makefile.am
+index 561b7e2..d9af02a 100644
+--- a/libvtv/testsuite/Makefile.am
++++ b/libvtv/testsuite/Makefile.am
+@@ -11,3 +11,5 @@ EXPECT = $(shell if test -f $(top_builddir)/../expect/expect; then \
+ _RUNTEST = $(shell if test -f $(top_srcdir)/../dejagnu/runtest; then \
+ 	     echo $(top_srcdir)/../dejagnu/runtest; else echo runtest; fi)
+ RUNTEST = "$(_RUNTEST) $(AM_RUNTESTFLAGS)"
++
++export CC
+diff --git a/libvtv/testsuite/Makefile.in b/libvtv/testsuite/Makefile.in
+index e19e13e..813bad0 100644
+--- a/libvtv/testsuite/Makefile.in
++++ b/libvtv/testsuite/Makefile.in
+@@ -433,6 +433,8 @@ uninstall-am:
+ 	uninstall uninstall-am
+ 
+ 
++export CC
++
+ # Tell versions [3.59,3.63) of GNU make to not export all variables.
+ # Otherwise a system limit (for SysV at least) may be exceeded.
+ .NOEXPORT:
+diff --git a/libvtv/testsuite/lib/libvtv.exp b/libvtv/testsuite/lib/libvtv.exp
+index edf5fdd..9bef7a3 100644
+--- a/libvtv/testsuite/lib/libvtv.exp
++++ b/libvtv/testsuite/lib/libvtv.exp
+@@ -90,7 +90,7 @@ proc libvtv_init { args } {
+ 	if [info exists TOOL_EXECUTABLE] {
+ 	    set GCC_UNDER_TEST $TOOL_EXECUTABLE
+ 	} else {
+-	    set GCC_UNDER_TEST "[find_gcc]"
++	    set GCC_UNDER_TEST "[getenv CC]"
+ 	}
+     }
+ 
