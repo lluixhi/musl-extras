@@ -1,4 +1,4 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -44,7 +44,7 @@ src_prepare() {
 	epatch "${FILESDIR}/ffmpeg3.patch"
 
 	# Fix for MUSL
-	epatch "${FILESDIR}/${PN}-2.0.1-musl.patch"
+	epatch "${FILESDIR}/${PN}-2.0.4-musl.patch"
 
 	sed -i '/^docdir/,/^$/d' Makefile.am || die
 	eautoreconf
