@@ -153,7 +153,7 @@ if [[ ${PN} != "kgcc64" && ${PN} != gcc-* ]] ; then
 	# the older versions, we don't want to bother supporting it.  #448024
 	tc_version_is_at_least 4.8 && IUSE+=" graphite" IUSE_DEF+=( sanitize )
 	tc_version_is_at_least 4.9 && IUSE+=" cilk +vtv"
-	tc_version_is_at_least 5.0 && IUSE+=" jit mpx"
+	tc_version_is_at_least 5.0 && IUSE+=" jit mpx pch"
 	tc_version_is_at_least 6.0 && IUSE+=" pie +ssp"
 fi
 
@@ -632,20 +632,47 @@ do_gcc_PIE_patches() {
 # configure to build with the hardened GCC specs as the default
 make_gcc_hard() {
 
-	# Gcc >= 6.X we don't need to sed in Makefile
-	# It have configurations options to turn pie/ssp on as default
+	local gcc_hard_flags=""
+	# Gcc >= 6.X we can use configuration options to turn pie/ssp on as default
 	if tc_version_is_at_least 6.0 ; then
-		if use hardened ; then
-			# rebrand to make bug reports easier
-			BRANDING_GCC_PKGVERSION=${BRANDING_GCC_PKGVERSION/Gentoo/Gentoo Hardened}
-		fi
 		if use pie ; then
 			einfo "Updating gcc to use automatic PIE building ..."
 		fi
 		if use ssp ; then
 			einfo "Updating gcc to use automatic SSP building ..."
 		fi
-		return 1
+		if use hardened ; then
+			# Will add some optimizations by default.
+			gcc_hard_flags+=" -DHARDENED_OPTIMIZATION"
+			# rebrand to make bug reports easier
+			BRANDING_GCC_PKGVERSION=${BRANDING_GCC_PKGVERSION/Gentoo/Gentoo Hardened}
+		fi
+	else
+		if use hardened ; then
+			# rebrand to make bug reports easier
+			BRANDING_GCC_PKGVERSION=${BRANDING_GCC_PKGVERSION/Gentoo/Gentoo Hardened}
+			if hardened_gcc_works ; then
+				einfo "Updating gcc to use automatic PIE + SSP building ..."
+				gcc_hard_flags+=" -DEFAULT_PIE_SSP"
+			elif hardened_gcc_works pie ; then
+				einfo "Updating gcc to use automatic PIE building ..."
+				ewarn "SSP has not been enabled by default"
+				gcc_hard_flags+=" -DEFAULT_PIE"
+			elif hardened_gcc_works ssp ; then
+				einfo "Updating gcc to use automatic SSP building ..."
+				ewarn "PIE has not been enabled by default"
+				gcc_hard_flags+=" -DEFAULT_SSP"
+			else
+				# do nothing if hardened isn't supported, but don't die either
+				ewarn "hardened is not supported for this arch in this gcc version"
+				return 0
+			fi
+		else
+			if hardened_gcc_works ssp ; then
+				einfo "Updating gcc to use automatic SSP building ..."
+				gcc_hard_flags+=" -DEFAULT_SSP"
+			fi
+		fi
 	fi
 
 	# we want to be able to control the pie patch logic via something other
@@ -658,34 +685,6 @@ make_gcc_hard() {
 		sed -e '/^ALL_CXXFLAGS/iHARD_CFLAGS = ' \
                         -e 's|^ALL_CXXFLAGS = |ALL_CXXFLAGS = $(HARD_CFLAGS) |' \
                         -i "${S}"/gcc/Makefile.in
-	fi
-
-	# defaults to enable for all toolchains
-	local gcc_hard_flags=""
-	if use hardened ; then
-		if hardened_gcc_works ; then
-			einfo "Updating gcc to use automatic PIE + SSP building ..."
-			gcc_hard_flags+=" -DEFAULT_PIE_SSP"
-		elif hardened_gcc_works pie ; then
-			einfo "Updating gcc to use automatic PIE building ..."
-			ewarn "SSP has not been enabled by default"
-			gcc_hard_flags+=" -DEFAULT_PIE"
-		elif hardened_gcc_works ssp ; then
-			einfo "Updating gcc to use automatic SSP building ..."
-			ewarn "PIE has not been enabled by default"
-			gcc_hard_flags+=" -DEFAULT_SSP"
-		else
-			# do nothing if hardened isn't supported, but don't die either
-			ewarn "hardened is not supported for this arch in this gcc version"
-			return 0
-		fi
-		# rebrand to make bug reports easier
-		BRANDING_GCC_PKGVERSION=${BRANDING_GCC_PKGVERSION/Gentoo/Gentoo Hardened}
-	else
-		if hardened_gcc_works ssp ; then
-			einfo "Updating gcc to use automatic SSP building ..."
-			gcc_hard_flags+=" -DEFAULT_SSP"
-		fi
 	fi
 
 	sed -i \

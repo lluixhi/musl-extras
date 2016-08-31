@@ -4,7 +4,7 @@
 
 EAPI="4"
 
-PATCH_VER="1.1"
+PATCH_VER="1.0"
 #UCLIBC_VER="1.0"
 
 inherit eutils toolchain
@@ -23,14 +23,12 @@ fi
 src_prepare() {
 	toolchain_src_prepare
 
-	epatch "${FILESDIR}"/${P}-3-arg-phi.patch
-
 	if use elibc_musl; then
 		cd "${S}"
 		epatch "${FILESDIR}"/4.9.3/posix_memalign.patch
 		epatch "${FILESDIR}"/5.2.0/res_state.patch
-		epatch "${FILESDIR}"/${PV}/cilkrts.patch
-		epatch "${FILESDIR}"/${PV}/cpu_indicator.patch
-		epatch "${FILESDIR}"/${PV}/linux_libc_has_function.patch
+		epatch "${FILESDIR}"/6.1.0/cilkrts.patch
+		epatch "${FILESDIR}"/6.1.0/cpu_indicator.patch
+		epatch "${FILESDIR}"/6.1.0/linux_libc_has_function.patch
 	fi
 }
