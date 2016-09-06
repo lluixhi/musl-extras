@@ -340,7 +340,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-2.0.0-F_SHLCK-and-F_EXLCK.patch
 	epatch "${FILESDIR}"/${PN}-2.0.0-linux-user-signal.c-define-__SIGRTMIN-MAX-for-non-GN.patch
 	epatch "${FILESDIR}"/${PN}-2.2.0-_sigev_un.patch
-	epatch "${FILESDIR}"/${PN}-2.6.0-configure-ifunc.patch
+	epatch "${FILESDIR}"/${P}-configure-ifunc.patch
 
 	# Fix ld and objcopy being called directly
 	tc-export AR LD OBJCOPY
