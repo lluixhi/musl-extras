@@ -153,8 +153,8 @@ if [[ ${PN} != "kgcc64" && ${PN} != gcc-* ]] ; then
 	# the older versions, we don't want to bother supporting it.  #448024
 	tc_version_is_at_least 4.8 && IUSE+=" graphite" IUSE_DEF+=( sanitize )
 	tc_version_is_at_least 4.9 && IUSE+=" cilk +vtv"
-	tc_version_is_at_least 5.0 && IUSE+=" jit mpx pch"
-	tc_version_is_at_least 6.0 && IUSE+=" pie +ssp"
+	tc_version_is_at_least 5.0 && IUSE+=" jit mpx"
+	tc_version_is_at_least 6.0 && IUSE+=" pie ssp +pch"
 fi
 
 IUSE+=" ${IUSE_DEF[*]/#/+}"
@@ -643,7 +643,7 @@ make_gcc_hard() {
 		fi
 		if use hardened ; then
 			# Will add some optimizations by default.
-			gcc_hard_flags+=" -DHARDENED_OPTIMIZATION"
+			gcc_hard_flags+=" -DEXTRA_OPTIONS"
 			# rebrand to make bug reports easier
 			BRANDING_GCC_PKGVERSION=${BRANDING_GCC_PKGVERSION/Gentoo/Gentoo Hardened}
 		fi
@@ -683,8 +683,8 @@ make_gcc_hard() {
 	# Need to add HARD_CFLAGS to ALL_CXXFLAGS on >= 4.7
 	if tc_version_is_at_least 4.7 ; then
 		sed -e '/^ALL_CXXFLAGS/iHARD_CFLAGS = ' \
-                        -e 's|^ALL_CXXFLAGS = |ALL_CXXFLAGS = $(HARD_CFLAGS) |' \
-                        -i "${S}"/gcc/Makefile.in
+			-e 's|^ALL_CXXFLAGS = |ALL_CXXFLAGS = $(HARD_CFLAGS) |' \
+			-i "${S}"/gcc/Makefile.in
 	fi
 
 	sed -i \
@@ -925,7 +925,7 @@ toolchain_src_configure() {
 	fi
 
 	# Support to disable pch when building libstdcxx
-	if tc_version_is_at_least 5.0 && ! use pch ; then
+	if tc_version_is_at_least 6.0 && ! use pch ; then
 		confgcc+=( --disable-libstdcxx-pch )
 	fi
 
