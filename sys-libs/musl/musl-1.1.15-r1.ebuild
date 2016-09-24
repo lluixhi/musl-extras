@@ -18,7 +18,7 @@ else
 	http://dev.gentoo.org/~blueness/musl-misc/getconf.c
 	http://dev.gentoo.org/~blueness/musl-misc/getent.c
 	http://dev.gentoo.org/~blueness/musl-misc/iconv.c"
-	KEYWORDS="-* amd64 arm ~arm64 ~mips ppc ~sh ~x86"
+	KEYWORDS="-* ~amd64 ~arm ~arm64 ~mips ~ppc ~sh ~x86"
 fi
 
 export CBUILD=${CBUILD:-${CHOST}}
@@ -48,17 +48,6 @@ just_headers() {
 	use crosscompile_opts_headers-only && is_crosscompile
 }
 
-musl_endian() {
-	# XXX: this wont work for bi-endian, but we dont have any
-	touch "${T}"/endian.s || die
-	$(tc-getAS ${CTARGET}) "${T}"/endian.s -o "${T}"/endian.o
-	case $(file "${T}"/endian.o) in
-		*" MSB "*) echo "";;
-		*" LSB "*) echo "el";;
-		*)         echo "nfc";; # We shouldn't be here
-	esac
-}
-
 pkg_setup() {
 	if [ ${CTARGET} == ${CHOST} ] ; then
 		case ${CHOST} in
@@ -78,7 +67,7 @@ src_configure() {
 		--target=${CTARGET} \
 		--prefix=${sysroot}/usr \
 		--syslibdir=${sysroot}/lib \
-		--disable-gcc-wrapper
+		--disable-gcc-wrapper || die
 }
 
 src_compile() {
@@ -86,9 +75,9 @@ src_compile() {
 	just_headers && return 0
 
 	emake
-	$(tc-getCC) ${CFLAGS} "${DISTDIR}"/getconf.c -o "${T}"/getconf
-	$(tc-getCC) ${CFLAGS} "${DISTDIR}"/getent.c -o "${T}"/getent
-	$(tc-getCC) ${CFLAGS} "${DISTDIR}"/iconv.c -o "${T}"/iconv
+	$(tc-getCC) ${CFLAGS} "${DISTDIR}"/getconf.c -o "${T}"/getconf || die
+	$(tc-getCC) ${CFLAGS} "${DISTDIR}"/getent.c -o "${T}"/getent || die
+	$(tc-getCC) ${CFLAGS} "${DISTDIR}"/iconv.c -o "${T}"/iconv || die
 }
 
 src_install() {
@@ -104,19 +93,8 @@ src_install() {
 	dosym ${sysroot}/lib/${ldso} ${sysroot}/usr/bin/ldd
 
 	if [[ ${CATEGORY} != cross-* ]] ; then
-		# TODO: We may be able to simplify this code by obtianing the arch name with
-		# /usr/lib/libc.so 2>&1 | sed -n 's/^.*(\(.*\))$/\1/;1p'
-		local target=$(tc-arch) arch
-		local endian=$(musl_endian)
-		case ${target} in
-			amd64) arch="x86_64";;
-			arm)   arch="armhf";; # We only have hardfloat right now
-			arm64) arch="aarch64";;
-			mips)  arch="mips${endian}";;
-			ppc)   arch="powerpc";;
-			sh)    arch="sh";; # fdpic?
-			x86)   arch="i386";;
-		esac
+		local arch=$("${D}"usr/lib/libc.so 2>&1 | sed -n '1s/^musl libc (\(.*\))$/\1/p')
+		[[ -e "${D}"/lib/ld-musl-${arch}.so.1 ]] || die
 		cp "${FILESDIR}"/ldconfig.in "${T}" || die
 		sed -e "s|@@ARCH@@|${arch}|" "${T}"/ldconfig.in > "${T}"/ldconfig || die
 		into /
@@ -137,7 +115,7 @@ pkg_postinst() {
 
 	[ "${ROOT}" != "/" ] && return 0
 
-	ldconfig
+	ldconfig || die
 	# reload init ...
 	/sbin/telinit U 2>/dev/null
 }

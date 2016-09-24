@@ -87,9 +87,9 @@ src_compile() {
 	emake
 
 	# getent, getconf, and iconv from voidlinux
-	$(tc-getCC) -o getent "${FILESDIR}"/getent.c
-	$(tc-getCC) -o getconf "${FILESDIR}"/getconf.c
-	$(tc-getCC) -o iconv "${FILESDIR}"/iconv.c
+	$(tc-getCC) -o getent "${FILESDIR}"/getent.c || die
+	$(tc-getCC) -o getconf "${FILESDIR}"/getconf.c || die
+	$(tc-getCC) -o iconv "${FILESDIR}"/iconv.c || die
 }
 
 src_install() {
