@@ -10,7 +10,7 @@ PYTHON_REQ_USE="ncurses,readline"
 PLOCALES="bg de_DE fr_FR hu it tr zh_CN"
 
 inherit eutils flag-o-matic linux-info toolchain-funcs multilib python-r1 \
-	user udev fcaps readme.gentoo pax-utils l10n
+	user udev fcaps readme.gentoo-r1 pax-utils l10n
 
 if [[ ${PV} = *9999* ]]; then
 	EGIT_REPO_URI="git://git.qemu.org/qemu.git"
@@ -18,7 +18,7 @@ if [[ ${PV} = *9999* ]]; then
 	SRC_URI=""
 else
 	SRC_URI="http://wiki.qemu-project.org/download/${P}.tar.bz2"
-	KEYWORDS="amd64 ~arm64 ~ppc ~ppc64 ~x86 ~x86-fbsd"
+	KEYWORDS="amd64 ~arm64 ~ppc ~ppc64 x86 ~x86-fbsd"
 fi
 
 DESCRIPTION="QEMU + Kernel-based Virtual Machine userland tools"
@@ -109,7 +109,7 @@ SOFTMMU_LIB_DEPEND="${COMMON_LIB_DEPEND}
 		virtual/opengl
 		media-libs/libepoxy[static-libs(+)]
 		media-libs/mesa[static-libs(+)]
-		media-libs/mesa[egl,gles2]
+		media-libs/mesa[egl,gles2,gbm]
 	)
 	png? ( media-libs/libpng:0=[static-libs(+)] )
 	pulseaudio? ( media-sound/pulseaudio )
@@ -341,6 +341,10 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-CVE-2016-7157-1.patch # bug 593038
 	epatch "${FILESDIR}"/${P}-CVE-2016-7157-2.patch # bug 593038
 	epatch "${FILESDIR}"/${P}-CVE-2016-7170.patch   # bug 593284
+	epatch "${FILESDIR}"/${P}-CVE-2016-7421.patch   # bug 593950
+	epatch "${FILESDIR}"/${P}-CVE-2016-7422.patch   # bug 593956
+	epatch "${FILESDIR}"/${P}-CVE-2016-7466.patch   # bug 594520
+	epatch "${FILESDIR}"/${P}-CVE-2016-7423.patch   # bug 594368
 
 	# Patching for musl
 	epatch "${FILESDIR}"/${PN}-2.0.0-F_SHLCK-and-F_EXLCK.patch
