@@ -4,14 +4,14 @@
 
 EAPI=6
 
-inherit toolchain-funcs
+inherit flag-o-matic toolchain-funcs
 
 DESCRIPTION="Tools and library to manipulate EFI variables"
 HOMEPAGE="https://github.com/rhinstaller/efivar"
 SRC_URI="https://github.com/rhinstaller/efivar/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="GPL-2"
-SLOT="0/${PV}"
+SLOT="0/1"
 KEYWORDS="~amd64 ~ia64 ~x86"
 
 RDEPEND="dev-libs/popt"
@@ -22,10 +22,15 @@ src_prepare() {
 	eapply "${FILESDIR}/0.23-musl.patch"
 	eapply "${FILESDIR}/27-strndupa.patch"
 	default
+	sed -i -e s/-Werror// gcc.specs || die
 }
 
 src_configure() {
 	tc-export CC
+
+	# https://github.com/rhinstaller/efivar/issues/64
+	append-cflags -flto
+
 	tc-ld-disable-gold
 	export libdir="/usr/$(get_libdir)"
 	unset LIBS # Bug 562004
