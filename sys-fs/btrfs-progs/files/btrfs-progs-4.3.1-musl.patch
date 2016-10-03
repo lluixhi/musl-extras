@@ -1,20 +1,3 @@
-diff -Naurw btrfs-progs-v4.3.1.orig/chunk-recover.c btrfs-progs-v4.3.1/chunk-recover.c
---- btrfs-progs-v4.3.1.orig/chunk-recover.c	2015-11-16 05:29:25.000000000 -0800
-+++ btrfs-progs-v4.3.1/chunk-recover.c	2015-11-29 10:36:21.278592499 -0800
-@@ -887,12 +887,7 @@
- 		for (i = 0; i < devidx; i++) {
- 			if (dev_scans[i].bytenr == -1)
- 				continue;
--			ret = pthread_tryjoin_np(t_scans[i],
--						 (void **)&t_rets[i]);
--			if (ret == EBUSY) {
--				all_done = 0;
--				continue;
--			}
-+			ret = pthread_join(t_scans[i], (void **)&t_rets[i]);
- 			if (ret || t_rets[i]) {
- 				ret = 1;
- 				goto out1;
 diff -Naurw btrfs-progs-v4.3.1.orig/kerncompat.h btrfs-progs-v4.3.1/kerncompat.h
 --- btrfs-progs-v4.3.1.orig/kerncompat.h	2015-11-16 05:29:25.000000000 -0800
 +++ btrfs-progs-v4.3.1/kerncompat.h	2015-11-29 10:35:53.305258333 -0800
