@@ -156,6 +156,9 @@ src_prepare() {
 	# fixes https://bugzilla.gnome.org/show_bug.cgi?id=758194
 	epatch "${FILESDIR}"/${PN}-2.46.2-fix-gstrerror-on-non-glibc.patch
 
+	# this fixes a crash if gsettings are not installed but called, patch is from archlinux
+	epatch "${FILESDIR}"/${PN}-2.46.2-fix-gsettings-crash.patch
+
 	# leave python shebang alone
 	sed -e '/${PYTHON}/d' \
 		-i glib/Makefile.{am,in} || die
