@@ -1,0 +1,15 @@
+diff -Naur qtwebengine-opensource-src-5.7.0.orig/src/3rdparty/chromium/third_party/usrsctp/usrsctplib/usrsctplib/netinet/sctp_userspace.c qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/usrsctp/usrsctplib/usrsctplib/netinet/sctp_userspace.c
+--- qtwebengine-opensource-src-5.7.0.orig/src/3rdparty/chromium/third_party/usrsctp/usrsctplib/usrsctplib/netinet/sctp_userspace.c	2016-10-07 01:17:21.522878362 -0700
++++ qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/third_party/usrsctp/usrsctplib/usrsctplib/netinet/sctp_userspace.c	2016-10-07 01:24:00.694292600 -0700
+@@ -72,7 +72,11 @@
+ 	pthread_setname_np(name);
+ #endif
+ #if defined(__Userspace_os_Linux)
++#if defined(__GLIBC__)
+ 	pthread_setname_np(pthread_self(), name);
++#else
++	prctl(PR_SET_NAME, name);
++#endif
+ #endif
+ #if defined(__Userspace_os_FreeBSD)
+ 	pthread_set_name_np(pthread_self(), name);
