@@ -75,6 +75,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-5.7.0-musl-mallinfo.patch"
 	"${FILESDIR}/${PN}-5.7.0-musl-pthread-setname.patch"
 	"${FILESDIR}/${PN}-5.7.0-musl-resolver.patch"
+	"${FILESDIR}/${PN}-5.7.0-musl-sandbox.patch"
 	"${FILESDIR}/${PN}-5.6.0-musl-siginfo.patch"
 	"${FILESDIR}/${PN}-5.6.0-musl-stack.patch"
 	"${FILESDIR}/${PN}-5.6.0-musl-sysctl.patch"
