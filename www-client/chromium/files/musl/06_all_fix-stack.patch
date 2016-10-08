@@ -1,0 +1,33 @@
+diff -Naur chromium-54.0.2840.34.orig/base/threading/platform_thread_linux.cc chromium-54.0.2840.34/base/threading/platform_thread_linux.cc
+--- chromium-54.0.2840.34.orig/base/threading/platform_thread_linux.cc	2016-10-07 17:41:37.845508762 -0700
++++ chromium-54.0.2840.34/base/threading/platform_thread_linux.cc	2016-10-07 17:43:39.496945350 -0700
+@@ -96,7 +96,7 @@
+ 
+ size_t GetDefaultThreadStackSize(const pthread_attr_t& attributes) {
+ #if !defined(THREAD_SANITIZER)
+-  return 0;
++  return 1 << 21;
+ #else
+   // ThreadSanitizer bloats the stack heavily. Evidence has been that the
+   // default stack size isn't enough for some browser tests.
+diff -Naur chromium-54.0.2840.34.orig/third_party/WebKit/Source/platform/heap/StackFrameDepth.cpp chromium-54.0.2840.34/third_party/WebKit/Source/platform/heap/StackFrameDepth.cpp
+--- chromium-54.0.2840.34.orig/third_party/WebKit/Source/platform/heap/StackFrameDepth.cpp	2016-10-07 17:42:42.025266664 -0700
++++ chromium-54.0.2840.34/third_party/WebKit/Source/platform/heap/StackFrameDepth.cpp	2016-10-07 17:42:54.226410748 -0700
+@@ -73,7 +73,7 @@
+     // FIXME: On Mac OSX and Linux, this method cannot estimate stack size
+     // correctly for the main thread.
+ 
+-#if defined(__GLIBC__) || OS(ANDROID) || OS(FREEBSD)
++#if OS(LINUX) || OS(ANDROID) || OS(FREEBSD)
+     // pthread_getattr_np() can fail if the thread is not invoked by
+     // pthread_create() (e.g., the main thread of webkit_unit_tests).
+     // If so, a conservative size estimate is returned.
+@@ -135,7 +135,7 @@
+ 
+ void* StackFrameDepth::getStackStart()
+ {
+-#if defined(__GLIBC__) || OS(ANDROID) || OS(FREEBSD)
++#if OS(LINUX) || OS(ANDROID) || OS(FREEBSD)
+     pthread_attr_t attr;
+     int error;
+ #if OS(FREEBSD)

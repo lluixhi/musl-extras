@@ -21,7 +21,7 @@ diff -Naur chromium-50.0.2661.37.orig/breakpad/src/client/linux/handler/exceptio
    siginfo.si_pid = getpid();
 -  struct ucontext context;
 +  struct ucontext context = {0};
-+#if defined(__GLIBC__) || defined(__UCLIBC__)
++#if defined(__GLIBC__)
    getcontext(&context);
 +#endif
    return HandleSignal(sig, &siginfo, &context);
@@ -31,7 +31,7 @@ diff -Naur chromium-50.0.2661.37.orig/breakpad/src/client/linux/handler/exceptio
    sys_prctl(PR_SET_DUMPABLE, 1, 0, 0, 0);
  
    CrashContext context;
-+#if defined(__GLIBC__) || defined(__UCLIBC__)
++#if defined(__GLIBC__)
    int getcontext_result = getcontext(&context.context);
    if (getcontext_result)
      return false;
@@ -60,7 +60,7 @@ diff -Naur chromium-50.0.2661.37.orig/breakpad/src/client/linux/minidump_writer/
  
  // Test that mapping info can be specified when writing a minidump,
  // and that it ends up in the module list of the minidump.
-+#if defined(__GLIBC__) || defined(__UCLIBC__)
++#if defined(__GLIBC__)
  TEST(MinidumpWriterTest, MappingInfo) {
    int fds[2];
    ASSERT_NE(-1, pipe(fds));
@@ -68,7 +68,7 @@ diff -Naur chromium-50.0.2661.37.orig/breakpad/src/client/linux/minidump_writer/
  
    close(fds[1]);
  }
-+#endif // defined(__GLIBC__) || defined(__UCLIBC__)
++#endif // defined(__GLIBC__)
  
  // Test that mapping info can be specified, and that it overrides
  // existing mappings that are wholly contained within the specified
@@ -76,7 +76,7 @@ diff -Naur chromium-50.0.2661.37.orig/breakpad/src/client/linux/minidump_writer/
  }
  
  // Test that an additional memory region can be added to the minidump.
-+#if defined(__GLIBC__) || defined(__UCLIBC__)
++#if defined(__GLIBC__)
  TEST(MinidumpWriterTest, AdditionalMemory) {
    int fds[2];
    ASSERT_NE(-1, pipe(fds));
@@ -84,7 +84,7 @@ diff -Naur chromium-50.0.2661.37.orig/breakpad/src/client/linux/minidump_writer/
  
    close(fds[1]);
  }
-+#endif // defined(__GLIBC__) || defined(__UCLIBC__)
++#endif // defined(__GLIBC__)
  
  // Test that limiting the size of the minidump works.
  TEST(MinidumpWriterTest, MinidumpSizeLimit) {
