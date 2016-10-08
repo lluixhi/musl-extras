@@ -1,6 +1,6 @@
 diff -Naur qtwebengine-opensource-src-5.7.0.orig/src/3rdparty/chromium/sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.cc qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.cc
---- qtwebengine-opensource-src-5.7.0.orig/src/3rdparty/chromium/sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.cc	2016-10-07 16:24:18.767621775 -0700
-+++ qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.cc	2016-10-07 16:30:09.631533494 -0700
+--- qtwebengine-opensource-src-5.7.0.orig/src/3rdparty/chromium/sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.cc	2016-10-07 20:26:54.170418460 -0700
++++ qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.cc	2016-10-07 20:28:30.342515797 -0700
 @@ -116,21 +116,13 @@
    const Arg<unsigned long> flags(0);
  
@@ -30,8 +30,24 @@ diff -Naur qtwebengine-opensource-src-5.7.0.orig/src/3rdparty/chromium/sandbox/l
        .Else(CrashSIGSYSClone());
  }
 diff -Naur qtwebengine-opensource-src-5.7.0.orig/src/3rdparty/chromium/sandbox/linux/seccomp-bpf-helpers/syscall_sets.cc qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/sandbox/linux/seccomp-bpf-helpers/syscall_sets.cc
---- qtwebengine-opensource-src-5.7.0.orig/src/3rdparty/chromium/sandbox/linux/seccomp-bpf-helpers/syscall_sets.cc	2016-10-07 16:24:18.768621786 -0700
-+++ qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/sandbox/linux/seccomp-bpf-helpers/syscall_sets.cc	2016-10-07 16:30:34.409809743 -0700
+--- qtwebengine-opensource-src-5.7.0.orig/src/3rdparty/chromium/sandbox/linux/seccomp-bpf-helpers/syscall_sets.cc	2016-10-07 20:26:54.169418448 -0700
++++ qtwebengine-opensource-src-5.7.0/src/3rdparty/chromium/sandbox/linux/seccomp-bpf-helpers/syscall_sets.cc	2016-10-07 20:29:16.430041661 -0700
+@@ -414,6 +414,7 @@
+     case __NR_epoll_create:
+     case __NR_epoll_wait:
+ #endif
++    case __NR_epoll_pwait:
+     case __NR_epoll_create1:
+     case __NR_epoll_ctl:
+       return true;
+@@ -421,7 +422,6 @@
+ #if defined(__x86_64__)
+     case __NR_epoll_ctl_old:
+ #endif
+-    case __NR_epoll_pwait:
+ #if defined(__x86_64__)
+     case __NR_epoll_wait_old:
+ #endif
 @@ -494,6 +494,7 @@
      case __NR_mlock:
      case __NR_munlock:
