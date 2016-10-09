@@ -68,7 +68,7 @@ python_prepare_all() {
 	if use lapack; then
 		append-ldflags "$($(tc-getPKG_CONFIG) --libs-only-other cblas lapack)"
 		local libdir="${EPREFIX}"/usr/$(get_libdir)
-		cat >> site.cfg <<-EOF
+		cat >> site.cfg <<-EOF || die
 			[blas]
 			include_dirs = $(pc_incdir cblas)
 			library_dirs = $(pc_libdir cblas blas):${libdir}
@@ -115,14 +115,14 @@ python_prepare_all() {
 	# of being bytecode compiled as a proper subdir package.
 	# We trick the buildsystem into accepting it as a bytecode
 	# package by adding a setup.py and an empty __init__.py
-	cp numpy/{compat/setup.py,core/tests} || die
-	touch numpy/core/tests/__init__.py || die
-	sed \
-		-e 's:compat:tests:' \
-		-i numpy/core/tests/setup.py || die
-	sed \
-		-e "s:config\.add_data_dir('tests'):config\.add_subpackage('tests'):" \
-		-i numpy/core/setup.py || die
+	#cp numpy/{compat/setup.py,core/tests} || die
+	#touch numpy/core/tests/__init__.py || die
+	#sed \
+	#	-e 's:compat:tests:' \
+	#	-i numpy/core/tests/setup.py || die
+	#sed \
+	#	-e "s:config\.add_data_dir('tests'):config\.add_subpackage('tests'):" \
+	#	-i numpy/core/setup.py || die
 
 	distutils-r1_python_prepare_all
 }
