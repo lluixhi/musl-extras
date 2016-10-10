@@ -1,0 +1,49 @@
+diff -Naur chromium-54.0.2840.34.orig/base/allocator/allocator_shim_default_dispatch_to_glibc.cc chromium-54.0.2840.34/base/allocator/allocator_shim_default_dispatch_to_glibc.cc
+--- chromium-54.0.2840.34.orig/base/allocator/allocator_shim_default_dispatch_to_glibc.cc	2016-10-10 09:44:17.547584764 -0700
++++ chromium-54.0.2840.34/base/allocator/allocator_shim_default_dispatch_to_glibc.cc	2016-10-10 10:02:29.152877349 -0700
+@@ -9,11 +9,11 @@
+ // The code here is strongly inspired from tcmalloc's libc_override_glibc.h.
+ 
+ extern "C" {
+-void* __libc_malloc(size_t size);
+-void* __libc_calloc(size_t n, size_t size);
+-void* __libc_realloc(void* address, size_t size);
+-void* __libc_memalign(size_t alignment, size_t size);
+-void __libc_free(void* ptr);
++void* malloc(size_t size);
++void* calloc(size_t n, size_t size);
++void* realloc(void* address, size_t size);
++void* memalign(size_t alignment, size_t size);
++void free(void* ptr);
+ }  // extern "C"
+ 
+ namespace {
+@@ -21,23 +21,23 @@
+ using base::allocator::AllocatorDispatch;
+ 
+ void* GlibcMalloc(const AllocatorDispatch*, size_t size) {
+-  return __libc_malloc(size);
++  return malloc(size);
+ }
+ 
+ void* GlibcCalloc(const AllocatorDispatch*, size_t n, size_t size) {
+-  return __libc_calloc(n, size);
++  return calloc(n, size);
+ }
+ 
+ void* GlibcRealloc(const AllocatorDispatch*, void* address, size_t size) {
+-  return __libc_realloc(address, size);
++  return realloc(address, size);
+ }
+ 
+ void* GlibcMemalign(const AllocatorDispatch*, size_t alignment, size_t size) {
+-  return __libc_memalign(alignment, size);
++  return memalign(alignment, size);
+ }
+ 
+ void GlibcFree(const AllocatorDispatch*, void* address) {
+-  __libc_free(address);
++  free(address);
+ }
+ 
+ }  // namespace
