@@ -3,7 +3,7 @@
 # $Id$
 
 EAPI="5"
-inherit base systemd autotools
+inherit autotools base systemd
 
 DESCRIPTION="Provides a daemon for managing internet connections"
 HOMEPAGE="https://01.org/connman"

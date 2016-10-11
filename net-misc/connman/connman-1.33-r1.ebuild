@@ -3,7 +3,7 @@
 # $Id$
 
 EAPI="6"
-inherit systemd autotools
+inherit autotools systemd
 
 DESCRIPTION="Provides a daemon for managing internet connections"
 HOMEPAGE="https://01.org/connman"
@@ -29,24 +29,28 @@ RDEPEND=">=dev-libs/glib-2.16
 	wispr? ( net-libs/gnutls )"
 
 DEPEND="${RDEPEND}
-	>=sys-kernel/linux-headers-2.6.39"
+	>=sys-kernel/linux-headers-2.6.39
+	virtual/pkgconfig"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-musl.patch"
 	"${FILESDIR}/${PN}-1.32-execinfo.patch"
 	"${FILESDIR}/${PN}-musl-libresolv.patch"
 	"${FILESDIR}/${PN}-1.31-xtables.patch"
+	"${FILESDIR}/${PN}-1.33-polkit-configure-check-fix.patch"
+	"${FILESDIR}/${PN}-1.33-resolv-conf-overwrite.patch"
 )
 
 src_prepare() {
 	default
-
 	eautoreconf
 }
 
 src_configure() {
 	econf \
 		--localstatedir=/var \
+		--with-systemdunitdir=$(systemd_get_systemunitdir) \
+		--with-tmpfilesdir=${EPREFIX}/usr/lib/tmpfiles.d \
 		--enable-client \
 		--enable-datafiles \
 		--enable-loopback=builtin \
