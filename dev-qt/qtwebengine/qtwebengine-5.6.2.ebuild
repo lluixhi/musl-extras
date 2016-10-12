@@ -9,7 +9,7 @@ inherit python-any-r1 qt5-build
 DESCRIPTION="Library for rendering dynamic web content in Qt5 C++ and QML applications"
 
 if [[ ${QT5_BUILD_TYPE} == release ]]; then
-	KEYWORDS="amd64 x86"
+	KEYWORDS="~amd64 ~x86"
 fi
 
 IUSE="bindist geolocation +system-ffmpeg +system-icu widgets"
@@ -35,7 +35,7 @@ RDEPEND="
 	media-libs/freetype
 	media-libs/harfbuzz:=
 	media-libs/libpng:0=
-	>=media-libs/libvpx-1.4:=
+	>=media-libs/libvpx-1.5:=[svc]
 	media-libs/libwebp:=
 	media-libs/mesa
 	media-libs/opus
@@ -58,7 +58,7 @@ RDEPEND="
 	x11-libs/libXScrnSaver
 	x11-libs/libXtst
 	geolocation? ( ~dev-qt/qtpositioning-${PV} )
-	system-ffmpeg? ( =media-video/ffmpeg-2*:0= )
+	system-ffmpeg? ( media-video/ffmpeg:0= )
 	system-icu? ( dev-libs/icu:= )
 	widgets? ( ~dev-qt/qtwidgets-${PV} )
 "
