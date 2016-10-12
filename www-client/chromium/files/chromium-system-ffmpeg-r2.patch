@@ -19,12 +19,14 @@
  #include <libavformat/avio.h>
  #include <libavutil/avutil.h>
  #include <libavutil/imgutils.h>
---- a/media/filters/ffmpeg_demuxer.cc.orig	2016-08-01 10:52:01.528177808 +0000
-+++ b/media/filters/ffmpeg_demuxer.cc	2016-08-01 10:52:27.160707694 +0000
-@@ -1150,24 +1150,6 @@
-   // If no estimate is found, the stream entry will be kInfiniteDuration.
+diff --git a/media/filters/ffmpeg_demuxer.cc b/media/filters/ffmpeg_demuxer.cc
+index 155e980..7ba327a 100644
+--- a/media/filters/ffmpeg_demuxer.cc
++++ b/media/filters/ffmpeg_demuxer.cc
+@@ -1034,24 +1034,6 @@
+   // If no estimate is found, the stream entry will be kInfiniteDuration().
    std::vector<base::TimeDelta> start_time_estimates(format_context->nb_streams,
-                                                     kInfiniteDuration);
+                                                     kInfiniteDuration());
 -  const AVFormatInternal* internal = format_context->internal;
 -  if (internal && internal->packet_buffer &&
 -      format_context->start_time != static_cast<int64_t>(AV_NOPTS_VALUE)) {
@@ -44,5 +46,5 @@
 -    }
 -  }
  
-   std::unique_ptr<MediaTracks> media_tracks(new MediaTracks());
    AVStream* audio_stream = NULL;
+   AudioDecoderConfig audio_config;
