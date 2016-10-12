@@ -1,18 +1,34 @@
-diff -Naur chromium-54.0.2840.34.orig/base/trace_event/malloc_dump_provider.cc chromium-54.0.2840.34/base/trace_event/malloc_dump_provider.cc
---- chromium-54.0.2840.34.orig/base/trace_event/malloc_dump_provider.cc	2016-10-07 17:53:10.306270172 -0700
-+++ chromium-54.0.2840.34/base/trace_event/malloc_dump_provider.cc	2016-10-07 17:56:08.523752431 -0700
-@@ -224,7 +224,7 @@
-   resident_size = all_heap_info.committed_size;
-   allocated_objects_size = all_heap_info.allocated_size;
-   allocated_objects_count = all_heap_info.block_count;
+diff -Naur chromium-53.0.2785.143.orig/base/trace_event/malloc_dump_provider.cc chromium-53.0.2785.143/base/trace_event/malloc_dump_provider.cc
+--- chromium-53.0.2785.143.orig/base/trace_event/malloc_dump_provider.cc	2016-10-12 14:36:54.821809488 -0700
++++ chromium-53.0.2785.143/base/trace_event/malloc_dump_provider.cc	2016-10-12 14:40:53.295875322 -0700
+@@ -128,7 +128,7 @@
+   // fixed quantum, so the excess region will not be resident.
+   // See crrev.com/1531463004 for detailed explanation.
+   resident_size = stats.max_size_in_use;
 -#else
 +#elif defined(OS_LINUX) && defined(__GLIBC__)
    struct mallinfo info = mallinfo();
    DCHECK_GE(info.arena + info.hblkhd, info.uordblks);
  
-diff -Naur chromium-54.0.2840.34.orig/content/child/content_child_helpers.cc chromium-54.0.2840.34/content/child/content_child_helpers.cc
---- chromium-54.0.2840.34.orig/content/child/content_child_helpers.cc	2016-10-07 17:53:14.176324249 -0700
-+++ chromium-54.0.2840.34/content/child/content_child_helpers.cc	2016-10-07 17:56:46.627204676 -0700
+@@ -140,6 +140,7 @@
+   allocated_objects_size = info.uordblks;
+ #endif
+ 
++#if defined(USE_TCMALLOC) || defined(OS_MACOSX) || defined(OS_IOS) || (defined(OS_LINUX) && defined(__GLIBC__))
+   MemoryAllocatorDump* outer_dump = pmd->CreateAllocatorDump("malloc");
+   outer_dump->AddScalar("virtual_size", MemoryAllocatorDump::kUnitsBytes,
+                         total_virtual_size);
+@@ -162,6 +163,7 @@
+                           MemoryAllocatorDump::kUnitsBytes,
+                           resident_size - allocated_objects_size);
+   }
++#endif
+ 
+   // Heap profiler dumps.
+   if (!heap_profiler_enabled_)
+diff -Naur chromium-53.0.2785.143.orig/content/child/content_child_helpers.cc chromium-53.0.2785.143/content/child/content_child_helpers.cc
+--- chromium-53.0.2785.143.orig/content/child/content_child_helpers.cc	2016-10-12 14:36:57.531855693 -0700
++++ chromium-53.0.2785.143/content/child/content_child_helpers.cc	2016-10-12 14:41:55.688939085 -0700
 @@ -13,7 +13,7 @@
  #include "build/build_config.h"
  #include "v8/include/v8.h"
