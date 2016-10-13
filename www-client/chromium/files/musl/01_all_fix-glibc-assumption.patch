@@ -1,12 +1,13 @@
-diff -Naur chromium-50.0.2661.37.orig/chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.cc chromium-50.0.2661.37/chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.cc
---- chromium-50.0.2661.37.orig/chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.cc	2016-03-15 15:01:12.000000000 -0700
-+++ chromium-50.0.2661.37/chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.cc	2016-03-31 16:03:54.724951251 -0700
-@@ -37,7 +37,7 @@
+diff -Naur chromium-53.0.2785.143.orig/chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.cc chromium-53.0.2785.143/chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.cc
+--- chromium-53.0.2785.143.orig/chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.cc	2016-10-13 09:09:41.838917314 -0700
++++ chromium-53.0.2785.143/chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.cc	2016-10-13 09:13:06.609157786 -0700
+@@ -37,7 +37,9 @@
  #endif  // defined(OS_ANDROID) && defined(__arm__)
  
--#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
-+#if defined(__GLIBC__) && !defined(OS_CHROMEOS)
+ #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
++#if defined(__GLIBC__)
  #include <gnu/libc-version.h>
++#endif
  
  #include "base/version.h"
  #if defined(USE_X11)
