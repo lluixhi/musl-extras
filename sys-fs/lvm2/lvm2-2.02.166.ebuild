@@ -60,8 +60,8 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-2.02.129-example.conf.in.patch
 
 	# Musl fixes
-	"${FILESDIR}"/${PN}-2.02.136-fix-stdio-usage.patch
-	"${FILESDIR}"/${PN}-2.02.136-portability.patch
+	"${FILESDIR}"/${PN}-2.02.166-fix-stdio-usage.patch
+	"${FILESDIR}"/${PN}-2.02.166-portability.patch
 
 	# For upstream -- review and forward:
 	"${FILESDIR}"/${PN}-2.02.63-always-make-static-libdm.patch
@@ -72,7 +72,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-2.02.139-dynamic-static-ldflags.patch #332905
 	"${FILESDIR}"/${PN}-2.02.129-static-pkgconfig-libs.patch #370217, #439414 + blkid
 	"${FILESDIR}"/${PN}-2.02.130-pthread-pkgconfig.patch #492450
-	"${FILESDIR}"/${PN}-2.02.145-mkdev.patch #580062
+	#"${FILESDIR}"/${PN}-2.02.145-mkdev.patch #580062 # Merged upstream
 )
 
 pkg_setup() {
