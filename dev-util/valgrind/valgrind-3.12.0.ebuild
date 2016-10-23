@@ -1,4 +1,4 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -30,12 +30,9 @@ src_prepare() {
 	# Changing Makefile.all.am to disable SSP
 	epatch "${FILESDIR}"/${PN}-3.7.0-fno-stack-protector.patch
 
-	# Yet more local labels, this time for ppc32 & ppc64
-	epatch "${FILESDIR}"/${PN}-3.6.0-local-labels.patch
-
 	# Don't build in empty assembly files for other platforms or we'll get a QA
 	# warning about executable stacks.
-	epatch "${FILESDIR}"/${PN}-3.11.0-non-exec-stack.patch
+	epatch "${FILESDIR}"/${PN}-3.12.0-non-exec-stack.patch
 
 	# Fix for MUSL.
 	epatch "${FILESDIR}"/${PN}-3.11.0-musl.patch
