@@ -15,7 +15,7 @@ diff -Naur LVM2.2.02.166.orig/lib/log/log.c LVM2.2.02.166/lib/log/log.c
  }
 +#else
 +{
-+	return freopen(NULL, mode, *stream) != NULL
++	return freopen(NULL, mode, *stream) != NULL;
 +}
 +#endif
  
