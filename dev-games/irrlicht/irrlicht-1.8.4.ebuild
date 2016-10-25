@@ -1,9 +1,9 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
-inherit eutils multilib toolchain-funcs
+EAPI=6
+inherit eutils toolchain-funcs
 
 DESCRIPTION="open source high performance realtime 3D engine written in C++"
 HOMEPAGE="http://irrlicht.sourceforge.net/"
@@ -15,7 +15,7 @@ KEYWORDS="~amd64 ~ppc ~x86"
 IUSE="debug doc static-libs"
 
 RDEPEND="virtual/jpeg:0
-	media-libs/libpng:0
+	media-libs/libpng:0=
 	app-arch/bzip2
 	sys-libs/zlib
 	virtual/opengl
@@ -26,24 +26,25 @@ DEPEND="${RDEPEND}
 	x11-proto/xproto
 	x11-proto/xf86vidmodeproto"
 
-S=${WORKDIR}/${P}/source/Irrlicht
+S=${WORKDIR}/${P}/source/${PN^}
+
+PATCHES=( "${FILESDIR}"/${P}-gentoo.patch
+		"${FILESDIR}"/${P}-config.patch
+		"${FILESDIR}"/${P}-demoMake.patch
+		"${FILESDIR}"/${P}-mesa-10.x.patch
+		"${FILESDIR}"/${P}-jpeg-9a.patch
+		"${FILESDIR}"/${PN}-1.8.1-sysctl.patch )
+
+DOCS=( changes.txt readme.txt )
 
 src_prepare() {
 	cd "${WORKDIR}"/${P} || die
 	edos2unix include/IrrCompileConfig.h
-
-	epatch \
-		"${FILESDIR}"/${PN}-1.8.1-gentoo.patch \
-		"${FILESDIR}"/${PN}-1.8.1-config.patch \
-		"${FILESDIR}"/${PN}-1.8.1-demoMake.patch \
-		"${FILESDIR}"/${PN}-1.8.1-mesa-10.x.patch \
-		"${FILESDIR}"/${PN}-1.8.1-jpeg-9a.patch \
-		"${FILESDIR}"/${PN}-1.8.1-sysctl.patch
-
 	sed -i \
 		-e 's:\.\./\.\./media:../media:g' \
 		$(grep -rl '\.\./\.\./media' examples) \
 		|| die 'sed failed'
+	default
 }
 
 src_compile() {
@@ -64,7 +65,9 @@ src_install() {
 	insinto /usr/include/${PN}
 	doins include/*
 
-	dodoc changes.txt readme.txt
+	einstalldocs
+
+	# don't do these with einstalldocs because they shouldn't be compressed
 	if use doc ; then
 		insinto /usr/share/doc/${PF}
 		doins -r examples media
