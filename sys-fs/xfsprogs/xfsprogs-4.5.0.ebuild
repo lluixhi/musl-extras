@@ -82,6 +82,7 @@ src_configure() {
 	fi
 
 	econf \
+		--bindir=/usr/bin \
 		--libexecdir=/usr/$(get_libdir) \
 		--enable-lib64=no \
 		$(use_enable nls gettext) \
