@@ -1,4 +1,4 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -11,7 +11,7 @@ SRC_URI="http://ncmpcpp.rybczak.net/stable/${P}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 arm hppa ~ppc ppc64 ~sparc ~x86"
+KEYWORDS="amd64 arm hppa ppc ppc64 sparc x86"
 IUSE="clock curl outputs taglib unicode visualizer"
 
 RDEPEND="
@@ -22,11 +22,8 @@ RDEPEND="
 	sys-libs/readline:*
 	curl? ( net-misc/curl )
 	taglib? ( media-libs/taglib )
-	unicode? (
-		dev-libs/boost:=[icu]
-		dev-libs/icu:=
-	)
-	visualizer? ( sci-libs/fftw:3.0= )
+	unicode? ( dev-libs/boost:=[icu] )
+	visualizer? ( sci-libs/fftw:3.0 )
 "
 DEPEND="
 	${RDEPEND}
