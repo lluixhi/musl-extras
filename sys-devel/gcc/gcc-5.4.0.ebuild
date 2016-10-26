@@ -49,7 +49,6 @@ src_prepare() {
 		epatch "${FILESDIR}"/5.3.0/musl.patch
 		epatch "${FILESDIR}"/5.3.0/musl-gthr.patch
 		epatch "${FILESDIR}"/5.3.0/musl-stdint.patch
-		epatch "${FILESDIR}"/5.2.0/res_state.patch
 		epatch "${FILESDIR}"/4.9.3/posix_memalign.patch
 	fi
 }
