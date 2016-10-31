@@ -1,19 +1,20 @@
 # MUSL Extras Repo
 
-Gentoo's Hardened Development Repo is on the stable side.
+This repo existed to provide unstable packages in addition to Gentoo's musl
+overlay.
 
-This repo exists to be bleeding edge, fix/update the hardened dev patches,
-pull in patches from Voidlinux and Alpine, and create its own.
+It's transitioning into an experimental (read: mostly broken) musl overlay. The
+packages are slowly being moved into the official musl overlay.
 
 Features currently not found in other distros that support MUSL include:
-* GCC 6.1.0
+* GCC 6.2.0
 * Latest Linux Headers
 * Working xf86-video-intel
 * Latest ElfUtils
 * Icecat
 * Icedtea 8
 * SystemTap
-* Possibly more?
+* More!
 
 ## Note on Icedtea
 Icedtea requires a JDK to bootstrap it, and GCJ is broken.
