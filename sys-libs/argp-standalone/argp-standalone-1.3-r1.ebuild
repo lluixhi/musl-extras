@@ -2,9 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI="5"
+EAPI=6
 
-inherit autotools eutils flag-o-matic
+inherit autotools flag-o-matic
 
 DESCRIPTION="Standalone argp library for use with uclibc"
 HOMEPAGE="http://www.lysator.liu.se/~nisse/misc/"
@@ -17,17 +17,20 @@ IUSE="static-libs"
 
 DEPEND="!sys-libs/glibc"
 
-src_prepare() {
-	epatch "${FILESDIR}/${P}-throw-in-funcdef.patch"
-	epatch "${FILESDIR}/${P}-shared.patch"
+PATCHES=(
+	"${FILESDIR}/${P}-throw-in-funcdef.patch"
+	"${FILESDIR}/${P}-shared.patch"
+)
 
+src_prepare() {
+	default
 	eautoreconf
 }
 
 src_configure() {
-	append-cflags -fgnu89-inline
+	append-cflags "-fgnu89-inline"
 	econf \
-	$(use_enable static-libs static)
+		$(use_enable static-libs static)
 }
 
 src_install() {

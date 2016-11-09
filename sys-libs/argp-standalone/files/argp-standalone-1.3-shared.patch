@@ -1,5 +1,5 @@
---- Makefile.am.orig	2009-05-28 15:19:50.000000000 +0200
-+++ Makefile.am	2009-05-28 15:30:57.000000000 +0200
+--- a/Makefile.am	2009-05-28 15:19:50.000000000 +0200
++++ b/Makefile.am	2009-05-28 15:30:57.000000000 +0200
 @@ -21,20 +21,20 @@
  AUTOMAKE_OPTIONS = foreign
  SUBDIRS = . testsuite
@@ -26,8 +26,8 @@
 -argp_test_LDADD = libargp.a
 +argp_test_LDADD = libargp.la
  
---- configure.ac.orig	2009-05-28 15:20:01.000000000 +0200
-+++ configure.ac	2009-05-28 15:21:06.000000000 +0200
+--- a/configure.ac	2009-05-28 15:20:01.000000000 +0200
++++ b/configure.ac	2009-05-28 15:21:06.000000000 +0200
 @@ -17,6 +17,7 @@
  AC_PROG_MAKE_SET
  AC_PROG_RANLIB
@@ -36,8 +36,8 @@
  
  if test "x$am_cv_prog_cc_stdc" = xno ; then
    AC_ERROR([the C compiler doesn't handle ANSI-C])
---- testsuite/Makefile.am.orig	2009-05-28 15:21:33.000000000 +0200
-+++ testsuite/Makefile.am	2009-05-28 15:21:41.000000000 +0200
+--- a/testsuite/Makefile.am	2009-05-28 15:21:33.000000000 +0200
++++ b/testsuite/Makefile.am	2009-05-28 15:21:41.000000000 +0200
 @@ -5,7 +5,7 @@
  
  noinst_PROGRAMS = $(TS_PROGS) ex1 ex3 ex4
