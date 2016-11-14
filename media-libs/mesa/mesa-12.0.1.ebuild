@@ -189,6 +189,7 @@ pkg_setup() {
 
 src_prepare() {
 	epatch "${FILESDIR}"/${PN}-11-execinfo.patch
+	epatch "${FILESDIR}"/${PN}-12.0-sysmacros.patch #580392
 
 	eautoreconf
 }
