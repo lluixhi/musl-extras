@@ -1,6 +1,6 @@
 diff -Naur elfutils-0.167.orig/src/arlib.h elfutils-0.167/src/arlib.h
---- elfutils-0.167.orig/src/arlib.h	2015-08-21 05:22:37.000000000 -0700
-+++ elfutils-0.167/src/arlib.h	2016-11-15 12:02:27.479686088 -0800
+--- elfutils-0.167.orig/src/arlib.h	2016-11-15 12:44:15.758165069 -0800
++++ elfutils-0.167/src/arlib.h	2016-11-15 12:45:19.592776457 -0800
 @@ -29,6 +29,12 @@
  #include <stdint.h>
  #include <sys/types.h>
@@ -15,8 +15,8 @@ diff -Naur elfutils-0.167.orig/src/arlib.h elfutils-0.167/src/arlib.h
  /* State of -D/-U flags.  */
  extern bool arlib_deterministic_output;
 diff -Naur elfutils-0.167.orig/src/elfcompress.c elfutils-0.167/src/elfcompress.c
---- elfutils-0.167.orig/src/elfcompress.c	2016-08-03 09:19:47.000000000 -0700
-+++ elfutils-0.167/src/elfcompress.c	2016-11-15 12:03:47.538428900 -0800
+--- elfutils-0.167.orig/src/elfcompress.c	2016-11-15 12:44:15.759165079 -0800
++++ elfutils-0.167/src/elfcompress.c	2016-11-15 12:45:19.595776486 -0800
 @@ -36,6 +36,13 @@
  #include <gelf.h>
  #include "system.h"
@@ -33,7 +33,7 @@ diff -Naur elfutils-0.167.orig/src/elfcompress.c elfutils-0.167/src/elfcompress.
  ARGP_PROGRAM_VERSION_HOOK_DEF = print_version;
 diff -Naur elfutils-0.167.orig/src/error.h elfutils-0.167/src/error.h
 --- elfutils-0.167.orig/src/error.h	1969-12-31 16:00:00.000000000 -0800
-+++ elfutils-0.167/src/error.h	2016-11-15 11:59:21.885964088 -0800
++++ elfutils-0.167/src/error.h	2016-11-15 12:45:19.596776496 -0800
 @@ -0,0 +1,27 @@
 +#ifndef _ERROR_H_
 +#define _ERROR_H_
@@ -63,9 +63,9 @@ diff -Naur elfutils-0.167.orig/src/error.h elfutils-0.167/src/error.h
 +
 +#endif	/* _ERROR_H_ */
 diff -Naur elfutils-0.167.orig/src/readelf.c elfutils-0.167/src/readelf.c
---- elfutils-0.167.orig/src/readelf.c	2016-03-31 13:06:07.000000000 -0700
-+++ elfutils-0.167/src/readelf.c	2016-11-15 12:06:55.366171627 -0800
-@@ -4487,8 +4487,10 @@
+--- elfutils-0.167.orig/src/readelf.c	2016-11-15 12:44:15.760165088 -0800
++++ elfutils-0.167/src/readelf.c	2016-11-15 12:45:28.621862935 -0800
+@@ -4487,10 +4487,11 @@
    return base;
  }
  
@@ -75,9 +75,11 @@ diff -Naur elfutils-0.167.orig/src/readelf.c elfutils-0.167/src/readelf.c
 -compare_listptr (const void *a, const void *b, void *arg)
 +compare_listptr (const void *a, const void *b)
  {
-   const char *name = arg;
+-  const char *name = arg;
    struct listptr *p1 = (void *) a;
-@@ -4506,21 +4508,21 @@
+   struct listptr *p2 = (void *) b;
+ 
+@@ -4506,21 +4507,21 @@
  	  p1->warned = p2->warned = true;
  	  error (0, 0,
  		 gettext ("%s %#" PRIx64 " used with different address sizes"),
@@ -102,7 +104,7 @@ diff -Naur elfutils-0.167.orig/src/readelf.c elfutils-0.167/src/readelf.c
  	}
      }
  
-@@ -4585,9 +4587,11 @@
+@@ -4585,9 +4586,11 @@
  static void
  sort_listptr (struct listptr_table *table, const char *name)
  {
@@ -118,8 +120,8 @@ diff -Naur elfutils-0.167.orig/src/readelf.c elfutils-0.167/src/readelf.c
  
  static bool
 diff -Naur elfutils-0.167.orig/src/strip.c elfutils-0.167/src/strip.c
---- elfutils-0.167.orig/src/strip.c	2016-08-25 11:57:21.000000000 -0700
-+++ elfutils-0.167/src/strip.c	2016-11-15 12:00:37.941669758 -0800
+--- elfutils-0.167.orig/src/strip.c	2016-11-15 12:44:15.758165069 -0800
++++ elfutils-0.167/src/strip.c	2016-11-15 12:45:19.600776534 -0800
 @@ -45,6 +45,10 @@
  #include "libdwelf.h"
  #include <system.h>
