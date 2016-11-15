@@ -80,6 +80,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-5.6.0-musl-siginfo.patch"
 	"${FILESDIR}/${PN}-5.6.0-musl-stack.patch"
 	"${FILESDIR}/${PN}-5.6.0-musl-sysctl.patch"
+	"${FILESDIR}/${PN}-5.7.0-unset-madv_free.patch"
 )
 
 src_prepare() {
