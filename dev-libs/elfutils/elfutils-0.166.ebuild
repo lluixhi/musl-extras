@@ -12,7 +12,7 @@ SRC_URI="https://fedorahosted.org/releases/e/l/${PN}/${PV}/${P}.tar.bz2"
 
 LICENSE="GPL-2-with-exceptions"
 SLOT="0"
-KEYWORDS="alpha amd64 arm ~arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~s390 ~sh ~sparc x86 ~amd64-linux ~arm-linux ~x86-linux"
+KEYWORDS="alpha amd64 arm arm64 hppa ia64 m68k ~mips ppc ppc64 s390 sh sparc x86 ~amd64-linux ~arm-linux ~x86-linux"
 IUSE="bzip2 lzma nls static-libs test +threads +utils"
 
 # This pkg does not actually seem to compile currently in a uClibc
@@ -40,10 +40,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-0.118-PaX-support.patch
 
 	# Add MUSL patches
-	epatch "${FILESDIR}"/${PN}-0.165-musl-obstack-fts.patch
-	epatch "${FILESDIR}"/${PN}-0.165-musl-libs.patch
-	epatch "${FILESDIR}"/${PN}-0.163-musl-utils.patch
-	epatch "${FILESDIR}"/${PN}-0.165-musl-utils.patch
+	epatch "${FILESDIR}"/${P}-musl-obstack-fts.patch
+	epatch "${FILESDIR}"/${P}-musl-utils.patch
+	epatch "${FILESDIR}"/${P}-musl-fcntl_h.patch
 
 	eautoreconf
 

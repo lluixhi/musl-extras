@@ -1,7 +1,7 @@
-diff -Naurw elfutils-0.165.orig/configure.ac elfutils-0.165/configure.ac
---- elfutils-0.165.orig/configure.ac	2016-02-03 16:33:20.595950158 -0800
-+++ elfutils-0.165/configure.ac	2016-02-03 16:35:24.345946639 -0800
-@@ -316,6 +316,62 @@
+diff -Naur elfutils-0.166.orig/configure.ac elfutils-0.166/configure.ac
+--- elfutils-0.166.orig/configure.ac	2016-11-15 12:19:07.231953443 -0800
++++ elfutils-0.166/configure.ac	2016-11-15 12:20:59.299990043 -0800
+@@ -361,6 +361,60 @@
  fi
  AC_SUBST([argp_LDADD])
  
@@ -59,14 +59,12 @@ diff -Naurw elfutils-0.165.orig/configure.ac elfutils-0.165/configure.ac
 +fi
 +AC_SUBST([obstack_LDADD])
 +
-+dnl The directories with content.
-+
  dnl The directories with content.
  
  dnl Documentation.
-diff -Naurw elfutils-0.165.orig/libdw/Makefile.am elfutils-0.165/libdw/Makefile.am
---- elfutils-0.165.orig/libdw/Makefile.am	2016-02-03 16:33:20.504950160 -0800
-+++ elfutils-0.165/libdw/Makefile.am	2016-02-03 16:36:07.624945408 -0800
+diff -Naur elfutils-0.166.orig/libdw/Makefile.am elfutils-0.166/libdw/Makefile.am
+--- elfutils-0.166.orig/libdw/Makefile.am	2016-11-15 12:19:07.142952620 -0800
++++ elfutils-0.166/libdw/Makefile.am	2016-11-15 12:20:59.299990043 -0800
 @@ -112,7 +112,7 @@
  		-Wl,--enable-new-dtags,-rpath,$(pkglibdir) \
  		-Wl,--version-script,$<,--no-undefined \
@@ -76,9 +74,9 @@ diff -Naurw elfutils-0.165.orig/libdw/Makefile.am elfutils-0.165/libdw/Makefile.
  	@$(textrel_check)
  	$(AM_V_at)ln -fs $@ $@.$(VERSION)
  
-diff -Naurw elfutils-0.165.orig/src/Makefile.am elfutils-0.165/src/Makefile.am
---- elfutils-0.165.orig/src/Makefile.am	2016-02-03 16:33:20.432950162 -0800
-+++ elfutils-0.165/src/Makefile.am	2016-02-03 16:39:54.795938947 -0800
+diff -Naur elfutils-0.166.orig/src/Makefile.am elfutils-0.166/src/Makefile.am
+--- elfutils-0.166.orig/src/Makefile.am	2016-11-15 12:19:07.072951972 -0800
++++ elfutils-0.166/src/Makefile.am	2016-11-15 12:20:59.299990043 -0800
 @@ -104,28 +104,28 @@
  ar_no_Wstack_usage = yes
  unstrip_no_Wstack_usage = yes
@@ -124,9 +122,9 @@ diff -Naurw elfutils-0.165.orig/src/Makefile.am elfutils-0.165/src/Makefile.am
  
  ldlex.o: ldscript.c
  ldlex_no_Werror = yes
-diff -Naurw elfutils-0.165.orig/src/nm.c elfutils-0.165/src/nm.c
---- elfutils-0.165.orig/src/nm.c	2016-02-03 16:33:20.433950162 -0800
-+++ elfutils-0.165/src/nm.c	2016-02-03 16:40:34.346937822 -0800
+diff -Naur elfutils-0.166.orig/src/nm.c elfutils-0.166/src/nm.c
+--- elfutils-0.166.orig/src/nm.c	2016-11-15 12:19:07.073951982 -0800
++++ elfutils-0.166/src/nm.c	2016-11-15 12:20:59.300990052 -0800
 @@ -47,6 +47,21 @@
  #include "../libebl/libeblP.h"
  #include "../libdwfl/libdwflP.h"
