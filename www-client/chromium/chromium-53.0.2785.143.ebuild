@@ -193,9 +193,6 @@ src_prepare() {
 	epatch "${FILESDIR}/${PN}-last-commit-position-r0.patch"
 	epatch "${FILESDIR}/${PN}-system-zlib-r0.patch"
 
-	# In Gentoo Upstream
-	epatch "${FILESDIR}/${PN}-icu-58.patch"
-
 	# Not in Gentoo, but not musl specific
 	epatch "${FILESDIR}/${PN}-unset-madv_free.patch"
 
