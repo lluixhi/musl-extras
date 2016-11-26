@@ -56,7 +56,6 @@ DEPEND="${RDEPEND}
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-4.3.1-musl.patch
-	"${FILESDIR}"/${P}-fix-ioctl-again.patch
 )
 
 if [[ ${PV} == 9999 ]]; then
