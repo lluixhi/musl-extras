@@ -200,6 +200,7 @@ pkg_setup() {
 
 src_prepare() {
 	epatch "${FILESDIR}"/${PN}-11-execinfo.patch
+	epatch "${FILESDIR}"/${P}-missing-assert.h.patch
 
 	eautoreconf
 }
