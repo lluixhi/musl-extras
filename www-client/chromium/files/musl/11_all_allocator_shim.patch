@@ -1,0 +1,65 @@
+--- .src/chromium-54.0.2840.100/base/allocator/allocator_shim.cc	2016-11-10 20:02:09.000000000 +0000
++++ chromium-54.0.2840.100/base/allocator/allocator_shim.cc	2016-11-10 20:02:09.000000000 +0000
+@@ -252,17 +252,6 @@
+ #include "base/allocator/allocator_shim_override_cpp_symbols.h"
+ #endif
+ 
+-#if defined(OS_ANDROID)
+-// Android does not support symbol interposition. The way malloc symbols are
+-// intercepted on Android is by using link-time -wrap flags.
+-#include "base/allocator/allocator_shim_override_linker_wrapped_symbols.h"
+-#elif defined(OS_WIN)
+-// On Windows we use plain link-time overriding of the CRT symbols.
+-#include "base/allocator/allocator_shim_override_ucrt_symbols_win.h"
+-#else
+-#include "base/allocator/allocator_shim_override_libc_symbols.h"
+-#endif
+-
+ // In the case of tcmalloc we also want to plumb into the glibc hooks
+ // to avoid that allocations made in glibc itself (e.g., strdup()) get
+ // accidentally performed on the glibc heap instead of the tcmalloc one.
+--- .src/chromium-54.0.2840.100/base/allocator/allocator_shim_default_dispatch_to_glibc.cc	2016-11-10 20:02:09.000000000 +0000
++++ chromium-54.0.2840.100/base/allocator/allocator_shim_default_dispatch_to_glibc.cc	2016-11-10 20:02:09.000000000 +0000
+@@ -8,36 +8,30 @@
+ // routes allocations to libc functions.
+ // The code here is strongly inspired from tcmalloc's libc_override_glibc.h.
+ 
+-extern "C" {
+-void* __libc_malloc(size_t size);
+-void* __libc_calloc(size_t n, size_t size);
+-void* __libc_realloc(void* address, size_t size);
+-void* __libc_memalign(size_t alignment, size_t size);
+-void __libc_free(void* ptr);
+-}  // extern "C"
++#include <stdlib.h>
+ 
+ namespace {
+ 
+ using base::allocator::AllocatorDispatch;
+ 
+ void* GlibcMalloc(const AllocatorDispatch*, size_t size) {
+-  return __libc_malloc(size);
++  return malloc(size);
+ }
+ 
+ void* GlibcCalloc(const AllocatorDispatch*, size_t n, size_t size) {
+-  return __libc_calloc(n, size);
++  return calloc(n, size);
+ }
+ 
+ void* GlibcRealloc(const AllocatorDispatch*, void* address, size_t size) {
+-  return __libc_realloc(address, size);
++  return realloc(address, size);
+ }
+ 
+ void* GlibcMemalign(const AllocatorDispatch*, size_t alignment, size_t size) {
+-  return __libc_memalign(alignment, size);
++  return memalign(alignment, size);
+ }
+ 
+ void GlibcFree(const AllocatorDispatch*, void* address) {
+-  __libc_free(address);
++  free(address);
+ }
+ 
+ }  // namespace

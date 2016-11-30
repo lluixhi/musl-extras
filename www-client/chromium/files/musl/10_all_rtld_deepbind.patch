@@ -1,0 +1,15 @@
+diff -Naur chromium-54.0.2840.100.orig/base/native_library_posix.cc chromium-54.0.2840.100/base/native_library_posix.cc
+--- chromium-54.0.2840.100.orig/base/native_library_posix.cc	2016-11-30 13:05:07.118035735 -0800
++++ chromium-54.0.2840.100/base/native_library_posix.cc	2016-11-30 13:09:12.118546308 -0800
+@@ -6,6 +6,11 @@
+ 
+ #include <dlfcn.h>
+ 
++#ifndef RTLD_DEEPBIND
++// musl neither defines nor can use RTLD_DEEPBIND
++#define RTLD_DEEPBIND 0
++#endif
++
+ #include "base/files/file_path.h"
+ #include "base/logging.h"
+ #include "base/strings/string_util.h"
