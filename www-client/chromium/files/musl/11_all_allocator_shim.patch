@@ -1,5 +1,6 @@
---- .src/chromium-54.0.2840.100/base/allocator/allocator_shim.cc	2016-11-10 20:02:09.000000000 +0000
-+++ chromium-54.0.2840.100/base/allocator/allocator_shim.cc	2016-11-10 20:02:09.000000000 +0000
+diff -Naur chromium-54.0.2840.100.orig/base/allocator/allocator_shim.cc chromium-54.0.2840.100/base/allocator/allocator_shim.cc
+--- chromium-54.0.2840.100.orig/base/allocator/allocator_shim.cc	2016-12-01 12:23:41.466287939 -0800
++++ chromium-54.0.2840.100/base/allocator/allocator_shim.cc	2016-12-01 12:24:42.323857159 -0800
 @@ -252,17 +252,6 @@
  #include "base/allocator/allocator_shim_override_cpp_symbols.h"
  #endif
@@ -18,8 +19,9 @@
  // In the case of tcmalloc we also want to plumb into the glibc hooks
  // to avoid that allocations made in glibc itself (e.g., strdup()) get
  // accidentally performed on the glibc heap instead of the tcmalloc one.
---- .src/chromium-54.0.2840.100/base/allocator/allocator_shim_default_dispatch_to_glibc.cc	2016-11-10 20:02:09.000000000 +0000
-+++ chromium-54.0.2840.100/base/allocator/allocator_shim_default_dispatch_to_glibc.cc	2016-11-10 20:02:09.000000000 +0000
+diff -Naur chromium-54.0.2840.100.orig/base/allocator/allocator_shim_default_dispatch_to_glibc.cc chromium-54.0.2840.100/base/allocator/allocator_shim_default_dispatch_to_glibc.cc
+--- chromium-54.0.2840.100.orig/base/allocator/allocator_shim_default_dispatch_to_glibc.cc	2016-12-01 12:23:41.468287958 -0800
++++ chromium-54.0.2840.100/base/allocator/allocator_shim_default_dispatch_to_glibc.cc	2016-12-01 12:24:42.323857159 -0800
 @@ -8,36 +8,30 @@
  // routes allocations to libc functions.
  // The code here is strongly inspired from tcmalloc's libc_override_glibc.h.
@@ -63,3 +65,15 @@
  }
  
  }  // namespace
+diff -Naur chromium-54.0.2840.100.orig/base/allocator/allocator_shim_internals.h chromium-54.0.2840.100/base/allocator/allocator_shim_internals.h
+--- chromium-54.0.2840.100.orig/base/allocator/allocator_shim_internals.h	2016-12-01 12:23:41.463287911 -0800
++++ chromium-54.0.2840.100/base/allocator/allocator_shim_internals.h	2016-12-01 12:25:21.100219846 -0800
+@@ -7,8 +7,6 @@
+ 
+ #if defined(__GNUC__)
+ 
+-#include <sys/cdefs.h>  // for __THROW
+-
+ #ifndef __THROW  // Not a glibc system
+ #ifdef _NOEXCEPT  // LLVM libc++ uses noexcept instead
+ #define __THROW _NOEXCEPT
