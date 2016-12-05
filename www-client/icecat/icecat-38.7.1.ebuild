@@ -7,11 +7,9 @@ VIRTUALX_REQUIRED="pgo"
 WANT_AUTOCONF="2.1"
 
 # This list can be updated with scripts/get_langs.sh from the mozilla overlay
-# No official support as of fetch time
-# csb
-MOZ_LANGS=( ach af an ar as ast az be bg bn-BD bn-IN br bs ca cs cy da de
-el en-GB en-US en-ZA eo es-AR es-CL es-ES es-MX et eu fa fi fr fy-NL ga-IE
-gd gl gu-IN he hi-IN hr hsb hu hy-AM id is it ja kk km kn ko lt lv mai mk
+MOZ_LANGS=( ach af an ar as ast az be bg bn-BD bn-IN br bs ca cs cy da de dsb
+el en-GB en-US en-ZA eo es-AR es-CL es-ES es-MX et eu fa ff fi fr fy-NL ga-IE
+gd gl gu-IN he hi-IN hr hsb hu hy-AM id is it ja kk km kn ko lij lt lv mai mk
 ml mr ms nb-NO nl nn-NO or pa-IN pl pt-BR pt-PT rm ro ru si sk sl son sq
 sr sv-SE ta te th tr uk uz vi xh zh-CN zh-TW )
 
@@ -23,10 +21,13 @@ MOZ_PV=${PV}
 PATCH="firefox-38.0-patches-04"
 MOZ_HTTP_URI="mirror://gnu/gnuzilla"
 
+MOZ_LANGPACK_PREFIX="${MOZ_PV}/langpacks/${PN}-${MOZ_PV}."
+MOZ_LANGPACK_SUFFIX=".langpack.xpi"
+
 MOZCONFIG_OPTIONAL_WIFI=1
 MOZCONFIG_OPTIONAL_JIT="enabled"
 
-inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.38 multilib pax-utils fdo-mime autotools virtualx icelinguas
+inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.38 multilib pax-utils fdo-mime autotools virtualx mozlinguas-v2
 
 DESCRIPTION="Icecat Web Browser"
 HOMEPAGE="http://www.gnu.org/gnuzilla"

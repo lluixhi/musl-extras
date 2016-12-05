@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI="5"
+EAPI=6
 VIRTUALX_REQUIRED="pgo"
 WANT_AUTOCONF="2.1"
 
@@ -18,25 +18,27 @@ GNU_PV="gnu1"
 MOZ_PV=${PV}
 
 # Patch version
-PATCH="firefox-38.0-patches-04"
+PATCH="firefox-45.0-patches-08"
 MOZ_HTTP_URI="mirror://gnu/gnuzilla"
 
 MOZ_LANGPACK_PREFIX="${MOZ_PV}/langpacks/${PN}-${MOZ_PV}."
 MOZ_LANGPACK_SUFFIX=".langpack.xpi"
 
+# Kill gtk3 support since gtk+-3.20 breaks it hard prior to 48.0
+#MOZCONFIG_OPTIONAL_GTK3=1
 MOZCONFIG_OPTIONAL_WIFI=1
 MOZCONFIG_OPTIONAL_JIT="enabled"
 
-inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.38 multilib pax-utils fdo-mime autotools virtualx mozlinguas-v2
+inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.45 pax-utils fdo-mime autotools virtualx mozlinguas-v2
 
 DESCRIPTION="Icecat Web Browser"
 HOMEPAGE="http://www.gnu.org/gnuzilla"
 
-KEYWORDS="~alpha amd64 ~arm ~arm64 hppa ~ia64 ~ppc ppc64 x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~alpha amd64 ~arm ~arm64 ~ia64 ~ppc ~ppc64 ~x86 ~amd64-linux ~x86-linux"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
-IUSE="bindist egl hardened +minimal pgo selinux +gmp-autoupdate test"
+IUSE="bindist hardened +hwaccel pgo selinux +gmp-autoupdate test"
 RESTRICT="!bindist? ( bindist )"
 
 # More URIs appended below...
@@ -64,7 +66,7 @@ DEPEND="${RDEPEND}
 SRC_URI="${SRC_URI}
 	     ${MOZ_HTTP_URI}/${PV}/icecat-${PV}-${GNU_PV}.tar.bz2"
 
-QA_PRESTRIPPED="usr/$(get_libdir)/${PN}/icecat"
+QA_PRESTRIPPED="usr/lib*/${PN}/icecat"
 
 BUILD_OBJ_DIR="${S}/ic"
 
@@ -109,38 +111,13 @@ src_prepare() {
 	EPATCH_SUFFIX="patch" \
 	EPATCH_FORCE="yes" \
 	EPATCH_EXCLUDE="
-			2002_fix-preferences-gentoo.patch
-			8011_bug1194520-freetype261_until_moz43.patch
-			8010_bug114311-freetype26.patch" \
+			2002_fix-preferences-gentoo.patch"
 	epatch "${WORKDIR}/firefox"
 
-	epatch "${FILESDIR}"/icecat-fix-preferences-gentoo.patch
-
-	## Begin MUSL patching ##
-
-	# Upstream
-	epatch "${FILESDIR}"/1130164.patch
-	epatch "${FILESDIR}"/1130175.patch
-	epatch "${FILESDIR}"/sctp-36.patch
-	epatch "${FILESDIR}"/1130710.patch
-
-	# others
-	epatch "${FILESDIR}"/basename.patch
-	epatch "${FILESDIR}"/crashreporter.patch
-	epatch "${FILESDIR}"/fts.patch
-	epatch "${FILESDIR}"/libstagefright-cdefs.patch
-	epatch "${FILESDIR}"/profiler-gettid.patch
-	epatch "${FILESDIR}"/sandbox-cdefs.patch
-	epatch "${FILESDIR}"/updater.patch
-	epatch "${FILESDIR}"/xpcom-blocksize.patch
-	epatch "${FILESDIR}"/sipcc.patch
-
-	cp "${S}"/media/mtransport/third_party/nrappkit/src/port/generic/include/sys/queue.h "${S}"/media/mtransport/third_party/nrappkit/src/port/linux/include/sys
-
-	## End MUSL patching ##
+	eapply "${FILESDIR}"/icecat-fix-preferences-gentoo.patch
 
 	# Allow user to apply any additional patches without modifing ebuild
-	epatch_user
+	eapply_user
 
 	# Enable gnomebreakpad
 	if use debug ; then
@@ -181,7 +158,6 @@ src_prepare() {
 }
 
 src_configure() {
-	MOZILLA_FIVE_HOME="/usr/$(get_libdir)/${PN}"
 	MEXTENSIONS="default"
 	# Google API keys (see http://www.chromium.org/developers/how-tos/api-keys)
 	# Note: These are for Gentoo Linux use ONLY. For your own distribution, please
@@ -203,21 +179,12 @@ src_configure() {
 	# Add full relro support for hardened
 	use hardened && append-ldflags "-Wl,-z,relro,-z,now"
 
-	use egl && mozconfig_annotate 'Enable EGL as GL provider' --with-gl-provider=EGL
-
 	# Setup api key for location services
 	echo -n "${_google_api_key}" > "${S}"/google-api-key
 	mozconfig_annotate '' --with-google-api-keyfile="${S}/google-api-key"
 
 	mozconfig_annotate '' --enable-extensions="${MEXTENSIONS}"
 	mozconfig_annotate '' --disable-mailnews
-
-	# Other ff-specific settings
-	mozconfig_annotate '' --with-default-mozilla-five-home=${MOZILLA_FIVE_HOME}
-
-	# mozjemalloc doesn't build on musl yet
-	mozconfig_annotate '' --disable-replace-malloc
-	mozconfig_annotate '' --disable-jemalloc
 
 	# Allow for a proper pgo build
 	if use pgo; then
@@ -261,7 +228,7 @@ src_compile() {
 
 		CC="$(tc-getCC)" CXX="$(tc-getCXX)" LD="$(tc-getLD)" \
 		MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
-		Xemake -f client.mk profiledbuild || die "Xemake failed"
+		virtx emake -f client.mk profiledbuild || die "virtx emake failed"
 	else
 		CC="$(tc-getCC)" CXX="$(tc-getCXX)" LD="$(tc-getLD)" \
 		MOZ_MAKE_FLAGS="${MAKEOPTS}" SHELL="${SHELL:-${EPREFIX%/}/bin/bash}" \
@@ -271,9 +238,6 @@ src_compile() {
 }
 
 src_install() {
-	MOZILLA_FIVE_HOME="/usr/$(get_libdir)/${PN}"
-	DICTPATH="\"${EPREFIX}/usr/share/myspell\""
-
 	cd "${BUILD_OBJ_DIR}" || die
 
 	# Pax mark xpcshell for hardened support, only used for startupcache creation.
@@ -284,10 +248,15 @@ src_install() {
 		"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/all-gentoo.js" \
 		|| die
 
-	# Set default path to search for dictionaries.
-	echo "pref(\"spellchecker.dictionary_path\", ${DICTPATH});" \
-		>> "${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/all-gentoo.js" \
+	mozconfig_install_prefs \
+		"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/all-gentoo.js"
+
+	# Augment this with hwaccel prefs
+	if use hwaccel ; then
+		cat "${FILESDIR}"/gentoo-hwaccel-prefs.js-1 >> \
+		"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/all-gentoo.js" \
 		|| die
+	fi
 
 	echo "pref(\"extensions.autoDisableScopes\", 3);" >> \
 		"${BUILD_OBJ_DIR}/dist/bin/browser/defaults/preferences/all-gentoo.js" \
@@ -333,16 +302,11 @@ src_install() {
 			|| die
 	fi
 
-	# Required in order to use plugins and even run icecat on hardened.
+	# Required in order to use plugins and even run icecat on hardened, with jit useflag.
 	if use jit; then
 		pax-mark m "${ED}"${MOZILLA_FIVE_HOME}/{icecat,icecat-bin,plugin-container}
 	else
 		pax-mark m "${ED}"${MOZILLA_FIVE_HOME}/plugin-container
-	fi
-
-	if use minimal; then
-		rm -r "${ED}"/usr/include "${ED}${MOZILLA_FIVE_HOME}"/{idl,include,lib,sdk} \
-			|| die "Failed to remove sdk and headers"
 	fi
 
 	# very ugly hack to make icecat not sigbus on sparc
@@ -350,16 +314,6 @@ src_install() {
 	use sparc && { sed -e 's/IceCat/IceCatGentoo/g' \
 					 -i "${ED}/${MOZILLA_FIVE_HOME}/application.ini" \
 					|| die "sparc sed failed"; }
-
-	# revdep-rebuild entry
-	insinto /etc/revdep-rebuild
-	echo "SEARCH_DIRS_MASK=${MOZILLA_FIVE_HOME}" >> ${T}/10icecat
-	doins "${T}"/10${PN} || die
-
-	# workaround to make icecat find libmozalloc.so on musl
-	insinto /etc/env.d
-	echo "LDPATH=${MOZILLA_FIVE_HOME}" >> "${T}"/20icecat
-	doins "${T}"/20icecat || die
 }
 
 pkg_preinst() {
