@@ -166,6 +166,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-widevine-r1.patch"
 	"${FILESDIR}/chromium-54-ffmpeg2compat.patch"
 	"${FILESDIR}/${PN}-gn-bootstrap-ld.patch"
+	"${FILESDIR}/${PN}-unset-madv_free.patch"
 )
 
 pkg_pretend() {
@@ -196,11 +197,11 @@ pkg_setup() {
 src_prepare() {
 	default
 
-	# Not in Gentoo, but not musl specific
-	epatch "${FILESDIR}/${PN}-unset-madv_free.patch"
-
 	# musl patchset
-	EPATCH_EXCLUDE="08_all_no-mallinfo.patch
+	EPATCH_EXCLUDE="01_all_fix-glibc-assumption-r1.patch
+		            06_all_fix-stack-r1.patch
+		            07_all_no-execinfo-r1.patch
+		            08_all_no-mallinfo.patch
 		            09_all_no-pthread-setname.patch" \
 	EPATCH_SOURCE="${FILESDIR}/musl" \
 	EPATCH_SUFFIX="patch" \
