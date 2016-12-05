@@ -14,14 +14,14 @@ ml mr ms nb-NO nl nn-NO or pa-IN pl pt-BR pt-PT rm ro ru si sk sl son sq
 sr sv-SE ta te th tr uk uz vi xh zh-CN zh-TW )
 
 # GNU Patch version
-GNU_PV="gnu1"
-MOZ_PV=${PV}
+GNU_PV="gnu2"
+MOZ_PV="${PV}-${GNU_PV}"
 
 # Patch version
 PATCH="firefox-38.0-patches-04"
 MOZ_HTTP_URI="mirror://gnu/gnuzilla"
 
-MOZ_LANGPACK_PREFIX="${MOZ_PV}/langpacks/${PN}-${MOZ_PV}."
+MOZ_LANGPACK_PREFIX="${MOZ_PV}/langpacks/${PN}-${PV}."
 MOZ_LANGPACK_SUFFIX=".langpack.xpi"
 
 MOZCONFIG_OPTIONAL_WIFI=1
@@ -62,7 +62,7 @@ DEPEND="${RDEPEND}
 		virtual/opengl )"
 
 SRC_URI="${SRC_URI}
-	     ${MOZ_HTTP_URI}/${PV}/icecat-${PV}-${GNU_PV}.tar.bz2"
+	     ${MOZ_HTTP_URI}/${MOZ_PV}/icecat-${MOZ_PV}.tar.bz2"
 
 QA_PRESTRIPPED="usr/$(get_libdir)/${PN}/icecat"
 
