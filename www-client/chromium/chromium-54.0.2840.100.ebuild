@@ -196,6 +196,9 @@ pkg_setup() {
 src_prepare() {
 	default
 
+	# Not in Gentoo, but not musl specific
+	epatch "${FILESDIR}/${PN}-unset-madv_free.patch"
+
 	# musl patchset
 	EPATCH_EXCLUDE="08_all_no-mallinfo.patch
 		            09_all_no-pthread-setname.patch" \
