@@ -63,6 +63,7 @@ multilib_src_configure() {
 		$(use_enable threads thread-safety) \
 		--program-prefix="eu-" \
 		--with-zlib \
+		--disable-symbol-versioning \
 		$(use_with bzip2 bzlib) \
 		$(use_with lzma)
 }
