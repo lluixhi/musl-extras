@@ -23,6 +23,9 @@ fi
 src_prepare() {
 	toolchain_src_prepare
 
+	# Upstream Patch
+	epatch "${FILESDIR}"/${P}-r243475.patch
+
 	if use elibc_musl; then
 		cd "${S}"
 		epatch "${FILESDIR}"/4.9.3/posix_memalign.patch
