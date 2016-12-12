@@ -123,9 +123,7 @@ src_install() {
 		dosbin "${T}"/ldconfig
 		into /usr
 		dobin "${T}"/getconf
-		doman "${FILESDIR}"/getent.1
 		dobin "${T}"/getent
-		doman "${FILESDIR}"/getconf.1
 		dobin "${T}"/iconv
 		echo 'LDPATH="include ld.so.conf.d/*.conf"' > "${T}"/00musl || die
 		doenvd "${T}"/00musl || die
