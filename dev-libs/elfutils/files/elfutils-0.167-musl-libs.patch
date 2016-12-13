@@ -1,6 +1,6 @@
 diff -Naur elfutils-0.167.orig/lib/error.h elfutils-0.167/lib/error.h
 --- elfutils-0.167.orig/lib/error.h	1969-12-31 16:00:00.000000000 -0800
-+++ elfutils-0.167/lib/error.h	2016-11-15 11:49:10.788340567 -0800
++++ elfutils-0.167/lib/error.h	2016-12-12 21:46:17.991890860 -0800
 @@ -0,0 +1,27 @@
 +#ifndef _ERROR_H_
 +#define _ERROR_H_
@@ -31,7 +31,7 @@ diff -Naur elfutils-0.167.orig/lib/error.h elfutils-0.167/lib/error.h
 +#endif	/* _ERROR_H_ */
 diff -Naur elfutils-0.167.orig/lib/fixedsizehash.h elfutils-0.167/lib/fixedsizehash.h
 --- elfutils-0.167.orig/lib/fixedsizehash.h	2015-08-21 05:22:37.000000000 -0700
-+++ elfutils-0.167/lib/fixedsizehash.h	2016-11-15 11:50:20.857983670 -0800
++++ elfutils-0.167/lib/fixedsizehash.h	2016-12-12 21:46:17.994890886 -0800
 @@ -30,12 +30,12 @@
  #include <errno.h>
  #include <stdlib.h>
@@ -49,7 +49,7 @@ diff -Naur elfutils-0.167.orig/lib/fixedsizehash.h elfutils-0.167/lib/fixedsizeh
  
 diff -Naur elfutils-0.167.orig/lib/system.h elfutils-0.167/lib/system.h
 --- elfutils-0.167.orig/lib/system.h	2015-08-21 05:22:37.000000000 -0700
-+++ elfutils-0.167/lib/system.h	2016-11-15 11:51:11.262446284 -0800
++++ elfutils-0.167/lib/system.h	2016-12-12 21:46:17.994890886 -0800
 @@ -35,6 +35,7 @@
  #include <endian.h>
  #include <byteswap.h>
@@ -81,7 +81,7 @@ diff -Naur elfutils-0.167.orig/lib/system.h elfutils-0.167/lib/system.h
  extern void *xrealloc (void *, size_t) __attribute__ ((__malloc__));
 diff -Naur elfutils-0.167.orig/libcpu/i386_disasm.c elfutils-0.167/libcpu/i386_disasm.c
 --- elfutils-0.167.orig/libcpu/i386_disasm.c	2016-08-03 08:23:55.000000000 -0700
-+++ elfutils-0.167/libcpu/i386_disasm.c	2016-11-15 11:51:36.047673764 -0800
++++ elfutils-0.167/libcpu/i386_disasm.c	2016-12-12 21:46:17.995890894 -0800
 @@ -711,6 +711,7 @@
  
  		case 'm':
@@ -92,39 +92,27 @@ diff -Naur elfutils-0.167.orig/libcpu/i386_disasm.c elfutils-0.167/libcpu/i386_d
  		    {
 diff -Naur elfutils-0.167.orig/libdw/libdw.h elfutils-0.167/libdw/libdw.h
 --- elfutils-0.167.orig/libdw/libdw.h	2015-11-27 05:36:29.000000000 -0800
-+++ elfutils-0.167/libdw/libdw.h	2016-11-15 11:52:30.103169888 -0800
-@@ -33,7 +33,27 @@
++++ elfutils-0.167/libdw/libdw.h	2016-12-12 21:46:17.996890903 -0800
+@@ -33,6 +33,7 @@
  #include <stdbool.h>
  #include <stddef.h>
  #include <stdint.h>
 +#include <unistd.h>
-+#include <alloca.h>
-+#include <string.h>
  
-+#ifndef TEMP_FAILURE_RETRY
-+#define TEMP_FAILURE_RETRY(expression) \
-+  (__extension__                                                              \
-+    ({ long int __result;                                                     \
-+       do __result = (long int) (expression);                                 \
-+       while (__result == -1L && errno == EINTR);                             \
-+       __result; }))
-+#endif
-+
-+#ifndef strndupa
-+#define strndupa(s, n) \
-+       (__extension__ ({const char *__in = (s); \
-+                        size_t __len = strnlen (__in, (n)) + 1; \
-+                        char *__out = (char *) alloca (__len); \
-+                        __out[__len-1] = '\0'; \
-+                        (char *) memcpy (__out, __in, __len-1);}))
-+#endif
  
  #if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3)
- # define __nonnull_attribute__(...) __attribute__ ((__nonnull__ (__VA_ARGS__)))
 diff -Naur elfutils-0.167.orig/libdwfl/dwfl_build_id_find_elf.c elfutils-0.167/libdwfl/dwfl_build_id_find_elf.c
 --- elfutils-0.167.orig/libdwfl/dwfl_build_id_find_elf.c	2016-03-31 13:05:37.000000000 -0700
-+++ elfutils-0.167/libdwfl/dwfl_build_id_find_elf.c	2016-11-15 11:53:07.437512545 -0800
-@@ -94,7 +94,7 @@
++++ elfutils-0.167/libdwfl/dwfl_build_id_find_elf.c	2016-12-12 21:46:17.996890903 -0800
+@@ -30,6 +30,7 @@
+ #include <inttypes.h>
+ #include <fcntl.h>
+ #include <unistd.h>
++#include "system.h"
+ 
+ 
+ int
+@@ -94,7 +95,7 @@
  	{
  	  if (*file_name != NULL)
  	    free (*file_name);
@@ -135,7 +123,7 @@ diff -Naur elfutils-0.167.orig/libdwfl/dwfl_build_id_find_elf.c elfutils-0.167/l
  	      *file_name = name;
 diff -Naur elfutils-0.167.orig/libdwfl/dwfl_error.c elfutils-0.167/libdwfl/dwfl_error.c
 --- elfutils-0.167.orig/libdwfl/dwfl_error.c	2016-03-31 13:05:37.000000000 -0700
-+++ elfutils-0.167/libdwfl/dwfl_error.c	2016-11-15 11:53:34.672762512 -0800
++++ elfutils-0.167/libdwfl/dwfl_error.c	2016-12-12 21:46:17.996890903 -0800
 @@ -154,7 +154,16 @@
    switch (error &~ 0xffff)
      {
@@ -153,9 +141,20 @@ diff -Naur elfutils-0.167.orig/libdwfl/dwfl_error.c elfutils-0.167/libdwfl/dwfl_
      case OTHER_ERROR (LIBELF):
        return elf_errmsg (error & 0xffff);
      case OTHER_ERROR (LIBDW):
+diff -Naur elfutils-0.167.orig/libdwfl/dwfl_module_getdwarf.c elfutils-0.167/libdwfl/dwfl_module_getdwarf.c
+--- elfutils-0.167.orig/libdwfl/dwfl_module_getdwarf.c	2016-03-31 13:05:37.000000000 -0700
++++ elfutils-0.167/libdwfl/dwfl_module_getdwarf.c	2016-12-12 21:46:17.997890912 -0800
+@@ -33,6 +33,7 @@
+ #include <unistd.h>
+ #include "../libdw/libdwP.h"	/* DWARF_E_* values are here.  */
+ #include "../libelf/libelfP.h"
++#include "system.h"
+ 
+ static inline Dwfl_Error
+ open_elf_file (Elf **elf, int *fd, char **name)
 diff -Naur elfutils-0.167.orig/libdwfl/find-debuginfo.c elfutils-0.167/libdwfl/find-debuginfo.c
 --- elfutils-0.167.orig/libdwfl/find-debuginfo.c	2016-03-31 13:06:07.000000000 -0700
-+++ elfutils-0.167/libdwfl/find-debuginfo.c	2016-11-15 11:54:00.478999362 -0800
++++ elfutils-0.167/libdwfl/find-debuginfo.c	2016-12-12 21:46:17.998890920 -0800
 @@ -385,7 +385,7 @@
        /* If FILE_NAME is a symlink, the debug file might be associated
  	 with the symlink target name instead.  */
@@ -165,9 +164,40 @@ diff -Naur elfutils-0.167.orig/libdwfl/find-debuginfo.c elfutils-0.167/libdwfl/f
        if (canon != NULL && strcmp (file_name, canon))
  	fd = find_debuginfo_in_path (mod, canon,
  				     debuglink_file, debuglink_crc,
+diff -Naur elfutils-0.167.orig/libdwfl/libdwfl_crc32_file.c elfutils-0.167/libdwfl/libdwfl_crc32_file.c
+--- elfutils-0.167.orig/libdwfl/libdwfl_crc32_file.c	2015-08-21 05:22:37.000000000 -0700
++++ elfutils-0.167/libdwfl/libdwfl_crc32_file.c	2016-12-12 22:10:26.103356620 -0800
+@@ -34,3 +34,16 @@
+ #define LIB_SYSTEM_H	1
+ #include <libdwflP.h>
++#if !defined(__GLIBC__)
++
++/* Evaluate EXPRESSION, and repeat as long as it returns -1 with `errno'
++   set to EINTR.  */
++
++# define TEMP_FAILURE_RETRY(expression) \
++  (__extension__                                                              \
++    ({ long int __result;                                                     \
++       do __result = (long int) (expression);                                 \
++       while (__result == -1L && errno == EINTR);                             \
++       __result; }))
++
++#endif
+ #include "../lib/crc32_file.c"
+diff -Naur elfutils-0.167.orig/libdwfl/linux-kernel-modules.c elfutils-0.167/libdwfl/linux-kernel-modules.c
+--- elfutils-0.167.orig/libdwfl/linux-kernel-modules.c	2016-03-31 13:06:07.000000000 -0700
++++ elfutils-0.167/libdwfl/linux-kernel-modules.c	2016-12-12 21:46:17.999890929 -0800
+@@ -43,6 +43,7 @@
+ #include <sys/utsname.h>
+ #include <fcntl.h>
+ #include <unistd.h>
++#include "system.h"
+ 
+ /* Since fts.h is included before config.h, its indirect inclusions may not
+    give us the right LFS aliases of these functions, so map them manually.  */
 diff -Naur elfutils-0.167.orig/libelf/elf.h elfutils-0.167/libelf/elf.h
 --- elfutils-0.167.orig/libelf/elf.h	2016-08-03 08:23:55.000000000 -0700
-+++ elfutils-0.167/libelf/elf.h	2016-11-15 11:56:09.008179010 -0800
++++ elfutils-0.167/libelf/elf.h	2016-12-12 21:46:18.001890946 -0800
 @@ -21,7 +21,9 @@
  
  #include <features.h>
@@ -191,7 +221,7 @@ diff -Naur elfutils-0.167.orig/libelf/elf.h elfutils-0.167/libelf/elf.h
  #endif	/* elf.h */
 diff -Naur elfutils-0.167.orig/libelf/elf_getarsym.c elfutils-0.167/libelf/elf_getarsym.c
 --- elfutils-0.167.orig/libelf/elf_getarsym.c	2016-03-31 13:05:37.000000000 -0700
-+++ elfutils-0.167/libelf/elf_getarsym.c	2016-11-15 11:56:36.653432739 -0800
++++ elfutils-0.167/libelf/elf_getarsym.c	2016-12-12 21:46:18.001890946 -0800
 @@ -297,7 +297,7 @@
  		arsym[cnt].as_off = (*u32)[cnt];
  
