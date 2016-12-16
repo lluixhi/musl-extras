@@ -12,7 +12,7 @@ DESCRIPTION="X.Org driver for Intel cards"
 
 KEYWORDS="~amd64 ~x86 ~amd64-fbsd -x86-fbsd"
 IUSE="debug dri3 +sna +udev uxa xvmc"
-COMMIT_ID="bde946054efbc1c7ae1483b84c3b4fa3c2c7e2ec"
+COMMIT_ID="169c74fa6c2cd9c28dd7bfacd9639cd245b8c8a8"
 SRC_URI="https://cgit.freedesktop.org/xorg/driver/xf86-video-intel/snapshot/${COMMIT_ID}.tar.xz -> ${P}.tar.xz"
 
 S=${WORKDIR}/${COMMIT_ID}
@@ -20,8 +20,10 @@ S=${WORKDIR}/${COMMIT_ID}
 REQUIRED_USE="
 	|| ( sna uxa )
 "
-RDEPEND="x11-libs/libXext
+RDEPEND="
+	x11-libs/libXext
 	x11-libs/libXfixes
+	x11-libs/libXScrnSaver
 	>=x11-libs/pixman-0.27.1
 	>=x11-libs/libdrm-2.4.29[video_cards_intel]
 	dri3? (
@@ -44,6 +46,10 @@ DEPEND="${RDEPEND}
 	x11-proto/dri3proto
 	x11-proto/presentproto
 	x11-proto/resourceproto"
+
+PATCHES=(
+	"${FILESDIR}"/${PN}-2.99.917-config-header.patch #575970
+)
 
 src_configure() {
 	replace-flags -Os -O2
