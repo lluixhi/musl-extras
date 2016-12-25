@@ -4,7 +4,7 @@
 
 EAPI="4"
 
-PATCH_VER="1.1"
+PATCH_VER="1.0"
 #UCLIBC_VER="1.0"
 
 inherit eutils toolchain
@@ -22,9 +22,6 @@ fi
 
 src_prepare() {
 	toolchain_src_prepare
-
-	# Upstream Patch
-	epatch "${FILESDIR}"/${P}-r243475.patch
 
 	if use elibc_musl || [[ ${CATEGORY} = cross-*-musl ]]; then
 		epatch "${FILESDIR}"/4.9.4/boehm_gc.patch
