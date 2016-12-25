@@ -51,6 +51,7 @@ src_prepare() {
 
 	if use elibc_musl || [[ ${CATEGORY} = cross-*-musl ]]; then
 		epatch "${FILESDIR}"/4.9.4/gthread.patch
+		epatch "${FILESDIR}"/4.9.4/boehm_gc.patch
 		epatch "${FILESDIR}"/4.9.4/posix_memalign.patch
 		epatch "${FILESDIR}"/5.4.0/cilkrts.patch
 		epatch "${FILESDIR}"/5.4.0/linker_path.patch

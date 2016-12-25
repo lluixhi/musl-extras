@@ -27,6 +27,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-r243475.patch
 
 	if use elibc_musl || [[ ${CATEGORY} = cross-*-musl ]]; then
+		epatch "${FILESDIR}"/4.9.4/boehm_gc.patch
 		epatch "${FILESDIR}"/4.9.4/posix_memalign.patch
 		epatch "${FILESDIR}"/5.4.0/cilkrts.patch
 		epatch "${FILESDIR}"/6.2.0/musl.patch
