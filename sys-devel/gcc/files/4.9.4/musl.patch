@@ -11,46 +11,6 @@ diff -Naur gcc-4.9.4.orig/fixincludes/mkfixinc.sh gcc-4.9.4/fixincludes/mkfixinc
  	#  IF there is no include fixing,
  	#  THEN create a no-op fixer and exit
  	(echo "#! /bin/sh" ; echo "exit 0" ) > ${target}
-diff -Naur gcc-4.9.4.orig/gcc/config/aarch64/aarch64-linux.h gcc-4.9.4/gcc/config/aarch64/aarch64-linux.h
---- gcc-4.9.4.orig/gcc/config/aarch64/aarch64-linux.h	2016-12-24 16:17:07.078826284 -0800
-+++ gcc-4.9.4/gcc/config/aarch64/aarch64-linux.h	2016-12-24 16:18:04.944380348 -0800
-@@ -23,6 +23,9 @@
- 
- #define GLIBC_DYNAMIC_LINKER "/lib/ld-linux-aarch64%{mbig-endian:_be}.so.1"
- 
-+#undef MUSL_DYNAMIC_LINKER
-+#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-aarch64%{mbig-endian:_be}%{mabi=ilp32:_ilp32}.so.1"
-+
- #define CPP_SPEC "%{pthread:-D_REENTRANT}"
- 
- #define LINUX_TARGET_LINK_SPEC  "%{h*}		\
-diff -Naur gcc-4.9.4.orig/gcc/config/arm/linux-eabi.h gcc-4.9.4/gcc/config/arm/linux-eabi.h
---- gcc-4.9.4.orig/gcc/config/arm/linux-eabi.h	2016-12-24 16:17:07.132826801 -0800
-+++ gcc-4.9.4/gcc/config/arm/linux-eabi.h	2016-12-24 16:18:34.176660248 -0800
-@@ -77,6 +77,23 @@
-     %{mfloat-abi=soft*:" GLIBC_DYNAMIC_LINKER_SOFT_FLOAT "} \
-     %{!mfloat-abi=*:" GLIBC_DYNAMIC_LINKER_DEFAULT "}"
- 
-+/* For ARM musl currently supports four dynamic linkers:
-+   - ld-musl-arm.so.1 - for the EABI-derived soft-float ABI
-+   - ld-musl-armhf.so.1 - for the EABI-derived hard-float ABI
-+   - ld-musl-armeb.so.1 - for the EABI-derived soft-float ABI, EB
-+   - ld-musl-armebhf.so.1 - for the EABI-derived hard-float ABI, EB
-+   musl does not support the legacy OABI mode.
-+   All the dynamic linkers live in /lib.
-+   We default to soft-float, EL. */
-+#undef  MUSL_DYNAMIC_LINKER
-+#if TARGET_BIG_ENDIAN_DEFAULT
-+#define MUSL_DYNAMIC_LINKER_E "%{mlittle-endian:;:eb}"
-+#else
-+#define MUSL_DYNAMIC_LINKER_E "%{mbig-endian:eb}"
-+#endif
-+#define MUSL_DYNAMIC_LINKER \
-+  "/lib/ld-musl-arm" MUSL_DYNAMIC_LINKER_E "%{mfloat-abi=hard:hf}.so.1"
-+
- /* At this point, bpabi.h will have clobbered LINK_SPEC.  We want to
-    use the GNU/Linux version, not the generic BPABI version.  */
- #undef  LINK_SPEC
 diff -Naur gcc-4.9.4.orig/gcc/config/glibc-stdint.h gcc-4.9.4/gcc/config/glibc-stdint.h
 --- gcc-4.9.4.orig/gcc/config/glibc-stdint.h	2016-12-24 16:17:07.089826389 -0800
 +++ gcc-4.9.4/gcc/config/glibc-stdint.h	2016-12-24 16:19:14.388045274 -0800
@@ -84,59 +44,6 @@ diff -Naur gcc-4.9.4.orig/gcc/config/glibc-stdint.h gcc-4.9.4/gcc/config/glibc-s
  #define UINT_FAST64_TYPE (LONG_TYPE_SIZE == 64 ? "long unsigned int" : "long long unsigned int")
  
  #define INTPTR_TYPE (LONG_TYPE_SIZE == 64 ? "long int" : "int")
-diff -Naur gcc-4.9.4.orig/gcc/config/i386/linux.h gcc-4.9.4/gcc/config/i386/linux.h
---- gcc-4.9.4.orig/gcc/config/i386/linux.h	2016-12-24 16:17:07.013825661 -0800
-+++ gcc-4.9.4/gcc/config/i386/linux.h	2016-12-24 16:19:28.024175840 -0800
-@@ -21,3 +21,6 @@
- 
- #define GNU_USER_LINK_EMULATION "elf_i386"
- #define GLIBC_DYNAMIC_LINKER "/lib/ld-linux.so.2"
-+
-+#undef MUSL_DYNAMIC_LINKER
-+#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-i386.so.1"
-diff -Naur gcc-4.9.4.orig/gcc/config/i386/linux64.h gcc-4.9.4/gcc/config/i386/linux64.h
---- gcc-4.9.4.orig/gcc/config/i386/linux64.h	2016-12-24 16:17:07.006825594 -0800
-+++ gcc-4.9.4/gcc/config/i386/linux64.h	2016-12-24 16:19:45.168339996 -0800
-@@ -30,3 +30,10 @@
- #define GLIBC_DYNAMIC_LINKER32 "/lib/ld-linux.so.2"
- #define GLIBC_DYNAMIC_LINKER64 "/lib64/ld-linux-x86-64.so.2"
- #define GLIBC_DYNAMIC_LINKERX32 "/libx32/ld-linux-x32.so.2"
-+
-+#undef MUSL_DYNAMIC_LINKER32
-+#define MUSL_DYNAMIC_LINKER32 "/lib/ld-musl-i386.so.1"
-+#undef MUSL_DYNAMIC_LINKER64
-+#define MUSL_DYNAMIC_LINKER64 "/lib/ld-musl-x86_64.so.1"
-+#undef MUSL_DYNAMIC_LINKERX32
-+#define MUSL_DYNAMIC_LINKERX32 "/lib/ld-musl-x32.so.1"
-diff -Naur gcc-4.9.4.orig/gcc/config/i386/pmm_malloc.h gcc-4.9.4/gcc/config/i386/pmm_malloc.h
---- gcc-4.9.4.orig/gcc/config/i386/pmm_malloc.h	2016-12-24 16:17:07.001825547 -0800
-+++ gcc-4.9.4/gcc/config/i386/pmm_malloc.h	2016-12-24 16:20:25.242723710 -0800
-@@ -27,12 +27,13 @@
- #include <stdlib.h>
- 
- /* We can't depend on <stdlib.h> since the prototype of posix_memalign
--   may not be visible.  */
-+   may not be visible and we can't pollute the namespace either.  */
- #ifndef __cplusplus
--extern int posix_memalign (void **, size_t, size_t);
-+extern int __gcc_posix_memalign (void **, size_t, size_t)
- #else
--extern "C" int posix_memalign (void **, size_t, size_t) throw ();
-+extern "C" int __gcc_posix_memalign (void **, size_t, size_t) throw ()
- #endif
-+__asm__("posix_memalign");
- 
- static __inline void *
- _mm_malloc (size_t size, size_t alignment)
-@@ -42,7 +43,7 @@
-     return malloc (size);
-   if (alignment == 2 || (sizeof (void *) == 8 && alignment == 4))
-     alignment = sizeof (void *);
--  if (posix_memalign (&ptr, alignment, size) == 0)
-+  if (__gcc_posix_memalign (&ptr, alignment, size) == 0)
-     return ptr;
-   else
-     return NULL;
 diff -Naur gcc-4.9.4.orig/gcc/config/linux.c gcc-4.9.4/gcc/config/linux.c
 --- gcc-4.9.4.orig/gcc/config/linux.c	2016-12-24 16:17:07.084826341 -0800
 +++ gcc-4.9.4/gcc/config/linux.c	2016-12-24 16:21:18.109229908 -0800
@@ -339,60 +246,6 @@ diff -Naur gcc-4.9.4.orig/gcc/config/linux.opt gcc-4.9.4/gcc/config/linux.opt
 +mmusl
 +Target Report RejectNegative Var(linux_libc,LIBC_MUSL) Negative(mbionic)
 +Use musl C library.
-diff -Naur gcc-4.9.4.orig/gcc/config/microblaze/linux.h gcc-4.9.4/gcc/config/microblaze/linux.h
---- gcc-4.9.4.orig/gcc/config/microblaze/linux.h	2016-12-24 16:17:07.086826360 -0800
-+++ gcc-4.9.4/gcc/config/microblaze/linux.h	2016-12-24 16:25:58.754917100 -0800
-@@ -28,10 +28,20 @@
- #undef TLS_NEEDS_GOT
- #define TLS_NEEDS_GOT 1
- 
--#define DYNAMIC_LINKER "/lib/ld.so.1"
-+#define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
-+
-+#if TARGET_BIG_ENDIAN_DEFAULT == 0 /* LE */
-+#define MUSL_DYNAMIC_LINKER_E "%{mbig-endian:;:el}"
-+#else
-+#define MUSL_DYNAMIC_LINKER_E "%{mlittle-endian:el}"
-+#endif
-+
-+#undef MUSL_DYNAMIC_LINKER
-+#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-microblaze" MUSL_DYNAMIC_LINKER_E ".so.1"
-+
- #undef  SUBTARGET_EXTRA_SPECS
- #define SUBTARGET_EXTRA_SPECS \
--  { "dynamic_linker", DYNAMIC_LINKER }
-+  { "dynamic_linker", GNU_USER_DYNAMIC_LINKER }
- 
- #undef LINK_SPEC
- #define LINK_SPEC "%{shared:-shared} \
-diff -Naur gcc-4.9.4.orig/gcc/config/mips/linux.h gcc-4.9.4/gcc/config/mips/linux.h
---- gcc-4.9.4.orig/gcc/config/mips/linux.h	2016-12-24 16:17:07.176827222 -0800
-+++ gcc-4.9.4/gcc/config/mips/linux.h	2016-12-24 16:28:47.202529991 -0800
-@@ -23,3 +23,6 @@
- #undef UCLIBC_DYNAMIC_LINKER
- #define UCLIBC_DYNAMIC_LINKER \
-   "%{mnan=2008:/lib/ld-uClibc-mipsn8.so.0;:/lib/ld-uClibc.so.0}"
-+
-+#undef MUSL_DYNAMIC_LINKER
-+#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-mips%{EL:el}%{msoft-float:-sf}.so.1"
-diff -Naur gcc-4.9.4.orig/gcc/config/mips/linux64.h gcc-4.9.4/gcc/config/mips/linux64.h
---- gcc-4.9.4.orig/gcc/config/mips/linux64.h	2016-12-24 16:17:07.174827203 -0800
-+++ gcc-4.9.4/gcc/config/mips/linux64.h	2016-12-24 16:28:20.061270113 -0800
-@@ -38,7 +38,13 @@
- #define UCLIBC_DYNAMIC_LINKERN32 \
-   "%{mnan=2008:/lib32/ld-uClibc-mipsn8.so.0;:/lib32/ld-uClibc.so.0}"
- 
-+#undef MUSL_DYNAMIC_LINKER32
-+#define MUSL_DYNAMIC_LINKER32 "/lib/ld-musl-mips%{EL:el}%{msoft-float:-sf}.so.1"
-+#undef MUSL_DYNAMIC_LINKER64
-+#define MUSL_DYNAMIC_LINKER64 "/lib/ld-musl-mips64%{EL:el}%{msoft-float:-sf}.so.1"
-+#define MUSL_DYNAMIC_LINKERN32 "/lib/ld-musl-mipsn32%{EL:el}%{msoft-float:-sf}.so.1"
-+
- #define BIONIC_DYNAMIC_LINKERN32 "/system/bin/linker32"
- #define GNU_USER_DYNAMIC_LINKERN32 \
-   CHOOSE_DYNAMIC_LINKER (GLIBC_DYNAMIC_LINKERN32, UCLIBC_DYNAMIC_LINKERN32, \
--			 BIONIC_DYNAMIC_LINKERN32)
-+                         BIONIC_DYNAMIC_LINKERN32, MUSL_DYNAMIC_LINKERN32)
 diff -Naur gcc-4.9.4.orig/gcc/config/rs6000/linux64.h gcc-4.9.4/gcc/config/rs6000/linux64.h
 --- gcc-4.9.4.orig/gcc/config/rs6000/linux64.h	2016-12-24 16:17:07.154827012 -0800
 +++ gcc-4.9.4/gcc/config/rs6000/linux64.h	2016-12-24 16:30:34.833560562 -0800
@@ -411,119 +264,9 @@ diff -Naur gcc-4.9.4.orig/gcc/config/rs6000/linux64.h gcc-4.9.4/gcc/config/rs600
  #endif
  
  /* Determine what functions are present at the runtime;
-@@ -369,19 +373,32 @@
- #else
- #define GLIBC_DYNAMIC_LINKER64 "%{mabi=elfv2:/lib64/ld64.so.2;:/lib64/ld64.so.1}"
- #endif
-+
-+#define MUSL_DYNAMIC_LINKER32 \
-+  "/lib/ld-musl-powerpc" MUSL_DYNAMIC_LINKER_E "%{msoft-float:-sf}.so.1"
-+#define MUSL_DYNAMIC_LINKER64 \
-+  "/lib/ld-musl-powerpc64" MUSL_DYNAMIC_LINKER_E "%{msoft-float:-sf}.so.1"
-+
- #define UCLIBC_DYNAMIC_LINKER32 "/lib/ld-uClibc.so.0"
- #define UCLIBC_DYNAMIC_LINKER64 "/lib/ld64-uClibc.so.0"
- #if DEFAULT_LIBC == LIBC_UCLIBC
--#define CHOOSE_DYNAMIC_LINKER(G, U) "%{mglibc:" G ";:" U "}"
-+#define CHOOSE_DYNAMIC_LINKER(G, U, M) \
-+  "%{mglibc:" G ";:%{mmusl:" M ";:" U "}}"
- #elif DEFAULT_LIBC == LIBC_GLIBC
--#define CHOOSE_DYNAMIC_LINKER(G, U) "%{muclibc:" U ";:" G "}"
-+#define CHOOSE_DYNAMIC_LINKER(G, U, M) \
-+  "%{muclibc:" U ";:%{mmusl:" M ";:" G "}}"
-+#elif DEFAULT_LIBC == LIBC_MUSL
-+#define CHOOSE_DYNAMIC_LINKER(G, U, M) \
-+  "%{mglibc:" G ";:%{muclibc:" U ";:" M "}}"
- #else
- #error "Unsupported DEFAULT_LIBC"
- #endif
- #define GNU_USER_DYNAMIC_LINKER32 \
--  CHOOSE_DYNAMIC_LINKER (GLIBC_DYNAMIC_LINKER32, UCLIBC_DYNAMIC_LINKER32)
-+  CHOOSE_DYNAMIC_LINKER (GLIBC_DYNAMIC_LINKER32, UCLIBC_DYNAMIC_LINKER32, \
-+			 MUSL_DYNAMIC_LINKER32)
- #define GNU_USER_DYNAMIC_LINKER64 \
--  CHOOSE_DYNAMIC_LINKER (GLIBC_DYNAMIC_LINKER64, UCLIBC_DYNAMIC_LINKER64)
-+  CHOOSE_DYNAMIC_LINKER (GLIBC_DYNAMIC_LINKER64, UCLIBC_DYNAMIC_LINKER64, \
-+			 MUSL_DYNAMIC_LINKER64)
- 
- #undef  DEFAULT_ASM_ENDIAN
- #if (TARGET_DEFAULT & MASK_LITTLE_ENDIAN)
-diff -Naur gcc-4.9.4.orig/gcc/config/rs6000/secureplt.h gcc-4.9.4/gcc/config/rs6000/secureplt.h
---- gcc-4.9.4.orig/gcc/config/rs6000/secureplt.h	2016-12-24 16:17:07.144826916 -0800
-+++ gcc-4.9.4/gcc/config/rs6000/secureplt.h	2016-12-24 16:30:43.485643406 -0800
-@@ -18,3 +18,4 @@
- <http://www.gnu.org/licenses/>.  */
- 
- #define CC1_SECURE_PLT_DEFAULT_SPEC "-msecure-plt"
-+#define LINK_SECURE_PLT_DEFAULT_SPEC "--secure-plt"
 diff -Naur gcc-4.9.4.orig/gcc/config/rs6000/sysv4.h gcc-4.9.4/gcc/config/rs6000/sysv4.h
 --- gcc-4.9.4.orig/gcc/config/rs6000/sysv4.h	2016-12-24 16:17:07.144826916 -0800
 +++ gcc-4.9.4/gcc/config/rs6000/sysv4.h	2016-12-24 16:33:37.567310244 -0800
-@@ -537,6 +537,9 @@
- #ifndef CC1_SECURE_PLT_DEFAULT_SPEC
- #define CC1_SECURE_PLT_DEFAULT_SPEC ""
- #endif
-+#ifndef LINK_SECURE_PLT_DEFAULT_SPEC
-+#define LINK_SECURE_PLT_DEFAULT_SPEC ""
-+#endif
- 
- /* Pass -G xxx to the compiler.  */
- #define	CC1_SPEC "%{G*} %(cc1_cpu)" \
-@@ -566,6 +569,7 @@
-                : %(link_start_default)     }"
- 
- #define LINK_START_DEFAULT_SPEC ""
-+#define LINK_SECURE_PLT_SPEC LINK_SECURE_PLT_DEFAULT_SPEC
- 
- #undef	LINK_SPEC
- #define	LINK_SPEC "\
-@@ -573,6 +577,7 @@
- %{R*} \
- %(link_shlib) \
- %{!T*: %(link_start) } \
-+%{!static: %{!mbss-plt: %(link_secure_plt)}} \
- %(link_target) \
- %(link_os)"
- 
-@@ -761,17 +766,27 @@
- 
- #define LINK_START_LINUX_SPEC ""
- 
-+#define MUSL_DYNAMIC_LINKER_E ENDIAN_SELECT("","le","")
-+
- #define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
- #define UCLIBC_DYNAMIC_LINKER "/lib/ld-uClibc.so.0"
-+#define MUSL_DYNAMIC_LINKER \
-+  "/lib/ld-musl-powerpc" MUSL_DYNAMIC_LINKER_E "%{msoft-float:-sf}.so.1"
- #if DEFAULT_LIBC == LIBC_UCLIBC
--#define CHOOSE_DYNAMIC_LINKER(G, U) "%{mglibc:" G ";:" U "}"
-+#define CHOOSE_DYNAMIC_LINKER(G, U, M) \
-+  "%{mglibc:" G ";:%{mmusl:" M ";:" U "}}"
-+#elif DEFAULT_LIBC == LIBC_MUSL
-+#define CHOOSE_DYNAMIC_LINKER(G, U, M) \
-+  "%{mglibc:" G ";:%{muclibc:" U ";:" M "}}"
- #elif !defined (DEFAULT_LIBC) || DEFAULT_LIBC == LIBC_GLIBC
--#define CHOOSE_DYNAMIC_LINKER(G, U) "%{muclibc:" U ";:" G "}"
-+#define CHOOSE_DYNAMIC_LINKER(G, U, M) \
-+  "%{muclibc:" U ";:%{mmusl:" M ";:" G "}}"
- #else
- #error "Unsupported DEFAULT_LIBC"
- #endif
- #define GNU_USER_DYNAMIC_LINKER \
--  CHOOSE_DYNAMIC_LINKER (GLIBC_DYNAMIC_LINKER, UCLIBC_DYNAMIC_LINKER)
-+  CHOOSE_DYNAMIC_LINKER (GLIBC_DYNAMIC_LINKER, UCLIBC_DYNAMIC_LINKER, \
-+			 MUSL_DYNAMIC_LINKER)
- 
- #define LINK_OS_LINUX_SPEC "-m elf32ppclinux %{!shared: %{!static: \
-   %{rdynamic:-export-dynamic} \
-@@ -894,6 +909,7 @@
-   { "link_os_openbsd",		LINK_OS_OPENBSD_SPEC },			\
-   { "link_os_default",		LINK_OS_DEFAULT_SPEC },			\
-   { "cc1_secure_plt_default",	CC1_SECURE_PLT_DEFAULT_SPEC },		\
-+  { "link_secure_plt",		LINK_SECURE_PLT_SPEC },			\
-   { "cpp_os_ads",		CPP_OS_ADS_SPEC },			\
-   { "cpp_os_yellowknife",	CPP_OS_YELLOWKNIFE_SPEC },		\
-   { "cpp_os_mvme",		CPP_OS_MVME_SPEC },			\
 @@ -948,6 +964,77 @@
  /* This target uses the sysv4.opt file.  */
  #define TARGET_USES_SYSV4_OPT 1
@@ -602,37 +345,6 @@ diff -Naur gcc-4.9.4.orig/gcc/config/rs6000/sysv4.h gcc-4.9.4/gcc/config/rs6000/
  #undef DBX_REGISTER_NUMBER
  
  /* Link -lasan early on the command line.  For -static-libasan, don't link
-diff -Naur gcc-4.9.4.orig/gcc/config/sh/linux.h gcc-4.9.4/gcc/config/sh/linux.h
---- gcc-4.9.4.orig/gcc/config/sh/linux.h	2016-12-24 16:17:07.068826188 -0800
-+++ gcc-4.9.4/gcc/config/sh/linux.h	2016-12-24 16:34:08.509606517 -0800
-@@ -43,6 +43,27 @@
- 
- #define TARGET_ASM_FILE_END file_end_indicate_exec_stack
- 
-+#if TARGET_ENDIAN_DEFAULT == MASK_LITTLE_ENDIAN
-+#define MUSL_DYNAMIC_LINKER_E "%{mb:eb}"
-+#else
-+#define MUSL_DYNAMIC_LINKER_E "%{!ml:eb}"
-+#endif
-+
-+#if TARGET_CPU_DEFAULT & (MASK_HARD_SH2A_DOUBLE | MASK_SH4)
-+/* "-nofpu" if any nofpu option is specified.  */
-+#define MUSL_DYNAMIC_LINKER_FP \
-+  "%{m1|m2|m2a-nofpu|m3|m4-nofpu|m4-100-nofpu|m4-200-nofpu|m4-300-nofpu|" \
-+  "m4-340|m4-400|m4-500|m4al:-nofpu}"
-+#else
-+/* "-nofpu" if none of the hard fpu options are specified.  */
-+#define MUSL_DYNAMIC_LINKER_FP "%{m2a|m4|m4-100|m4-200|m4-300|m4a:;:-nofpu}"
-+#endif
-+
-+#undef MUSL_DYNAMIC_LINKER
-+#define MUSL_DYNAMIC_LINKER \
-+  "/lib/ld-musl-sh" MUSL_DYNAMIC_LINKER_E MUSL_DYNAMIC_LINKER_FP \
-+  "%{mfdpic:-fdpic}.so.1"
-+
- #define GLIBC_DYNAMIC_LINKER "/lib/ld-linux.so.2"
- 
- #undef SUBTARGET_LINK_EMUL_SUFFIX
 diff -Naur gcc-4.9.4.orig/gcc/config.gcc gcc-4.9.4/gcc/config.gcc
 --- gcc-4.9.4.orig/gcc/config.gcc	2016-12-24 16:17:07.211827557 -0800
 +++ gcc-4.9.4/gcc/config.gcc	2016-12-24 16:36:55.357204089 -0800
@@ -655,17 +367,6 @@ diff -Naur gcc-4.9.4.orig/gcc/config.gcc gcc-4.9.4/gcc/config.gcc
      *)
        tm_defines="$tm_defines DEFAULT_LIBC=LIBC_GLIBC"
        ;;
-@@ -2338,6 +2341,10 @@
- 	    powerpc*-*-linux*paired*)
- 		tm_file="${tm_file} rs6000/750cl.h" ;;
- 	esac
-+	case ${target} in
-+	    *-linux*-musl*)
-+		enable_secureplt=yes ;;
-+	esac
- 	if test x${enable_secureplt} = xyes; then
- 		tm_file="rs6000/secureplt.h ${tm_file}"
- 	fi
 diff -Naur gcc-4.9.4.orig/gcc/configure gcc-4.9.4/gcc/configure
 --- gcc-4.9.4.orig/gcc/configure	2016-12-24 16:17:07.210827548 -0800
 +++ gcc-4.9.4/gcc/configure	2016-12-24 16:39:13.238524307 -0800
@@ -728,49 +429,6 @@ diff -Naur gcc-4.9.4.orig/gcc/configure.ac gcc-4.9.4/gcc/configure.ac
  esac
  GCC_TARGET_TEMPLATE([TARGET_DL_ITERATE_PHDR])
  if test x$gcc_cv_target_dl_iterate_phdr = xyes; then
-diff -Naur gcc-4.9.4.orig/libcilkrts/runtime/os-unix.c gcc-4.9.4/libcilkrts/runtime/os-unix.c
---- gcc-4.9.4.orig/libcilkrts/runtime/os-unix.c	2016-12-24 16:16:59.028749204 -0800
-+++ gcc-4.9.4/libcilkrts/runtime/os-unix.c	2016-12-24 16:41:44.019968044 -0800
-@@ -51,6 +51,7 @@
- #if defined __linux__
- #   include <sys/sysinfo.h>
- #   include <sys/syscall.h>
-+#   include <sched.h>
- #elif defined __APPLE__
- #   include <sys/sysctl.h>
-     // Uses sysconf(_SC_NPROCESSORS_ONLN) in verbose output
-@@ -398,25 +399,19 @@
- 
- COMMON_SYSDEP void __cilkrts_yield(void)
- {
--#if __APPLE__ || __FreeBSD__ || __VXWORKS__
--    // On MacOS, call sched_yield to yield quantum.  I'm not sure why we
--    // don't do this on Linux also.
--    sched_yield();
--#elif defined(__MIC__)
-+#if defined(__MIC__)
-     // On MIC, pthread_yield() really trashes things.  Arch's measurements
-     // showed that calling _mm_delay_32() (or doing nothing) was a better
-     // option.  Delaying 1024 clock cycles is a reasonable compromise between
-     // giving up the processor and latency starting up when work becomes
-     // available
-     _mm_delay_32(1024);
--#elif defined(__ANDROID__) || (defined(__sun__) && defined(__svr4__))
--    // On Android and Solaris, call sched_yield to yield quantum.  I'm not
--    // sure why we don't do this on Linux also.
--    sched_yield();
--#else
--    // On Linux, call pthread_yield (which in turn will call sched_yield)
--    // to yield quantum.
-+#elif defined(__sun__) && !defined(__svr4__)
-+    // On old SunOS call pthread_yield to yield a quantum.
-     pthread_yield();
-+#else
-+    // On other platforms call sched_yield to yield a quantum.
-+    sched_yield();
- #endif
- }
- 
 diff -Naur gcc-4.9.4.orig/libgcc/unwind-dw2-fde-dip.c gcc-4.9.4/libgcc/unwind-dw2-fde-dip.c
 --- gcc-4.9.4.orig/libgcc/unwind-dw2-fde-dip.c	2016-12-24 16:16:59.271751531 -0800
 +++ gcc-4.9.4/libgcc/unwind-dw2-fde-dip.c	2016-12-24 16:42:32.934436750 -0800
@@ -787,30 +445,6 @@ diff -Naur gcc-4.9.4.orig/libgcc/unwind-dw2-fde-dip.c gcc-4.9.4/libgcc/unwind-dw
      && defined(__FreeBSD__) && __FreeBSD__ >= 7
  # define ElfW __ElfN
  # define USE_PT_GNU_EH_FRAME
-diff -Naur gcc-4.9.4.orig/libgfortran/acinclude.m4 gcc-4.9.4/libgfortran/acinclude.m4
---- gcc-4.9.4.orig/libgfortran/acinclude.m4	2016-12-24 16:16:53.481696091 -0800
-+++ gcc-4.9.4/libgfortran/acinclude.m4	2016-12-24 16:42:52.045622116 -0800
-@@ -100,7 +100,7 @@
- 	      [Define to 1 if the target supports #pragma weak])
-   fi
-   case "$host" in
--    *-*-darwin* | *-*-hpux* | *-*-cygwin* | *-*-mingw* )
-+    *-*-darwin* | *-*-hpux* | *-*-cygwin* | *-*-mingw* | *-*-musl* )
-       AC_DEFINE(GTHREAD_USE_WEAK, 0,
- 		[Define to 0 if the target shouldn't use #pragma weak])
-       ;;
-diff -Naur gcc-4.9.4.orig/libgfortran/configure gcc-4.9.4/libgfortran/configure
---- gcc-4.9.4.orig/libgfortran/configure	2016-12-24 16:16:53.557696818 -0800
-+++ gcc-4.9.4/libgfortran/configure	2016-12-24 16:43:06.557762874 -0800
-@@ -26355,7 +26355,7 @@
- 
-   fi
-   case "$host" in
--    *-*-darwin* | *-*-hpux* | *-*-cygwin* | *-*-mingw* )
-+    *-*-darwin* | *-*-hpux* | *-*-cygwin* | *-*-mingw* | *-*-musl* )
- 
- $as_echo "#define GTHREAD_USE_WEAK 0" >>confdefs.h
- 
 diff -Naur gcc-4.9.4.orig/libitm/config/arm/hwcap.cc gcc-4.9.4/libitm/config/arm/hwcap.cc
 --- gcc-4.9.4.orig/libitm/config/arm/hwcap.cc	2016-12-24 16:16:55.671717060 -0800
 +++ gcc-4.9.4/libitm/config/arm/hwcap.cc	2016-12-24 16:43:20.282895999 -0800
@@ -855,19 +489,6 @@ diff -Naur gcc-4.9.4.orig/libitm/config/linux/x86/tls.h gcc-4.9.4/libitm/config/
 +#endif
  
  #endif // LIBITM_X86_TLS_H
-diff -Naur gcc-4.9.4.orig/libstdc++-v3/config/os/generic/os_defines.h gcc-4.9.4/libstdc++-v3/config/os/generic/os_defines.h
---- gcc-4.9.4.orig/libstdc++-v3/config/os/generic/os_defines.h	2016-12-24 16:16:55.523715643 -0800
-+++ gcc-4.9.4/libstdc++-v3/config/os/generic/os_defines.h	2016-12-24 16:44:10.273380874 -0800
-@@ -33,4 +33,9 @@
- // System-specific #define, typedefs, corrections, etc, go here.  This
- // file will come before all others.
- 
-+// Disable the weak reference logic in gthr.h for os/generic because it
-+// is broken on every platform unless there is implementation specific
-+// workaround in gthr-posix.h and at link-time for static linking.
-+#define _GLIBCXX_GTHREAD_USE_WEAK 0
-+
- #endif
 diff -Naur gcc-4.9.4.orig/libstdc++-v3/configure.host gcc-4.9.4/libstdc++-v3/configure.host
 --- gcc-4.9.4.orig/libstdc++-v3/configure.host	2016-12-24 16:16:55.502715442 -0800
 +++ gcc-4.9.4/libstdc++-v3/configure.host	2016-12-24 16:44:33.412605309 -0800
