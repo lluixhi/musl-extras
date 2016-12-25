@@ -26,8 +26,7 @@ src_prepare() {
 	# Upstream Patch
 	epatch "${FILESDIR}"/${P}-r243475.patch
 
-	if use elibc_musl; then
-		cd "${S}"
+	if use elibc_musl || [[ ${CATEGORY} = cross-*-musl ]]; then
 		epatch "${FILESDIR}"/6.2.0/musl.patch
 	fi
 }
