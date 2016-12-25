@@ -49,7 +49,12 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-4.9.3-pr68470.patch
 
 	if use elibc_musl || [[ ${CATEGORY} = cross-*-musl ]]; then
-		epatch "${FILESDIR}"/4.9.4
+		epatch "${FILESDIR}"/4.9.4/cilkrts.patch
+		epatch "${FILESDIR}"/4.9.4/gthread.patch
+		epatch "${FILESDIR}"/4.9.4/linker_path.patch
+		epatch "${FILESDIR}"/4.9.4/musl.patch
+		epatch "${FILESDIR}"/4.9.4/posix_memalign.patch
+		epatch "${FILESDIR}"/4.9.4/ppc-secure_plt.patch
 	fi
 
 	use vanilla && return 0

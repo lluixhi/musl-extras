@@ -29,6 +29,6 @@ src_prepare() {
 	if use elibc_musl || [[ ${CATEGORY} = cross-*-musl ]]; then
 		epatch "${FILESDIR}"/4.9.4/posix_memalign.patch
 		epatch "${FILESDIR}"/5.4.0/cilkrts.patch
-		epatch "${FILESDIR}"/6.2.0
+		epatch "${FILESDIR}"/6.2.0/musl.patch
 	fi
 }
