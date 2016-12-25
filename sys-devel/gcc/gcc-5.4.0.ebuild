@@ -47,7 +47,7 @@ src_prepare() {
 
 	# Upstream Patch
 	epatch "${FILESDIR}"/${PN}-4.9.3-tree-vect-data-refs-correctness.patch
-	epatch "${FILESDIR}"/${PN}-4.9.3-pr68470.patch
+	epatch "${FILESDIR}"/${PN}-5.4.0-pr68470.patch
 
 	if use elibc_musl || [[ ${CATEGORY} = cross-*-musl ]]; then
 		epatch "${FILESDIR}"/5.4.0/musl.patch
