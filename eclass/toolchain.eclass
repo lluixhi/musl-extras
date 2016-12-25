@@ -892,10 +892,6 @@ toolchain_src_configure() {
 		confgcc+=( --disable-nls )
 	fi
 
-	if use elibc_musl ; then
-		confgcc+=( --disable-symvers libat_cv_have_ifunc=no )
-	fi
-
 	tc_version_is_at_least 3.4 || confgcc+=( --disable-libunwind-exceptions )
 
 	# Use the default ("release") checking because upstream usually neglects

@@ -1,0 +1,138 @@
+diff -Naur gcc-6.2.0.orig/gcc/config/i386/i386.c gcc-6.2.0/gcc/config/i386/i386.c
+--- gcc-6.2.0.orig/gcc/config/i386/i386.c	2016-12-24 15:55:23.355343088 -0800
++++ gcc-6.2.0/gcc/config/i386/i386.c	2016-12-24 15:55:58.718681693 -0800
+@@ -40325,10 +40325,10 @@
+     {
+     case IX86_BUILTIN_CPU_INIT:
+       {
+-	/* Make it call __cpu_indicator_init in libgcc. */
++	/* Make it call __cpu_indicator_init_local in libgcc. */
+ 	tree call_expr, fndecl, type;
+         type = build_function_type_list (integer_type_node, NULL_TREE); 
+-	fndecl = build_fn_decl ("__cpu_indicator_init", type);
++	fndecl = build_fn_decl ("__cpu_indicator_init_local", type);
+ 	call_expr = build_call_expr (fndecl, 0); 
+ 	return expand_expr (call_expr, target, mode, EXPAND_NORMAL);
+       }
+diff -Naur gcc-6.2.0.orig/gcc/config/i386/pmm_malloc.h gcc-6.2.0/gcc/config/i386/pmm_malloc.h
+--- gcc-6.2.0.orig/gcc/config/i386/pmm_malloc.h	2016-12-24 15:55:23.352343060 -0800
++++ gcc-6.2.0/gcc/config/i386/pmm_malloc.h	2016-12-24 16:00:40.547380213 -0800
+@@ -27,12 +27,13 @@
+ #include <stdlib.h>
+ 
+ /* We can't depend on <stdlib.h> since the prototype of posix_memalign
+-   may not be visible.  */
++   may not be visible and we can't pollute the namespace either.  */
+ #ifndef __cplusplus
+-extern int posix_memalign (void **, size_t, size_t);
++extern int __gcc_posix_memalign (void **, size_t, size_t)
+ #else
+-extern "C" int posix_memalign (void **, size_t, size_t) throw ();
++extern "C" int __gcc_posix_memalign (void **, size_t, size_t) throw ()
+ #endif
++__asm__("posix_memalign");
+ 
+ static __inline void *
+ _mm_malloc (size_t size, size_t alignment)
+@@ -42,7 +43,7 @@
+     return malloc (size);
+   if (alignment == 2 || (sizeof (void *) == 8 && alignment == 4))
+     alignment = sizeof (void *);
+-  if (posix_memalign (&ptr, alignment, size) == 0)
++  if (__gcc_posix_memalign (&ptr, alignment, size) == 0)
+     return ptr;
+   else
+     return NULL;
+diff -Naur gcc-6.2.0.orig/gcc/config/linux.c gcc-6.2.0/gcc/config/linux.c
+--- gcc-6.2.0.orig/gcc/config/linux.c	2016-12-24 15:55:23.308342638 -0800
++++ gcc-6.2.0/gcc/config/linux.c	2016-12-24 16:00:51.852488459 -0800
+@@ -26,7 +26,7 @@
+ bool
+ linux_libc_has_function (enum function_class fn_class)
+ {
+-  if (OPTION_GLIBC)
++  if (OPTION_GLIBC || OPTION_MUSL)
+     return true;
+   if (OPTION_BIONIC)
+     if (fn_class == function_c94
+diff -Naur gcc-6.2.0.orig/gcc/config.gcc gcc-6.2.0/gcc/config.gcc
+--- gcc-6.2.0.orig/gcc/config.gcc	2016-12-24 15:55:15.957272251 -0800
++++ gcc-6.2.0/gcc/config.gcc	2016-12-24 16:02:12.297258721 -0800
+@@ -1484,7 +1484,7 @@
+ 		extra_options="${extra_options} linux-android.opt"
+ 		# Assume modern glibc if not targeting Android nor uclibc.
+ 		case ${target} in
+-		*-*-*android*|*-*-*uclibc*)
++		*-*-*android*|*-*-*uclibc*|*-*-*musl*)
+ 		  ;;
+ 		*)
+ 		  default_gnu_indirect_function=yes
+@@ -1553,7 +1553,7 @@
+ 		extra_options="${extra_options} linux-android.opt"
+ 		# Assume modern glibc if not targeting Android nor uclibc.
+ 		case ${target} in
+-		*-*-*android*|*-*-*uclibc*)
++		*-*-*android*|*-*-*uclibc*|*-*-*musl*)
+ 		  ;;
+ 		*)
+ 		  default_gnu_indirect_function=yes
+diff -Naur gcc-6.2.0.orig/libcilkrts/runtime/os-unix.c gcc-6.2.0/libcilkrts/runtime/os-unix.c
+--- gcc-6.2.0.orig/libcilkrts/runtime/os-unix.c	2016-12-24 15:55:15.673269532 -0800
++++ gcc-6.2.0/libcilkrts/runtime/os-unix.c	2016-12-24 16:03:55.223244240 -0800
+@@ -51,6 +51,7 @@
+ #if defined __linux__
+ #   include <sys/sysinfo.h>
+ #   include <sys/syscall.h>
++#   include <sched.h>
+ #elif defined __APPLE__
+ #   include <sys/sysctl.h>
+     // Uses sysconf(_SC_NPROCESSORS_ONLN) in verbose output
+@@ -400,28 +401,19 @@
+ 
+ COMMON_SYSDEP void __cilkrts_yield(void)
+ {
+-#if __APPLE__ || __FreeBSD__ || __VXWORKS__
+-    // On MacOS, call sched_yield to yield quantum.  I'm not sure why we
+-    // don't do this on Linux also.
+-    sched_yield();
+-#elif defined(__DragonFly__)
+-    // On DragonFly BSD, call sched_yield to yield quantum.
+-    sched_yield();
+-#elif defined(__MIC__)
++#if defined(__MIC__)
+     // On MIC, pthread_yield() really trashes things.  Arch's measurements
+     // showed that calling _mm_delay_32() (or doing nothing) was a better
+     // option.  Delaying 1024 clock cycles is a reasonable compromise between
+     // giving up the processor and latency starting up when work becomes
+     // available
+     _mm_delay_32(1024);
+-#elif defined(__ANDROID__) || (defined(__sun__) && defined(__svr4__))
+-    // On Android and Solaris, call sched_yield to yield quantum.  I'm not
+-    // sure why we don't do this on Linux also.
+-    sched_yield();
+-#else
+-    // On Linux, call pthread_yield (which in turn will call sched_yield)
+-    // to yield quantum.
++#elif defined(__sun__) && !defined(__svr4__)
++    // On old SunOS call pthread_yield to yield a quantum.
+     pthread_yield();
++#else
++    // On other platforms call sched_yield to yield a quantum.
++    sched_yield();
+ #endif
+ }
+ 
+diff -Naur gcc-6.2.0.orig/libgcc/config/i386/cpuinfo.c gcc-6.2.0/libgcc/config/i386/cpuinfo.c
+--- gcc-6.2.0.orig/libgcc/config/i386/cpuinfo.c	2016-12-24 15:55:15.817270911 -0800
++++ gcc-6.2.0/libgcc/config/i386/cpuinfo.c	2016-12-24 15:57:05.399320163 -0800
+@@ -485,7 +485,7 @@
+   return 0;
+ }
+ 
+-#if defined SHARED && defined USE_ELF_SYMVER
+-__asm__ (".symver __cpu_indicator_init, __cpu_indicator_init@GCC_4.8.0");
+-__asm__ (".symver __cpu_model, __cpu_model@GCC_4.8.0");
++#ifndef SHARED
++int __cpu_indicator_init_local (void)
++  __attribute__ ((weak, alias ("__cpu_indicator_init")));
+ #endif

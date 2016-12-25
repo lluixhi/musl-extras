@@ -28,9 +28,6 @@ src_prepare() {
 
 	if use elibc_musl; then
 		cd "${S}"
-		epatch "${FILESDIR}"/4.9.3/posix_memalign.patch
-		epatch "${FILESDIR}"/6.1.0/cilkrts.patch
-		epatch "${FILESDIR}"/6.1.0/cpu_indicator.patch
-		epatch "${FILESDIR}"/6.1.0/linux_libc_has_function.patch
+		epatch "${FILESDIR}"/6.2.0/musl.patch
 	fi
 }
