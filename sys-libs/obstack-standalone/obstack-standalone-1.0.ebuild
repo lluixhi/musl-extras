@@ -1,4 +1,4 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -9,15 +9,20 @@ inherit autotools
 DESCRIPTION="A standalone library to implement GNU libc's obstack."
 HOMEPAGE="https://github.com/pullmoll/musl-obstack"
 SRC_URI="https://github.com/pullmoll/musl-obstack/archive/v${PV}.tar.gz -> ${P}.tar.gz"
-KEYWORDS="~amd64 ~x86"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~arm ~mips ~ppc ~x86"
 IUSE="static-libs"
 
-DEPEND="!sys-libs/glibc
-	!sys-libs/uclibc"
+DEPEND="
+	!sys-libs/glibc
+	!sys-libs/uclibc
+"
+
+PATCHES=("${FILESDIR}/obstack_printf.patch")
+
+S="${WORKDIR}/musl-obstack-${PV}"
 
 src_prepare() {
 	default
@@ -26,11 +31,12 @@ src_prepare() {
 
 src_configure() {
 	econf \
-	$(use_enable static-libs static)
+		$(use_enable static-libs static)
 }
 
 src_install() {
 	default
+	find "${D}" -name '*.la' -delete || die
 	insinto /usr/lib/pkgconfig
-	doins musl-obstack.pc
+	newins musl-obstack.pc obstack-standalone.pc
 }

@@ -100,29 +100,3 @@ diff -Naur elfutils-0.168.orig/src/Makefile.am elfutils-0.168/src/Makefile.am
  unstrip_LDADD = $(libebl) $(libelf) $(libdw) $(libeu) $(argp_LDADD) -ldl
  stack_LDADD = $(libebl) $(libelf) $(libdw) $(libeu) $(argp_LDADD) -ldl $(demanglelib)
  elfcompress_LDADD = $(libebl) $(libelf) $(libdw) $(libeu) $(argp_LDADD)
-diff -Naur elfutils-0.168.orig/src/nm.c elfutils-0.168/src/nm.c
---- elfutils-0.168.orig/src/nm.c	2016-12-28 10:56:21.568727603 -0800
-+++ elfutils-0.168/src/nm.c	2016-12-28 11:58:40.494268063 -0800
-@@ -47,7 +47,22 @@
- #include "../libebl/libeblP.h"
- #include "../libdwfl/libdwflP.h"
- 
-+#if !defined(__GLIBC__)
-+static int obstack_printf(struct obstack *obst, const char *fmt, ...)
-+{
-+	char buf[1024];
-+	va_list ap;
-+	int len;
- 
-+	va_start(ap, fmt);
-+	len = vsnprintf(buf, sizeof(buf), fmt, ap);
-+	obstack_grow(obst, buf, len);
-+	va_end(ap);
-+
-+	return len;
-+}
-+#endif
-+ 
- /* Name and version of program.  */
- ARGP_PROGRAM_VERSION_HOOK_DEF = print_version;
- 

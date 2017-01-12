@@ -122,28 +122,3 @@ diff -Naur elfutils-0.166.orig/src/Makefile.am elfutils-0.166/src/Makefile.am
  
  ldlex.o: ldscript.c
  ldlex_no_Werror = yes
-diff -Naur elfutils-0.166.orig/src/nm.c elfutils-0.166/src/nm.c
---- elfutils-0.166.orig/src/nm.c	2016-11-15 12:19:07.073951982 -0800
-+++ elfutils-0.166/src/nm.c	2016-11-15 12:20:59.300990052 -0800
-@@ -47,6 +47,21 @@
- #include "../libebl/libeblP.h"
- #include "../libdwfl/libdwflP.h"
- 
-+#if !defined(__GLIBC__)
-+static int obstack_printf(struct obstack *obst, const char *fmt, ...)
-+{
-+	char buf[1024];
-+	va_list ap;
-+	int len;
-+
-+	va_start(ap, fmt);
-+	len = vsnprintf(buf, sizeof(buf), fmt, ap);
-+	obstack_grow(obst, buf, len);
-+	va_end(ap);
-+
-+	return len;
-+}
-+#endif
- 
- /* Name and version of program.  */
- static void print_version (FILE *stream, struct argp_state *state);

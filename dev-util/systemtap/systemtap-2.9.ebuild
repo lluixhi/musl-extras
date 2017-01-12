@@ -20,7 +20,7 @@ IUSE="sqlite"
 RDEPEND=">=dev-libs/elfutils-0.142
 	elibc_musl? (
 		sys-libs/argp-standalone
-		sys-libs/musl-obstack
+		sys-libs/obstack-standalone
 	)
 	sys-libs/libcap
 	${PYTHON_DEPS}

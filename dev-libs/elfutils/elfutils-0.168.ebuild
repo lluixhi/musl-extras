@@ -25,7 +25,7 @@ DEPEND="${RDEPEND}
 	elibc_musl? (
 		sys-libs/argp-standalone
 		sys-libs/musl-fts
-		sys-libs/musl-obstack
+		sys-libs/obstack-standalone
 	)"
 
 src_prepare() {

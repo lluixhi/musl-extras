@@ -1,0 +1,45 @@
+diff -Naur musl-obstack-1.0.orig/Makefile.am musl-obstack-1.0/Makefile.am
+--- musl-obstack-1.0.orig/Makefile.am	2015-09-10 00:00:20.000000000 -0700
++++ musl-obstack-1.0/Makefile.am	2017-01-12 13:27:46.839217883 -0800
+@@ -1,6 +1,6 @@
+ ## Makefile.am - procress this file with automake to produce Makefile.in
+ lib_LTLIBRARIES = libobstack.la
+-libobstack_la_SOURCES = obstack.c
++libobstack_la_SOURCES = obstack.c obstack_printf.c
+ libobstack_la_HEADERS = obstack.h
+ libobstack_ladir = $(includedir)
+ ACLOCAL_AMFLAGS = -Im4
+diff -Naur musl-obstack-1.0.orig/obstack.h musl-obstack-1.0/obstack.h
+--- musl-obstack-1.0.orig/obstack.h	2015-09-10 00:00:20.000000000 -0700
++++ musl-obstack-1.0/obstack.h	2017-01-12 13:27:46.841217903 -0800
+@@ -235,6 +235,8 @@
+ int obstack_chunk_size (struct obstack *obstack);
+ int obstack_memory_used (struct obstack *obstack);
+ 
++int obstack_printf(struct obstack *obstack, const char *__restrict fmt, ...);
++
+ /* Error handler called when `obstack_chunk_alloc' failed to allocate
+    more memory.  This can be set to a user defined function.  The
+    default action is to print a message and abort.  */
+diff -Naur musl-obstack-1.0.orig/obstack_printf.c musl-obstack-1.0/obstack_printf.c
+--- musl-obstack-1.0.orig/obstack_printf.c	1969-12-31 16:00:00.000000000 -0800
++++ musl-obstack-1.0/obstack_printf.c	2017-01-12 13:27:50.592256057 -0800
+@@ -0,0 +1,18 @@
++#include <stdarg.h>
++#include <stdio.h>
++#include <strings.h>
++#include "obstack.h"
++
++int obstack_printf(struct obstack *obstack, const char *__restrict fmt, ...)
++{
++	char buf[1024];
++	va_list ap;
++	int len;
++
++	va_start(ap, fmt);
++	len = vsnprintf(buf, sizeof(buf), fmt, ap);
++	obstack_grow(obstack, buf, len);
++	va_end(ap);
++
++	return len;
++}

@@ -140,43 +140,6 @@ diff -Naurw systemtap-2.9.orig/loc2c.c systemtap-2.9/loc2c.c
  #include <dwarf.h>
  #include <elfutils/libdw.h>
  #include <elfutils/version.h>
-diff -Naurw systemtap-2.9.orig/loc2c.h systemtap-2.9/loc2c.h
---- systemtap-2.9.orig/loc2c.h	2016-02-03 17:29:35.222854187 -0800
-+++ systemtap-2.9/loc2c.h	2016-02-03 17:51:24.996816938 -0800
-@@ -3,6 +3,10 @@
- struct obstack;			/* Use <obstack.h> */
- struct location;		/* Opaque */
- 
-+#ifndef HAVE_OBSTACK
-+#include "obstack_printf.c"
-+#endif
-+
- /* G++ 3.3 doesn't seem to like the __attribute__ constructs below. */
- #if (__GNUG__ == 3) && (__GNUC_MINOR__ == 3)
- #define __attribute__(x) /* nothing */
-diff -Naurw systemtap-2.9.orig/obstack_printf.c systemtap-2.9/obstack_printf.c
---- systemtap-2.9.orig/obstack_printf.c	1969-12-31 16:00:00.000000000 -0800
-+++ systemtap-2.9/obstack_printf.c	2016-02-03 17:51:28.907816827 -0800
-@@ -0,0 +1,19 @@
-+#include <stdarg.h>
-+#include <stdio.h>
-+#include <obstack.h>
-+
-+#ifndef HAVE_OBSTACK
-+static int obstack_printf(struct obstack *obst, const char *fmt, ...)
-+{
-+	char buf[1024];
-+	va_list ap;
-+	int len;
-+
-+	va_start(ap, fmt);
-+	len = vsnprintf(buf, sizeof(buf), fmt, ap);
-+	obstack_grow(obst, buf, len);
-+	va_end(ap);
-+
-+	return len;
-+}
-+#endif
 diff -Naurw systemtap-2.9.orig/remote.cxx systemtap-2.9/remote.cxx
 --- systemtap-2.9.orig/remote.cxx	2016-02-03 17:29:35.239854186 -0800
 +++ systemtap-2.9/remote.cxx	2016-02-03 17:29:45.359853899 -0800
