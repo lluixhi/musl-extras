@@ -1,15 +1,3 @@
-diff -Naurw systemtap-2.9.orig/Makefile.am systemtap-2.9/Makefile.am
---- systemtap-2.9.orig/Makefile.am	2016-02-03 17:29:35.156854189 -0800
-+++ systemtap-2.9/Makefile.am	2016-02-03 17:49:50.808819617 -0800
-@@ -49,7 +49,7 @@
- 	setupdwfl.cxx remote.cxx privilege.cxx cmdline.cxx \
- 	tapset-dynprobe.cxx tapset-method.cxx translator-output.cxx \
-         stapregex.cxx stapregex-tree.cxx stapregex-parse.cxx \
--	stapregex-dfa.cxx stringtable.cxx
-+	stapregex-dfa.cxx stringtable.cxx obstack_printf.c
- noinst_HEADERS = sdt_types.h
- stap_LDADD = @stap_LIBS@ @sqlite3_LIBS@ @LIBINTL@ -lpthread
- stap_DEPENDENCIES =
 diff -Naurw systemtap-2.9.orig/buildrun.cxx systemtap-2.9/buildrun.cxx
 --- systemtap-2.9.orig/buildrun.cxx	2016-02-03 17:29:35.158854189 -0800
 +++ systemtap-2.9/buildrun.cxx	2016-02-03 17:29:45.349853899 -0800
