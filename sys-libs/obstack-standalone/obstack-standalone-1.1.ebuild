@@ -17,10 +17,7 @@ IUSE="static-libs"
 
 DEPEND="
 	!sys-libs/glibc
-	!sys-libs/uclibc
-"
-
-PATCHES=("${FILESDIR}/obstack_printf.patch")
+	!sys-libs/uclibc"
 
 S="${WORKDIR}/musl-obstack-${PV}"
 
@@ -37,6 +34,5 @@ src_configure() {
 src_install() {
 	default
 	find "${D}" -name '*.la' -delete || die
-	insinto /usr/lib/pkgconfig
-	newins musl-obstack.pc obstack-standalone.pc
+	mv "${ED%/}"/usr/$(get_libdir)/pkgconfig/{musl-obstack,obstack-standalone}.pc || die
 }
