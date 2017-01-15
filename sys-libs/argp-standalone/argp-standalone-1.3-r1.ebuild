@@ -35,6 +35,7 @@ src_configure() {
 
 src_install() {
 	default
+	find "${D}" -name '*.la' -delete || die
 	insinto /usr/include
 	doins argp.h
 }
