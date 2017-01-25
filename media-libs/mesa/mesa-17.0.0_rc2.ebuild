@@ -2,9 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI=6
 
-EGIT_REPO_URI="git://anongit.freedesktop.org/mesa/mesa"
+EGIT_REPO_URI="https://anongit.freedesktop.org/git/mesa/mesa.git"
 
 if [[ ${PV} = 9999 ]]; then
 	GIT_ECLASS="git-r3"
@@ -18,7 +18,6 @@ inherit autotools multilib-minimal python-any-r1 pax-utils ${GIT_ECLASS}
 OPENGL_DIR="xorg-x11"
 
 MY_P="${P/_/-}"
-FOLDER="${PV/_rc*/}"
 
 DESCRIPTION="OpenGL-like graphic library for Linux"
 HOMEPAGE="http://mesa3d.sourceforge.net/"
@@ -27,7 +26,7 @@ if [[ $PV == 9999 ]]; then
 	SRC_URI=""
 	KEYWORDS=""
 else
-	SRC_URI="ftp://ftp.freedesktop.org/pub/mesa/${FOLDER}/${MY_P}.tar.xz"
+	SRC_URI="https://mesa.freedesktop.org/archive/${MY_P}.tar.xz"
 	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~amd64-fbsd ~x86-fbsd ~x86-freebsd ~amd64-linux ~arm-linux ~ia64-linux ~x86-linux ~sparc-solaris ~x64-solaris ~x86-solaris"
 fi
 
@@ -37,18 +36,17 @@ RESTRICT="!bindist? ( bindist )"
 
 INTEL_CARDS="i915 i965 ilo intel"
 RADEON_CARDS="r100 r200 r300 r600 radeon radeonsi"
-VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} freedreno nouveau vc4 vmware"
+VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} freedreno imx nouveau vc4 vivante vmware"
 for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	bindist +classic d3d9 debug +dri3 +egl +gallium +gbm gcrypt gles1 gles2
-	libressl +llvm +nettle +nptl opencl osmesa pax_kernel openmax openssl pic
-	selinux vaapi valgrind vdpau vulkan wayland xvmc xa kernel_FreeBSD"
+	bindist +classic d3d9 debug +dri3 +egl +gallium +gbm gles1 gles2 +llvm
+	+nptl opencl osmesa pax_kernel openmax pic selinux vaapi valgrind vdpau
+	vulkan wayland xvmc xa kernel_FreeBSD"
 
 REQUIRED_USE="
-	|| ( gcrypt libressl nettle openssl )
 	d3d9?   ( dri3 gallium )
 	llvm?   ( gallium )
 	opencl? ( gallium llvm )
@@ -65,6 +63,7 @@ REQUIRED_USE="
 	video_cards_i915?   ( || ( classic gallium ) )
 	video_cards_i965?   ( classic )
 	video_cards_ilo?    ( gallium )
+	video_cards_imx?    ( gallium )
 	video_cards_nouveau? ( || ( classic gallium ) )
 	video_cards_radeon? ( || ( classic gallium )
 						  gallium? ( x86? ( llvm ) amd64? ( llvm ) ) )
@@ -73,6 +72,7 @@ REQUIRED_USE="
 	video_cards_r300?   ( gallium x86? ( llvm ) amd64? ( llvm ) )
 	video_cards_r600?   ( gallium )
 	video_cards_radeonsi?   ( gallium llvm )
+	video_cards_vivante? ( gallium gbm )
 	video_cards_vmware? ( gallium )
 	${PYTHON_REQUIRED_USE}
 "
@@ -102,14 +102,6 @@ RDEPEND="
 		) )
 		>=sys-devel/llvm-3.6.0:=[${MULTILIB_USEDEP}]
 	)
-	nettle? ( dev-libs/nettle:=[${MULTILIB_USEDEP}] )
-	!nettle? (
-		gcrypt? ( dev-libs/libgcrypt:=[${MULTILIB_USEDEP}] )
-		!gcrypt? (
-			libressl? ( dev-libs/libressl:=[${MULTILIB_USEDEP}] )
-			!libressl? ( dev-libs/openssl:=[${MULTILIB_USEDEP}] )
-		)
-	)
 	opencl? (
 				app-eselect/eselect-opencl
 				dev-libs/libclc
@@ -123,7 +115,7 @@ RDEPEND="
 	vdpau? ( >=x11-libs/libvdpau-1.1:=[${MULTILIB_USEDEP}] )
 	wayland? ( >=dev-libs/wayland-1.2.0:=[${MULTILIB_USEDEP}] )
 	xvmc? ( >=x11-libs/libXvMC-1.0.8:=[${MULTILIB_USEDEP}] )
-	${LIBDRM_DEPSTRING}[video_cards_freedreno?,video_cards_nouveau?,video_cards_vc4?,video_cards_vmware?,${MULTILIB_USEDEP}]
+	${LIBDRM_DEPSTRING}[video_cards_freedreno?,video_cards_nouveau?,video_cards_vc4?,video_cards_vivante?,video_cards_vmware?,${MULTILIB_USEDEP}]
 "
 for card in ${INTEL_CARDS}; do
 	RDEPEND="${RDEPEND}
@@ -249,10 +241,12 @@ multilib_src_configure() {
 
 		gallium_enable swrast
 		gallium_enable video_cards_vc4 vc4
+		gallium_enable video_cards_vivante etnaviv
 		gallium_enable video_cards_vmware svga
 		gallium_enable video_cards_nouveau nouveau
 		gallium_enable video_cards_i915 i915
 		gallium_enable video_cards_ilo ilo
+		gallium_enable video_cards_imx imx
 		if ! use video_cards_i915 && \
 			! use video_cards_i965; then
 			gallium_enable video_cards_intel i915
@@ -320,7 +314,6 @@ multilib_src_configure() {
 		--with-dri-drivers=${DRI_DRIVERS} \
 		--with-gallium-drivers=${GALLIUM_DRIVERS} \
 		--with-vulkan-drivers=${VULKAN_DRIVERS} \
-		--with-sha1=$(usex nettle libnettle $(usex gcrypt libgcrypt libcrypto)) \
 		PYTHON2="${PYTHON}" \
 		${myconf}
 }
