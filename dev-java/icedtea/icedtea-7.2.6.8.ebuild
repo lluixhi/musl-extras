@@ -133,7 +133,6 @@ DEPEND="${COMMON_DEP} ${ALSA_COMMON_DEP} ${CUPS_COMMON_DEP} ${X_COMMON_DEP} ${X_
 		>=dev-java/gcj-jdk-4.3
 		dev-java/icedtea-bin:7
 		dev-java/icedtea:7
-		dev-java/icedtea:6
 	)
 	app-arch/cpio
 	app-arch/unzip
