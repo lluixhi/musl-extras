@@ -192,7 +192,7 @@ pkg_setup() {
 }
 
 src_prepare() {
-	epatch "${FILESDIR}"/${PN}-11-execinfo.patch
+	eapply "${FILESDIR}"/${PN}-11-execinfo.patch
 	eapply_user
 	eautoreconf
 }
