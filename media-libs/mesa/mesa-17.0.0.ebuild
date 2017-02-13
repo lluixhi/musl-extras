@@ -114,7 +114,7 @@ RDEPEND="
 		video_cards_nouveau? ( !<=x11-libs/libva-vdpau-driver-0.7.4-r3 )
 	)
 	vdpau? ( >=x11-libs/libvdpau-1.1:=[${MULTILIB_USEDEP}] )
-	wayland? ( >=dev-libs/wayland-1.2.0:=[${MULTILIB_USEDEP}] )
+	wayland? ( >=dev-libs/wayland-1.11.0:=[${MULTILIB_USEDEP}] )
 	xvmc? ( >=x11-libs/libXvMC-1.0.8:=[${MULTILIB_USEDEP}] )
 	${LIBDRM_DEPSTRING}[video_cards_freedreno?,video_cards_nouveau?,video_cards_vc4?,video_cards_vivante?,video_cards_vmware?,${MULTILIB_USEDEP}]
 "
@@ -300,7 +300,6 @@ multilib_src_configure() {
 		--enable-dri \
 		--enable-glx \
 		--enable-shared-glapi \
-		--disable-shader-cache \
 		$(use_enable !bindist texture-float) \
 		$(use_enable d3d9 nine) \
 		$(use_enable debug) \
@@ -376,7 +375,7 @@ multilib_src_install() {
 }
 
 multilib_src_install_all() {
-	prune_libtool_files --all
+	find "${ED}" -name '*.la' -delete
 	einstalldocs
 
 	if use !bindist; then
@@ -386,11 +385,6 @@ multilib_src_install_all() {
 	# Install config file for eselect mesa
 	insinto /usr/share/mesa
 	newins "${FILESDIR}/eselect-mesa.conf.9.2" eselect-mesa.conf
-
-	# Mesa should not install these
-	if use vulkan; then
-		rm "${ED}"/usr/include/vulkan/{vulkan.h,vk_platform.h} || die
-	fi
 }
 
 multilib_src_test() {
