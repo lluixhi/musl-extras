@@ -188,9 +188,6 @@ src_unpack() {
 }
 
 java_prepare() {
-	# SystemTap is broken for MUSL, don't try to install stp files.
-	epatch "${FILESDIR}/${PN}-2.6.1-no-systemtap.patch"
-
 	# Link MUSL patches into icedtea build tree
 	ln -s "${FILESDIR}/${PN}-hotspot-musl.patch" patches || die
 	ln -s "${FILESDIR}/${PN}-hotspot-noagent-musl.patch" patches || die

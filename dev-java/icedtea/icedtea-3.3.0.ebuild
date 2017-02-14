@@ -156,6 +156,10 @@ PDEPEND="webstart? ( >=dev-java/icedtea-web-1.6.1:0 )
 
 S="${WORKDIR}"/${ICEDTEA_PKG}
 
+PATCHES=(
+	"${FILESDIR}"/${PN}-3.3.0-fix-paxmark.patch
+)
+
 icedtea_check_requirements() {
 	local CHECKREQS_DISK_BUILD
 
@@ -189,6 +193,11 @@ src_unpack() {
 	unpack ${SRC_PKG}
 }
 
+src_prepare() {
+	default
+	java-pkg-2_src_prepare
+}
+
 src_configure() {
 	# Link MUSL patches into icedtea build tree
 	ln -s "${FILESDIR}/${PN}-hotspot-musl.patch" patches || die
@@ -199,7 +208,7 @@ src_configure() {
 	ln -s "${FILESDIR}/${PN}-jdk-fix-ipv6-init.patch" patches || die
 	ln -s "${FILESDIR}/${PN}8-jdk-musl.patch" patches || die
 	ln -s "${FILESDIR}/${PN}8-gcc-triples.patch" patches || die
-	ln -s "${FILESDIR}/${PN}8-new-gnuconfig.patch" patches || die
+	ln -s "${FILESDIR}/${PN}8-autoconf-config.patch" patches || die
 
 	# For bootstrap builds as the sandbox control file might not yet exist.
 	addpredict /proc/self/coredump_filter
@@ -221,7 +230,7 @@ src_configure() {
 	DISTRIBUTION_PATCHES+="patches/${PN}-jdk-fix-ipv6-init.patch "
 	DISTRIBUTION_PATCHES+="patches/${PN}8-jdk-musl.patch "
 	DISTRIBUTION_PATCHES+="patches/${PN}8-gcc-triples.patch "
-	DISTRIBUTION_PATCHES+="patches/${PN}8-new-gnuconfig.patch "
+	DISTRIBUTION_PATCHES+="patches/${PN}8-autoconf-config.patch "
 
 	export DISTRIBUTION_PATCHES
 
