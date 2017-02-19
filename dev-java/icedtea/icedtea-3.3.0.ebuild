@@ -207,7 +207,6 @@ src_configure() {
 	ln -s "${FILESDIR}/${PN}8-jdk-fix-libjvm-load.patch" patches || die
 	ln -s "${FILESDIR}/${PN}-jdk-fix-ipv6-init.patch" patches || die
 	ln -s "${FILESDIR}/${PN}8-jdk-musl.patch" patches || die
-	ln -s "${FILESDIR}/${PN}8-gcc-triples.patch" patches || die
 	ln -s "${FILESDIR}/${PN}8-autoconf-config.patch" patches || die
 
 	# For bootstrap builds as the sandbox control file might not yet exist.
@@ -229,7 +228,6 @@ src_configure() {
 	DISTRIBUTION_PATCHES+="patches/${PN}8-jdk-fix-libjvm-load.patch "
 	DISTRIBUTION_PATCHES+="patches/${PN}-jdk-fix-ipv6-init.patch "
 	DISTRIBUTION_PATCHES+="patches/${PN}8-jdk-musl.patch "
-	DISTRIBUTION_PATCHES+="patches/${PN}8-gcc-triples.patch "
 	DISTRIBUTION_PATCHES+="patches/${PN}8-autoconf-config.patch "
 
 	export DISTRIBUTION_PATCHES

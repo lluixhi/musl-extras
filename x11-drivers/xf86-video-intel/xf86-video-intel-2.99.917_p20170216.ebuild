@@ -1,4 +1,4 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -12,7 +12,7 @@ DESCRIPTION="X.Org driver for Intel cards"
 
 KEYWORDS="~amd64 ~x86 ~amd64-fbsd -x86-fbsd"
 IUSE="debug dri3 +sna +udev uxa xvmc"
-COMMIT_ID="169c74fa6c2cd9c28dd7bfacd9639cd245b8c8a8"
+COMMIT_ID="860c3664fe79c1fe92095ff345068f1fc7e4e651"
 SRC_URI="https://cgit.freedesktop.org/xorg/driver/xf86-video-intel/snapshot/${COMMIT_ID}.tar.xz -> ${P}.tar.xz"
 
 S=${WORKDIR}/${COMMIT_ID}
@@ -46,10 +46,6 @@ DEPEND="${RDEPEND}
 	x11-proto/dri3proto
 	x11-proto/presentproto
 	x11-proto/resourceproto"
-
-PATCHES=(
-	"${FILESDIR}"/${PN}-2.99.917-config-header.patch #575970
-)
 
 src_configure() {
 	replace-flags -Os -O2
