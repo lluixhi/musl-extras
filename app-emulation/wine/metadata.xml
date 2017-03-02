@@ -18,8 +18,6 @@ Think of Wine as a compatibility layer for running Windows programs. Wine does n
 	<use>
 		<flag name="capi">Enable ISDN support via CAPI</flag>
 		<flag name="custom-cflags">Bypass strip-flags; use at your own peril</flag>
-		<flag name="d3d9">Apply highly experimental patches for Gallium Nine support.
-			This patch may break some applications.</flag>
 		<flag name="dos">Pull in <pkg>games-emulation/dosbox</pkg> to run DOS applications</flag>
 		<flag name="gecko">Add support for the Gecko engine when using iexplore</flag>
 		<flag name="gstreamer">Use <pkg>media-libs/gstreamer</pkg> to provide DirectShow functionality;</flag>
@@ -29,17 +27,13 @@ Think of Wine as a compatibility layer for running Windows programs. Wine does n
 		<flag name="osmesa">Add support for OpenGL in bitmaps using libOSMesa</flag>
 		<flag name="pcap">Support packet capture software (e.g. wireshark)</flag>
 		<flag name="perl">Install helpers written in perl (winedump/winemaker)</flag>
-		<flag name="pipelight">Apply Wine-Staging patches for Pipelight/Silverlight support</flag>
 		<flag name="prelink">Run prelink on DLLs during build;
 			For versions before wine-1.7.55 or hardened, do not disable if you do not know what this means as it can break things at runtime</flag>
 		<flag name="realtime">Pull in <pkg>sys-auth/rtkit</pkg> for low-latency pulseaudio support</flag>
 		<flag name="run-exes">Use Wine to open and run .EXE and .MSI files</flag>
-		<flag name="s3tc">Pull in <pkg>media-libs/libtxc_dxtn</pkg> for DXTn texture compression, needed for many games</flag>
 		<flag name="samba">Add support for NTLM auth. see
 		http://wiki.winehq.org/NtlmAuthSetupGuide and
 		http://wiki.winehq.org/NtlmSigningAndSealing</flag>
-		<flag name="staging">Apply Wine-Staging patches for advanced feature support that haven't made it into upstream Wine yet</flag>
-		<flag name="themes">Support GTK+:3 window theming through Wine-Staging</flag>
 		<flag name="udev">Use <pkg>virtual/libudev</pkg> to provide plug and play support</flag>
 	</use>
 	<upstream>
