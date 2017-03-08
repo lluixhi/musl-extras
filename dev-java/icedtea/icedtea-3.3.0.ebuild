@@ -155,10 +155,6 @@ PDEPEND="webstart? ( >=dev-java/icedtea-web-1.6.1:0 )
 
 S="${WORKDIR}"/${ICEDTEA_PKG}
 
-PATCHES=(
-	"${FILESDIR}"/${PN}-3.3.0-fix-paxmark.patch
-)
-
 icedtea_check_requirements() {
 	local CHECKREQS_DISK_BUILD
 
@@ -190,11 +186,6 @@ pkg_setup() {
 
 src_unpack() {
 	unpack ${SRC_PKG}
-}
-
-src_prepare() {
-	default
-	java-pkg-2_src_prepare
 }
 
 src_configure() {
