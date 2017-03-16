@@ -1,27 +1,47 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
 
 XORG_DRI=dri
 XORG_EAUTORECONF=yes
-inherit linux-info xorg-2
+inherit linux-info xorg-2 flag-o-matic
 
 DESCRIPTION="X.Org driver for Intel cards"
 
-KEYWORDS="amd64 x86 ~amd64-fbsd -x86-fbsd"
-IUSE="debug +sna +udev uxa xvmc"
+KEYWORDS="~amd64 ~x86 ~amd64-fbsd -x86-fbsd"
+IUSE="debug dri3 +sna tools +udev uxa xvmc"
+COMMIT_ID="7e9e92c86b0fc4c848d164fe571798add5e1e36e"
+SRC_URI="https://cgit.freedesktop.org/xorg/driver/xf86-video-intel/snapshot/${COMMIT_ID}.tar.xz -> ${P}.tar.xz"
+
+S=${WORKDIR}/${COMMIT_ID}
 
 REQUIRED_USE="
 	|| ( sna uxa )
 "
-
-RDEPEND="x11-libs/libXext
+RDEPEND="
+	x11-libs/libXext
 	x11-libs/libXfixes
+	x11-libs/libXScrnSaver
 	>=x11-libs/pixman-0.27.1
-	>=x11-libs/libdrm-2.4.29[video_cards_intel]
+	>=x11-libs/libdrm-2.4.52[video_cards_intel]
+	dri3? (
+		>=x11-base/xorg-server-1.18
+		!<=media-libs/mesa-12.0.4
+	)
 	sna? (
 		>=x11-base/xorg-server-1.10
+	)
+	tools? (
+		x11-libs/libX11
+		x11-libs/libxcb
+		x11-libs/libXcursor
+		x11-libs/libXdamage
+		x11-libs/libXinerama
+		x11-libs/libXrandr
+		x11-libs/libXrender
+		x11-libs/libxshmfence
+		x11-libs/libXtst
 	)
 	udev? (
 		virtual/udev
@@ -38,30 +58,27 @@ DEPEND="${RDEPEND}
 	x11-proto/presentproto
 	x11-proto/resourceproto"
 
-PATCHES=(
-	"${FILESDIR}"/${P}-sna-udev-fstat.patch
-	"${FILESDIR}"/${P}-uxa-udev-fstat.patch
-	"${FILESDIR}"/${P}-libdrm-kernel-4_0-crash.patch
-)
-
 src_configure() {
+	replace-flags -Os -O2
 	XORG_CONFIGURE_OPTIONS=(
 		$(use_enable debug)
 		$(use_enable dri)
+		$(use_enable dri dri3)
+		$(usex dri3 "--with-default-dri=3")
 		$(use_enable sna)
-		$(use_enable uxa)
+		$(use_enable tools)
 		$(use_enable udev)
+		$(use_enable uxa)
 		$(use_enable xvmc)
 		# Legacy driver is broken on MUSL, so whole driver fails.
 		--enable-kms-only
-		--disable-dri3
 	)
 	xorg-2_src_configure
 }
 
 pkg_postinst() {
-	if linux_config_exists \
-		&& ! linux_chkconfig_present DRM_I915_KMS; then
+	if linux_config_exists && \
+		kernel_is -lt 4 3 && ! linux_chkconfig_present DRM_I915_KMS; then
 		echo
 		ewarn "This driver requires KMS support in your kernel"
 		ewarn "  Device Drivers --->"
