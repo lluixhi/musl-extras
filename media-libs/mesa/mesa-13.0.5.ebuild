@@ -202,6 +202,7 @@ pkg_setup() {
 
 src_prepare() {
 	epatch "${FILESDIR}"/${PN}-11-execinfo.patch
+	epatch "${FILESDIR}"/${PN}-13-musl_endian.patch
 	epatch "${FILESDIR}"/${PN}-13-clover-Work-around-build-failure-with-AltiVec.patch
 
 	eautoreconf
