@@ -115,10 +115,12 @@ src_prepare() {
 	EPATCH_SUFFIX="patch" \
 	EPATCH_FORCE="yes" \
 	EPATCH_EXCLUDE="
-			1002_add_gentoo_preferences.patch"
+			1002_add_gentoo_preferences.patch
+			1006_fix_hardened_pie_detection.patch"
 	epatch "${WORKDIR}/firefox"
 
 	eapply "${FILESDIR}"/icecat-fix-preferences-gentoo.patch
+	eapply "${FILESDIR}"/icecat-fix-hardened-pie-detection.patch
 	eapply "${FILESDIR}"/musl_drop_hunspell_alloc_hooks.patch
 
 	# Enable gnomebreakpad
