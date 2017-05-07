@@ -17,7 +17,7 @@ else
 	http://dev.gentoo.org/~blueness/musl-misc/getconf.c
 	http://dev.gentoo.org/~blueness/musl-misc/getent.c
 	http://dev.gentoo.org/~blueness/musl-misc/iconv.c"
-	KEYWORDS="-* ~amd64 ~arm ~arm64 ~mips ~ppc ~sh ~x86"
+	KEYWORDS="-* amd64 arm ~arm64 ~mips ppc ~sh x86"
 fi
 
 export CBUILD=${CBUILD:-${CHOST}}
