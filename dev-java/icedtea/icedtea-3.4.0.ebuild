@@ -202,6 +202,7 @@ src_configure() {
 	ln -s "${FILESDIR}/${PN}-jdk-fix-ipv6-init.patch" patches || die
 	ln -s "${FILESDIR}/${PN}8-jdk-musl.patch" patches || die
 	ln -s "${FILESDIR}/${PN}8-autoconf-config.patch" patches || die
+	ln -s "${FILESDIR}/${PN}8-gcc-triple.patch" patches || die
 
 	# For bootstrap builds as the sandbox control file might not yet exist.
 	addpredict /proc/self/coredump_filter
@@ -223,6 +224,7 @@ src_configure() {
 	DISTRIBUTION_PATCHES+="patches/${PN}-jdk-fix-ipv6-init.patch "
 	DISTRIBUTION_PATCHES+="patches/${PN}8-jdk-musl.patch "
 	DISTRIBUTION_PATCHES+="patches/${PN}8-autoconf-config.patch "
+	DISTRIBUTION_PATCHES+="patches/${PN}8-gcc-triple.patch "
 
 	export DISTRIBUTION_PATCHES
 
