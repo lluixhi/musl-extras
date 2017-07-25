@@ -196,7 +196,7 @@ src_configure() {
 	# Link MUSL patches into icedtea build tree
 	ln -s "${FILESDIR}/${PN}-hotspot-musl.patch" patches || die
 	ln -s "${FILESDIR}/${PN}8-hotspot-noagent-musl.patch" patches || die
-	ln -s "${FILESDIR}/${PN}-hotspot-uclibc-fixes.patch" patches || die
+	ln -s "${FILESDIR}/${PN}8-hotspot-uclibc-fixes.patch" patches || die
 	ln -s "${FILESDIR}/${PN}8-jdk-execinfo.patch" patches || die
 	ln -s "${FILESDIR}/${PN}8-jdk-fix-libjvm-load.patch" patches || die
 	ln -s "${FILESDIR}/${PN}-jdk-fix-ipv6-init.patch" patches || die
