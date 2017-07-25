@@ -218,7 +218,7 @@ src_configure() {
 
 	DISTRIBUTION_PATCHES+="patches/${PN}-hotspot-musl.patch "
 	DISTRIBUTION_PATCHES+="patches/${PN}8-hotspot-noagent-musl.patch "
-	DISTRIBUTION_PATCHES+="patches/${PN}-hotspot-uclibc-fixes.patch "
+	DISTRIBUTION_PATCHES+="patches/${PN}8-hotspot-uclibc-fixes.patch "
 	DISTRIBUTION_PATCHES+="patches/${PN}8-jdk-execinfo.patch "
 	DISTRIBUTION_PATCHES+="patches/${PN}8-jdk-fix-libjvm-load.patch "
 	DISTRIBUTION_PATCHES+="patches/${PN}-jdk-fix-ipv6-init.patch "
