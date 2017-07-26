@@ -1,6 +1,6 @@
 diff -Naur openjdk.orig/hotspot/src/os/linux/vm/os_linux.cpp openjdk/hotspot/src/os/linux/vm/os_linux.cpp
---- openjdk.orig/hotspot/src/os/linux/vm/os_linux.cpp	2017-07-04 13:23:37.000000000 -0700
-+++ openjdk/hotspot/src/os/linux/vm/os_linux.cpp	2017-07-25 16:12:45.628494178 -0700
+--- openjdk.orig/hotspot/src/os/linux/vm/os_linux.cpp	2017-07-25 17:17:16.777812565 -0700
++++ openjdk/hotspot/src/os/linux/vm/os_linux.cpp	2017-07-25 17:20:23.263840744 -0700
 @@ -94,7 +94,6 @@
  # include <string.h>
  # include <syscall.h>
@@ -31,7 +31,7 @@ diff -Naur openjdk.orig/hotspot/src/os/linux/vm/os_linux.cpp openjdk/hotspot/src
  }
  
  /////////////////////////////////////////////////////////////////////////////
-@@ -2833,11 +2840,7 @@
+@@ -2833,17 +2840,13 @@
  // Handle request to load libnuma symbol version 1.1 (API v1). If it fails
  // load symbol from base version instead.
  void* os::Linux::libnuma_dlsym(void* handle, const char *name) {
@@ -44,6 +44,13 @@ diff -Naur openjdk.orig/hotspot/src/os/linux/vm/os_linux.cpp openjdk/hotspot/src
  }
  
  // Handle request to load libnuma symbol version 1.2 (API v2) only.
+ // Return NULL if the symbol is not defined in this particular version.
+ void* os::Linux::libnuma_v2_dlsym(void* handle, const char* name) {
+-  return dlvsym(handle, name, "libnuma_1.2");
++  return NULL;
+ }
+ 
+ bool os::Linux::libnuma_init() {
 @@ -5701,7 +5704,25 @@
  // Linux doesn't yet have a (official) notion of processor sets,
  // so just return the system wide load average.
@@ -71,8 +78,8 @@ diff -Naur openjdk.orig/hotspot/src/os/linux/vm/os_linux.cpp openjdk/hotspot/src
  
  void os::pause() {
 diff -Naur openjdk.orig/hotspot/src/share/vm/utilities/globalDefinitions_gcc.hpp openjdk/hotspot/src/share/vm/utilities/globalDefinitions_gcc.hpp
---- openjdk.orig/hotspot/src/share/vm/utilities/globalDefinitions_gcc.hpp	2017-07-04 13:23:37.000000000 -0700
-+++ openjdk/hotspot/src/share/vm/utilities/globalDefinitions_gcc.hpp	2017-07-25 16:13:32.711027911 -0700
+--- openjdk.orig/hotspot/src/share/vm/utilities/globalDefinitions_gcc.hpp	2017-07-25 17:17:16.701811724 -0700
++++ openjdk/hotspot/src/share/vm/utilities/globalDefinitions_gcc.hpp	2017-07-25 17:17:47.708149321 -0700
 @@ -235,7 +235,7 @@
  #elif defined(__APPLE__)
  inline int g_isnan(double f) { return isnan(f); }
