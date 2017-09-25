@@ -17,7 +17,7 @@ GNU_PV="gnu1"
 MOZ_PV=${PV}
 
 # Patch version
-PATCH="firefox-52.0-patches-08"
+PATCH="firefox-52.2-patches-03"
 MOZ_HTTP_URI="mirror://gnu/gnuzilla"
 
 MOZ_LANGPACK_PREFIX="${MOZ_PV}/langpacks/${PN}-${MOZ_PV}."
@@ -26,12 +26,12 @@ MOZ_LANGPACK_SUFFIX=".langpack.xpi"
 MOZCONFIG_OPTIONAL_GTK2ONLY=1
 MOZCONFIG_OPTIONAL_WIFI=1
 
-inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.52 pax-utils fdo-mime autotools virtualx mozlinguas-v2
+inherit check-reqs flag-o-matic toolchain-funcs eutils gnome2-utils mozconfig-v6.52 pax-utils xdg-utils autotools virtualx mozlinguas-v2
 
 DESCRIPTION="Icecat Web Browser"
 HOMEPAGE="http://www.gnu.org/gnuzilla"
 
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~ia64 ~ppc ~ppc64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~alpha amd64 ~arm ~arm64 ~ia64 ~ppc ~ppc64 x86 ~amd64-linux ~x86-linux"
 
 SLOT="0"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
@@ -53,7 +53,7 @@ RDEPEND="
 
 DEPEND="${RDEPEND}
 	pgo? ( >=sys-devel/gcc-4.5 )
-	rust? ( dev-lang/rust )
+	rust? ( virtual/rust )
 	amd64? ( ${ASM_DEPEND} virtual/opengl )
 	x86? ( ${ASM_DEPEND} virtual/opengl )"
 
@@ -121,7 +121,6 @@ src_prepare() {
 
 	eapply "${FILESDIR}"/icecat-fix-preferences-gentoo.patch
 	eapply "${FILESDIR}"/icecat-fix-hardened-pie-detection.patch
-	eapply "${FILESDIR}"/musl_drop_hunspell_alloc_hooks.patch
 
 	# Enable gnomebreakpad
 	if use debug ; then
@@ -354,7 +353,7 @@ pkg_preinst() {
 
 pkg_postinst() {
 	# Update mimedb for the new .desktop file
-	fdo-mime_desktop_database_update
+	xdg_desktop_database_update
 	gnome2_icon_cache_update
 
 	if ! use gmp-autoupdate ; then
