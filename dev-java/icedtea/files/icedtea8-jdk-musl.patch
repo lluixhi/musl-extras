@@ -59,17 +59,6 @@ diff -Naur openjdk.orig/jdk/src/solaris/native/java/net/Inet4AddressImpl.c openj
  #define HAS_GLIBC_GETHOSTBY_R   1
  #endif
  
-diff -Naur openjdk.orig/jdk/src/solaris/native/java/net/NetworkInterface.c openjdk/jdk/src/solaris/native/java/net/NetworkInterface.c
---- openjdk.orig/jdk/src/solaris/native/java/net/NetworkInterface.c	2017-01-30 11:02:08.138403064 -0800
-+++ openjdk/jdk/src/solaris/native/java/net/NetworkInterface.c	2017-01-30 11:06:22.047725853 -0800
-@@ -46,7 +46,6 @@
- 
- #if defined(__linux__)
- #include <sys/ioctl.h>
--#include <bits/ioctls.h>
- #include <sys/utsname.h>
- #include <stdio.h>
- #endif
 diff -Naur openjdk.orig/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c openjdk/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c
 --- openjdk.orig/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c	2017-01-30 11:02:08.137403055 -0800
 +++ openjdk/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c	2017-01-30 11:06:33.725833488 -0800
