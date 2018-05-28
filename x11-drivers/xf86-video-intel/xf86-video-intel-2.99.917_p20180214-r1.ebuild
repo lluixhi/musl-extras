@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
@@ -7,14 +7,18 @@ XORG_DRI=dri
 XORG_EAUTORECONF=yes
 inherit linux-info xorg-2 flag-o-matic
 
+if [[ ${PV} == 9999* ]]; then
+	SRC_URI=""
+else
+	KEYWORDS="amd64 x86"
+	COMMIT_ID="75795523003798d789d417e82aaa81c7ea1ed616"
+	SRC_URI="https://cgit.freedesktop.org/xorg/driver/xf86-video-intel/snapshot/${COMMIT_ID}.tar.xz -> ${P}.tar.xz"
+	S=${WORKDIR}/${COMMIT_ID}
+fi
+
 DESCRIPTION="X.Org driver for Intel cards"
 
-KEYWORDS="amd64 x86 ~amd64-fbsd ~x86-fbsd"
 IUSE="debug dri3 +sna tools +udev uxa xvmc"
-COMMIT_ID="860c3664fe79c1fe92095ff345068f1fc7e4e651"
-SRC_URI="https://cgit.freedesktop.org/xorg/driver/xf86-video-intel/snapshot/${COMMIT_ID}.tar.xz -> ${P}.tar.xz"
-
-S=${WORKDIR}/${COMMIT_ID}
 
 REQUIRED_USE="
 	|| ( sna uxa )
@@ -44,7 +48,7 @@ RDEPEND="
 		x11-libs/libXtst
 	)
 	udev? (
-		virtual/udev
+		virtual/libudev:=
 	)
 	xvmc? (
 		x11-libs/libXvMC
@@ -53,14 +57,12 @@ RDEPEND="
 	)
 "
 DEPEND="${RDEPEND}
-	>=x11-proto/dri2proto-2.6
-	x11-proto/dri3proto
-	x11-proto/presentproto
-	x11-proto/resourceproto"
+	x11-base/xorg-proto"
 
 src_configure() {
 	replace-flags -Os -O2
 	XORG_CONFIGURE_OPTIONS=(
+		--disable-dri1
 		$(use_enable debug)
 		$(use_enable dri)
 		$(use_enable dri dri3)
